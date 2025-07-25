@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -181,6 +182,10 @@
   },
   "active": "68eb7c3aa4330613",
   "lastOpenFiles": [
+    "MySQL/attachments/906972662855b6d0a857667c1e5e838b_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250726003114.png",
+    "MySQL/attachments/4bd5f486a6991f6329c87980f03a9c09_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250725235704.png",
     "MySQL/MySQL45讲.md",
     "MySQL/attachments/34ac5e67995e7afd46d6dd53414567d9_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250725230131.png",
@@ -194,9 +199,6 @@
     "IM/plato整体架构设计总结.md",
     "IM/手写分布式IM系统/存储层/分布式缓存设计（二） -- 高可用&一致性优化策略.md",
     "BigData/attachments/306580ce4cc56dd7dc6f8f6a71b6757f_MD5.png",
-    "BigData/attachments/43f688689d55d1ff6fd12b3fb9a733d4_MD5.png",
-    "BigData/attachments/7be9b3447bed4c5f02d8bf9584b43a9f_MD5.png",
-    "BigData/attachments/19b6b80cf22e6f2f3ae6dcb302995963_MD5.jpg",
     "BigData/大数据入门指南+v1.0+.pdf",
     "BigData/大数据学习路线.md",
     "BigData/attachments",

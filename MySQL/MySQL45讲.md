@@ -1,5 +1,11 @@
 > 笔记内容为学习极客时间-MySQL实战45讲
 
+**目录**
+
+- [01 基础架构：一条SQL查询语句是如何执行的？](#01%20%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9F%A5%E8%AF%A2%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F)
+- [02 日志系统：一条SQL更新语句是如何执行的？](#02%20%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F)
+
+
 ## 01 基础架构：一条SQL查询语句是如何执行的？
 MySQL的基本架构示意图如下图所示：
 ![](MySQL/attachments/34ac5e67995e7afd46d6dd53414567d9_MD5.jpeg)
@@ -35,4 +41,40 @@ MySQL8.0版本中将查询缓存的整个功能模块都删除了。
 问题：
 > 我给你留一个问题吧，如果表T中没有字段k，而你执行了这个语句 select * from T where k=1, 那肯定是会报“不存在这个列”的错误： “Unknown column ‘k’ in ‘where clause’”。你觉得这个错误是在我们上面提到的哪个阶段报出来的呢？
 
-答案： 
+答案： 语法分析
+
+## 02 日志系统：一条SQL更新语句是如何执行的？
+与查询流程不一样的是，更新流程还涉及两个重要的日志模块，`redo log`以及`binlog`。
+
+**重要的日志模块：redo log**
+redo log就是MySQL中常说的WAL技术，Write-Ahead Logging，先写日志，在写磁盘，降低了IO成本。
+InnoDB中的redo log的大小是固定的，例如可配置为一组4个文件，每个文件大小是1GB，那么总共就可以记录4GB的操作，整个写入是循环写。
+![](MySQL/attachments/4bd5f486a6991f6329c87980f03a9c09_MD5.jpeg)
+*write pos*是当前记录的位置，*checkpoint*是当前要擦除的位置。
+write pos到checkpoint中间的部分可以用来记录新的操作。如果write pos追上checkpoint，则不能执行新的更新，需要推进checkpoint。
+有了redo log，InnoDB可以保证即使数据库异常重启，之前的提交不会丢失，这个能力称为*crash-safe*。
+
+**重要的日志模块：binlog**
+前面的redo log是InnoDB引擎特有的日志，也就是存储层特有的日志，而server层也有自己的日志binlog。
+redo log与bin log的三点不同：
+1. redo log是InnoDB引擎特有的；binlog是MySQL的Server层实现的，所有引擎都可以使用
+2. redo log是物理日志；bin log是逻辑日志
+3. redo log是循环写；bin log是追加写
+
+有了两个日志的概念后，看看执行器和InnoDB引擎在执行update语句的内部流程：
+![](MySQL/attachments/906972662855b6d0a857667c1e5e838b_MD5.jpeg)
+redo log的写入拆分成为了：prepare和commit，这就是“两阶段提交”。
+
+**两阶段提交**
+两阶段提交是为了让两个日志之间的逻辑一致。
+
+**总结**
+redo log用于保证crash-safe能力。innodb_flush_log_at_trx_commit这个参数设置成1的时候，表示每次事务的redo log都直接持久化到磁盘。这个参数我建议你设置成1，这样可以保证MySQL异常重启之后数据不丢失。
+sync_binlog这个参数设置成1的时候，表示每次事务的binlog都持久化到磁盘。这个参数我也建议你设置成1，这样可以保证MySQL异常重启之后binlog不丢失。
+
+问题：
+>前面我说到定期全量备份的周期“取决于系统重要性，有的是一天一备，有的是一周一备”。那么在什么场景下，一天一备会比一周一备更有优势呢？或者说，它影响了这个数据库系统的哪个指标？
+
+答案：影响的是“最长恢复时间”这个指标
+
+## 03 事务隔离：为什么你改了我还看不见？

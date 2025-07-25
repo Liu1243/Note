@@ -1,0 +1,11 @@
+{
+  "promptDelete": false,
+  "newFileLocation": "current",
+  "showLineNumber": false,
+  "livePreview": true,
+  "defaultViewMode": "source",
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "./attachments",
+  "readableLineLength": false,
+  "useMarkdownLinks": true
+}

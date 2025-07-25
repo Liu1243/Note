@@ -1,0 +1,231 @@
+{
+  "main": {
+    "id": "2f0e9d705713cba2",
+    "type": "split",
+    "children": [
+      {
+        "id": "743d6ea1246f9c46",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "68eb7c3aa4330613",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "学习.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "学习"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "0431883b8b4d2b36",
+    "type": "split",
+    "children": [
+      {
+        "id": "01cfe2604334dcd9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5831c7061ed82d28",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "0d9e6225e1a3f526",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "9518db1f8eb756ac",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "af3e46593f0673dd",
+    "type": "split",
+    "children": [
+      {
+        "id": "48a9d8f17d5f2d35",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d3f16e0a8b2833f3",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "IM/零基础IM开发入门.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "零基础IM开发入门 的反向链接列表"
+            }
+          },
+          {
+            "id": "6fa9d3025725cb55",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "出链"
+            }
+          },
+          {
+            "id": "7a2a2d52a0d607aa",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "bd6c58f72eb58486",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "IM/手写分布式IM系统/01 消息协议设计（一）--基本协议.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "01 消息协议设计（一）--基本协议 的大纲"
+            }
+          },
+          {
+            "id": "5d95608e8656d07c",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {},
+              "icon": "spreadsheet",
+              "title": "Advanced Tables"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "obsidian-git:Open Git source control": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "obsidian-local-images-plus:Local Images Plus  0.16.3\r\nLocalize attachments (plugin folder)": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
+    }
+  },
+  "active": "68eb7c3aa4330613",
+  "lastOpenFiles": [
+    "attachments/7bc9cfadfeca7a5af9e60fc7adbbaa22_MD5.jpeg",
+    "attachments/Pasted image 20250716143716.png",
+    "attachments/8105a7e62334c7e1a87b9d0dc3b445ab_MD5.jpeg",
+    "attachments/Pasted image 20250716143258.png",
+    "学习.md",
+    "IM/plato整体架构设计总结.md",
+    "IM/手写分布式IM系统/存储层/分布式缓存设计（二） -- 高可用&一致性优化策略.md",
+    "BigData/attachments/306580ce4cc56dd7dc6f8f6a71b6757f_MD5.png",
+    "BigData/attachments/43f688689d55d1ff6fd12b3fb9a733d4_MD5.png",
+    "BigData/attachments/7be9b3447bed4c5f02d8bf9584b43a9f_MD5.png",
+    "BigData/attachments/19b6b80cf22e6f2f3ae6dcb302995963_MD5.jpg",
+    "BigData/大数据入门指南+v1.0+.pdf",
+    "BigData/大数据学习路线.md",
+    "BigData/attachments",
+    "BigData",
+    "bigdata/attachments/43f688689d55d1ff6fd12b3fb9a733d4_MD5.png",
+    "bigdata/attachments/7be9b3447bed4c5f02d8bf9584b43a9f_MD5.png",
+    "bigdata/attachments/306580ce4cc56dd7dc6f8f6a71b6757f_MD5.png",
+    "bigdata/大数据学习路线.md",
+    "bigdata/大数据入门指南+v1.0+.pdf",
+    "bigdata/attachments",
+    "bigdata",
+    "IM/手写分布式IM系统/存储层/分布式缓存设计（一） -- 低延迟&高吞吐优化策略.md",
+    "IM/手写分布式IM系统/存储层/attachments",
+    "IM/手写分布式IM系统/协议设计/02 消息的可用性（可靠性 + 一致性）.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
+    "IM/手写分布式IM系统/前置学习资料.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
+    "大数据/大数据入门指南+v1.0+.pdf",
+    "大数据/大数据学习路线.md",
+    "IM/手写分布式IM系统/存储层/分布式存储（二） -- 万人群聊优化.md",
+    "IM/手写分布式IM系统/存储层/分布式存储（一） -- IM的存储模型设计.md",
+    "微服务：从设计到部署.md",
+    "IM/手写分布式IM系统/业务层/邻域驱动设计（二） -- IM微服务划分.md",
+    "IM/手写分布式IM系统/业务层/attachments",
+    "IM/手写分布式IM系统/业务层/Hardcore System Design.md",
+    "IM/手写分布式IM系统/业务层",
+    "IM/手写分布式IM系统/未命名.md",
+    "IM/手写分布式IM系统/协议设计/01 基本协议设计.md",
+    "IM/零基础IM开发入门.md",
+    "开发内功/网络管理/02 常见三次握手异常.md",
+    "开发内功/网络管理/01 深入理解三次握手原理.md",
+    "大数据/Hadoop.md",
+    "欢迎.md",
+    "创建链接.md"
+  ]
+}

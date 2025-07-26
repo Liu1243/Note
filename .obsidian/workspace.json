@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "misc/佛教知识.md",
+                "file": "MySQL/MySQL45讲.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "佛教知识"
+              "title": "MySQL45讲"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -182,20 +181,20 @@
   },
   "active": "68eb7c3aa4330613",
   "lastOpenFiles": [
-    "misc/attachments/cd13e28f49fca9caaf6b340b1c80e5a7_MD5.jpeg",
-    "misc/attachments/Pasted image 20250726111833.png",
-    "misc/attachments/84727ac2f249fcd8e1d2feebbed389e7_MD5.jpeg",
-    "misc/attachments/Pasted image 20250726111514.png",
-    "misc/attachments/00b237f2aa537a3d764815689e40be0a_MD5.jpeg",
-    "misc/attachments/Pasted image 20250726111430.png",
-    "misc/attachments/dc0585f54b9fcab4f5b66c9f21b8a526_MD5.jpeg",
-    "misc/attachments/Pasted image 20250726111359.png",
-    "misc/attachments/4cca8f3598097e8b966ee165f45caabc_MD5.jpeg",
-    "misc/attachments/Pasted image 20250726111045.png",
-    "misc/attachments/e8ae45fe8fb98420e95bc2e530b2678b_MD5.jpeg",
+    "MySQL/attachments/731b9dd8b99c2c858ed47eff46e6b84a_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250726174518.png",
+    "MySQL/attachments/b22999cfe886d7ca99aa01bc77af89c9_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250726174153.png",
+    "MySQL/attachments/a22dc65f7c3dd17bd690fc8eb445a5b1_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250726170004.png",
+    "MySQL/attachments/71f27ebf249f00c43ed4388a83698a15_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250726165310.png",
+    "MySQL/attachments/36aceb06347d3a669e83497161838525_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250726164619.png",
+    "MySQL/attachments/1ef1a2a7bb37c318c9936c8a54288ce5_MD5.jpeg",
+    "misc/佛教知识.md",
     "misc/attachments",
     "MySQL/MySQL45讲.md",
-    "misc/佛教知识.md",
     "misc",
     "未命名.md",
     "MySQL/attachments",

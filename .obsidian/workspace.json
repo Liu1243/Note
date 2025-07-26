@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/MySQL45讲.md",
+                "file": "misc/佛教知识.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "MySQL45讲"
+              "title": "佛教知识"
             }
           }
         ]
@@ -182,23 +182,27 @@
   },
   "active": "68eb7c3aa4330613",
   "lastOpenFiles": [
-    "MySQL/attachments/906972662855b6d0a857667c1e5e838b_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250726003114.png",
-    "MySQL/attachments/4bd5f486a6991f6329c87980f03a9c09_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250725235704.png",
+    "misc/attachments/cd13e28f49fca9caaf6b340b1c80e5a7_MD5.jpeg",
+    "misc/attachments/Pasted image 20250726111833.png",
+    "misc/attachments/84727ac2f249fcd8e1d2feebbed389e7_MD5.jpeg",
+    "misc/attachments/Pasted image 20250726111514.png",
+    "misc/attachments/00b237f2aa537a3d764815689e40be0a_MD5.jpeg",
+    "misc/attachments/Pasted image 20250726111430.png",
+    "misc/attachments/dc0585f54b9fcab4f5b66c9f21b8a526_MD5.jpeg",
+    "misc/attachments/Pasted image 20250726111359.png",
+    "misc/attachments/4cca8f3598097e8b966ee165f45caabc_MD5.jpeg",
+    "misc/attachments/Pasted image 20250726111045.png",
+    "misc/attachments/e8ae45fe8fb98420e95bc2e530b2678b_MD5.jpeg",
+    "misc/attachments",
     "MySQL/MySQL45讲.md",
-    "MySQL/attachments/34ac5e67995e7afd46d6dd53414567d9_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250725230131.png",
+    "misc/佛教知识.md",
+    "misc",
+    "未命名.md",
     "MySQL/attachments",
     "学习.md",
     "MySQL",
-    "attachments/7bc9cfadfeca7a5af9e60fc7adbbaa22_MD5.jpeg",
-    "attachments/Pasted image 20250716143716.png",
-    "attachments/8105a7e62334c7e1a87b9d0dc3b445ab_MD5.jpeg",
-    "attachments/Pasted image 20250716143258.png",
     "IM/plato整体架构设计总结.md",
     "IM/手写分布式IM系统/存储层/分布式缓存设计（二） -- 高可用&一致性优化策略.md",
-    "BigData/attachments/306580ce4cc56dd7dc6f8f6a71b6757f_MD5.png",
     "BigData/大数据入门指南+v1.0+.pdf",
     "BigData/大数据学习路线.md",
     "BigData/attachments",
@@ -208,13 +212,11 @@
     "bigdata/attachments",
     "bigdata",
     "IM/手写分布式IM系统/存储层/分布式缓存设计（一） -- 低延迟&高吞吐优化策略.md",
-    "IM/手写分布式IM系统/存储层/attachments",
     "IM/手写分布式IM系统/协议设计/02 消息的可用性（可靠性 + 一致性）.md",
     "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
     "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
     "IM/手写分布式IM系统/前置学习资料.md",
     "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
-    "大数据/大数据入门指南+v1.0+.pdf",
     "大数据/大数据学习路线.md",
     "IM/手写分布式IM系统/存储层/分布式存储（二） -- 万人群聊优化.md",
     "IM/手写分布式IM系统/存储层/分布式存储（一） -- IM的存储模型设计.md",
@@ -225,8 +227,6 @@
     "IM/手写分布式IM系统/协议设计/01 基本协议设计.md",
     "IM/零基础IM开发入门.md",
     "开发内功/网络管理/02 常见三次握手异常.md",
-    "开发内功/网络管理/01 深入理解三次握手原理.md",
-    "大数据/Hadoop.md",
-    "欢迎.md"
+    "开发内功/网络管理/01 深入理解三次握手原理.md"
   ]
 }

@@ -231,6 +231,83 @@ $L2.tradeid.value的字符集是utf8mb4，并且utf8mb4是utf8的超集，MySQL�
 
 ==因此，每次你的业务代码升级时，把可能出现的、新的SQL语句explain一下，是一个很好的习惯。==
 
+## 19 为什么我只查一行的语句，也执行这么慢？
+
+**第一类：查询长时间不返回**
+```sql
+mysql> select * from t where id=1;
+```
+一般这种情况，大概率是表t被锁住了。执行`show processlist`命令，查看当前语句的执行情况。
+
+**等MDL锁**
+![](MySQL/attachments/a1372942382dd37834ccc1af73c8e4c4_MD5.jpeg)
+Waiting for table metadata lock，出现**这个状态表示的是，现在有一个线程正在表t上请求或者持有MDL写锁，把select语句堵住了。**
+解决的办法就是找到谁持有MDL锁，将他kill
+有了performance_schema和sys系统库以后，就方便多了。（MySQL启动时需要设置performance_schema=on)
+通过查询sys.schema_table_lock_waits这张表，我们就可以直接找出造成阻塞的process id，把这个连接用kill 命令断开即可。
+`select blocking_pid from sys.schema_table_lock_waits;`
+
+**等flush**
+![](MySQL/attachments/af94f1e9fb75065ac27431f1da06f11e_MD5.jpeg)
+Waiting for table flush，现在有一个线程正要对表t做flush操作。
+一般有两种flush操作：
+```sql
+flush tables t with read lock;
+flush tables with read lock;
+```
+这两个flush语句，如果指定表t的话，代表的是只关闭表t；如果没有指定具体的表名，则表示关闭MySQL里所有打开的表。
+但是正常这两个语句执行起来都很快，除非它们也被别的线程堵住了。
+
+复现步骤：
+![](MySQL/attachments/249c7ff717d7f1654ea4e52c9a88fac0_MD5.jpeg)
+processlist结果
+![](MySQL/attachments/6983b6822ef72589aec70a1636555124_MD5.jpeg)
+
+**等行锁**
+以上表级锁都是MySQL Server层的机制，而行级锁是InnoDB存储引擎的机制。
+```sql
+mysql> select * from t where id=1 lock in share mode;
+```
+访问id=1记录需要加读锁，如果这时候有一个事务持有一个写锁，并且一直不提交，那该select就会被阻塞。
+![](MySQL/attachments/354a53f519e6be518ed2f6d1eeb5a738_MD5.jpeg)
+![](MySQL/attachments/6a3b2db4a8fe75a8595b65277e3614c8_MD5.jpeg)
+分析方式就是，查出谁占有写锁，如果MySQL5.7版本，可以通过sys.innodb_lock_waits查看。
+```sql
+select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'`\G
+```
+![](MySQL/attachments/243223872973643da60441e8d4f2c7e6_MD5.jpeg)
+这里KILL QUERY 4是没有用的，因为当前语句是执行完成的，只是没有commit，所以必须KILL 4 断开连接。
+
+**第二类：查询慢**
+`select * from t where c=50000 limit 1;`
+以上语句执行慢是因为c上没有索引，需要扫描50000行。
+
+接下来再看一个只扫描一行，但是执行很慢的语句。
+`select * from t where id=1；`
+扫描行数为1，但是执行时间800ms
+![](MySQL/attachments/cd9d8307ded02cf808f39bbdb0ee8c5a_MD5.jpeg)
+`select * from t where id=1 lock in share mode`
+扫描行数同样为1行，但是执行时间为0.2ms
+![](MySQL/attachments/49827a5a8f02bd9e7d98236b71cc6be1_MD5.jpeg)
+
+按道理说lock in share mode还需要加锁，执行时间应该更长才对。
+复现：
+![](MySQL/attachments/86952d0c7d5ae7a24d96e3227959803d_MD5.jpeg)
+执行的情况：
+![](MySQL/attachments/9542265f0d859b10aabd1c6e4cb42c8b_MD5.jpeg)
+session B更新完100万次，生成了100万个回滚日志(undo log)。
+
+带lock in share mode的SQL语句，是**当前读**，因此会直接读到1000001这个结果，所以速度很快；而select * from t where id=1这个语句，是**一致性读**，因此需要从1000001开始，依次执行undo log，执行了100万次以后，才将1这个结果返回。
+
+问题：
+> 我们在举例加锁读的时候，用的是这个语句，select * from t where id=1 lock in share mode。由于id上有索引，所以可以直接定位到id=1这一行，因此读锁也是只加在了这一行上。
+> 但如果是下面的SQL语句，
+> `begin; select * from t where c=5 for update; commit;`
+> 这个语句序列是怎么加锁的呢？加的锁又是什么时候释放呢？
+
+答案：
+在可重复读的隔离级别下，因为c没有索引，会全表扫描，并对扫描到的每一个记录加**临键锁（next-key lock）**，**临键锁=间隙锁+记录锁**，锁住满足条件的行，并且锁住索引该行前后的间隙，防止其他事务插入，导致幻读。所有被扫描的索引记录都会添加临键锁，判断不满足后释放锁，而c=5的记录锁以及间隙锁会在commit后释放。
+在读提交的隔离级别下，语句执行完成后，只有行锁，没有间隙锁，也是在commit后才释放行锁。
 
 
 

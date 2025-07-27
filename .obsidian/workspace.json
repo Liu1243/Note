@@ -4,39 +4,24 @@
     "type": "split",
     "children": [
       {
-        "id": "743d6ea1246f9c46",
+        "id": "cbe73724b939f0e7",
         "type": "tabs",
         "children": [
           {
-            "id": "68eb7c3aa4330613",
+            "id": "f25f0adf2ec7a591",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Java面经/javaGuide.md",
+                "file": "MySQL/MySQL45讲.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "javaGuide"
-            }
-          },
-          {
-            "id": "aeb7a5c6a17efbdb",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Java面经/javaGuide.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "javaGuide"
+              "title": "MySQL45讲"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -195,21 +180,21 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "aeb7a5c6a17efbdb",
+  "active": "f25f0adf2ec7a591",
   "lastOpenFiles": [
-    "Java面经/attachments/ab9215d6a8d42cdf135b977e88fbf56b_MD5.jpeg",
-    "Java面经/attachments/Pasted image 20250727154438.png",
-    "Java面经/attachments/71182ba2ef9b0a64e16c79311cda6d0c_MD5.jpeg",
-    "Java面经/attachments/Pasted image 20250727150714.png",
-    "MySQL/MySQL45讲.md",
-    "MySQL/attachments/0d58a33919c308ed8334d426e9377d8b_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250727123752.png",
-    "MySQL/attachments/98e85e71e0741b00f16500fd3adb536e_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250727123655.png",
-    "MySQL/attachments/f633b6c346cf07a23df26c0b1557e0ba_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250727120920.png",
+    "MySQL/attachments/9542265f0d859b10aabd1c6e4cb42c8b_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727172809.png",
+    "MySQL/attachments/86952d0c7d5ae7a24d96e3227959803d_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727172755.png",
+    "MySQL/attachments/49827a5a8f02bd9e7d98236b71cc6be1_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727172720.png",
+    "MySQL/attachments/cd9d8307ded02cf808f39bbdb0ee8c5a_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727172635.png",
+    "MySQL/attachments/243223872973643da60441e8d4f2c7e6_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727172229.png",
+    "MySQL/attachments/6a3b2db4a8fe75a8595b65277e3614c8_MD5.jpeg",
     "Java面经/javaGuide.md",
-    "Java面经/attachments/5e4182885c10b98e66114b4ce4319815_MD5.jpeg",
+    "MySQL/MySQL45讲.md",
     "Java面经/attachments",
     "分布式/DDIA.md",
     "Java面经",

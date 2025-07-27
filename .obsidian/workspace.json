@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/MySQL45讲.md",
+                "file": "Java面经/javaGuide.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "MySQL45讲"
+              "title": "javaGuide"
             }
           }
         ]
@@ -181,24 +181,29 @@
   },
   "active": "68eb7c3aa4330613",
   "lastOpenFiles": [
+    "Java面经/attachments/5e4182885c10b98e66114b4ce4319815_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250727103206.png",
+    "Java面经/attachments/64bb7a08bb3c7dc0bf7cdea835979c52_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250727102439.png",
+    "Java面经/attachments/9aac71c60e90934fa46fbac8ce48db06_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250727101553.png",
+    "Java面经/attachments",
+    "分布式/DDIA.md",
+    "Java面经/javaGuide.md",
+    "Java面经",
+    "学习.md",
+    "分布式",
+    "MySQL/MySQL45讲.md",
     "MySQL/attachments/731b9dd8b99c2c858ed47eff46e6b84a_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250726174518.png",
     "MySQL/attachments/b22999cfe886d7ca99aa01bc77af89c9_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250726174153.png",
     "MySQL/attachments/a22dc65f7c3dd17bd690fc8eb445a5b1_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250726170004.png",
-    "MySQL/attachments/71f27ebf249f00c43ed4388a83698a15_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250726165310.png",
-    "MySQL/attachments/36aceb06347d3a669e83497161838525_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250726164619.png",
-    "MySQL/attachments/1ef1a2a7bb37c318c9936c8a54288ce5_MD5.jpeg",
     "misc/佛教知识.md",
     "misc/attachments",
-    "MySQL/MySQL45讲.md",
     "misc",
     "未命名.md",
     "MySQL/attachments",
-    "学习.md",
     "MySQL",
     "IM/plato整体架构设计总结.md",
     "IM/手写分布式IM系统/存储层/分布式缓存设计（二） -- 高可用&一致性优化策略.md",
@@ -207,9 +212,6 @@
     "BigData/attachments",
     "BigData",
     "bigdata/大数据学习路线.md",
-    "bigdata/大数据入门指南+v1.0+.pdf",
-    "bigdata/attachments",
-    "bigdata",
     "IM/手写分布式IM系统/存储层/分布式缓存设计（一） -- 低延迟&高吞吐优化策略.md",
     "IM/手写分布式IM系统/协议设计/02 消息的可用性（可靠性 + 一致性）.md",
     "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
@@ -224,8 +226,6 @@
     "IM/手写分布式IM系统/业务层/Hardcore System Design.md",
     "IM/手写分布式IM系统/未命名.md",
     "IM/手写分布式IM系统/协议设计/01 基本协议设计.md",
-    "IM/零基础IM开发入门.md",
-    "开发内功/网络管理/02 常见三次握手异常.md",
-    "开发内功/网络管理/01 深入理解三次握手原理.md"
+    "IM/零基础IM开发入门.md"
   ]
 }

@@ -1,5 +1,4 @@
 [JavaGuide（Java学习&面试指南） \| JavaGuide](https://javaguide.cn/home.html)
-
 ## Java
 ### 基础
 1. AOT
@@ -152,3 +151,93 @@ String d = str1 + str2; // 常量池中的对象
 System.out.println(c == d);// true
 ```
 被 `final` 关键字修饰之后的 `String` 会被编译器当做常量来处理，编译器在程序编译期就可以确定它的值，其效果就相当于访问常量。
+
+15. 异常
+![](Java%E9%9D%A2%E7%BB%8F/attachments/71182ba2ef9b0a64e16c79311cda6d0c_MD5.jpeg)
+- **`Exception`** :程序本身可以处理的异常，可以通过 `catch` 来进行捕获。`Exception` 又可以分为 Checked Exception (受检查异常，必须处理) 和 Unchecked Exception (不受检查异常，可以不处理)。
+- **`Error`**：`Error` 属于程序无法处理的错误 ，不建议通过`catch`捕获 。例如 Java 虚拟机运行错误（`Virtual MachineError`）、虚拟机内存不够错误(`OutOfMemoryError`)、类定义错误（`NoClassDefFoundError`）等 。这些异常发生时，Java 虚拟机（JVM）一般会选择线程终止。
+
+**Checked Exception** 即 受检查异常 ，Java 代码在编译过程中，如果受检查异常没有被 `catch`或者`throws` 关键字处理的话，就没办法通过编译。
+**Unchecked Exception** 即 **不受检查异常** ，Java 代码在编译过程中 ，我们即使不处理不受检查异常也可以正常通过编译。
+`RuntimeException` 及其子类都统称为非受检查异常，常见的有（建议记下来，日常开发中会经常用到）：
+- `NullPointerException`(空指针错误)
+- `IllegalArgumentException`(参数错误比如方法入参类型错误)
+- `NumberFormatException`（字符串转换为数字格式错误，`IllegalArgumentException`的子类）
+- `ArrayIndexOutOfBoundsException`（数组越界错误）
+- `ClassCastException`（类型转换错误）
+- `ArithmeticException`（算术错误）
+- `SecurityException` （安全错误比如权限不够）
+- `UnsupportedOperationException`(不支持的操作错误比如重复创建同一用户)
+
+==**注意：不要在 finally 语句块中使用 return!**== 当 try 语句和 finally 语句中都有 return 语句时，try 语句块中的 return 语句会被忽略。这是因为 try 语句中的 return 返回值会先被暂存在一个本地变量中，当执行到 finally 语句中的 return 之后，这个本地变量的值就变为了 finally 语句中的 return 返回值。==除此之外，还会吞掉异常==
+
+---
+进阶一下：从字节码角度分析`try catch finally`这个语法糖背后的实现原理。
+==其实也就是将finally中的代码复制三份，放在try、catch流程最后==
+
+`try-with-resources`
+- **适用范围（资源的定义）：** 任何实现 `java.lang.AutoCloseable`或者 `java.io.Closeable` 的对象
+- **关闭资源和 finally 块的执行顺序：** 在 `try-with-resources` 语句中，任何 catch 或 finally 块在声明的资源关闭后运行
+
+从字节码的角度来看，对于必须要关闭的资源，try-with-resources比try-finall要好，因为报错的异常信息保留的更多。
+==在传统try-finally结构中，如果try与finally都抛出异常，最终只会抛出finally中的异常。而在try-with-resources中，会使用addSuppressed将close的异常作为压制异常添加到try抛出的主异常中。==
+
+16. 注解
+注解本质是一个继承了`Annotation` 的特殊接口
+
+注解只有被解析之后才会生效，常见的解析方法有两种：
+- **编译期直接扫描**：编译器在编译 Java 代码的时候扫描对应的注解并处理，比如某个方法使用`@Override` 注解，编译器在编译的时候就会检测当前的方法是否重写了父类对应的方法。
+- **运行期通过反射处理**：像框架中自带的注解(比如 Spring 框架的 `@Value`、`@Component`)都是通过反射来进行处理的。
+
+17. SPI
+SPI 即 Service Provider Interface ，字面意思就是：“服务提供者的接口”，我的理解是：专门提供给服务提供者或者扩展框架功能的开发者去使用的一个接口。
+很多框架都使用了 Java 的 SPI 机制，比如：Spring 框架、数据库加载驱动、日志接口、以及 Dubbo 的扩展实现等等。
+
+**SPI和API的区别**
+![](Java%E9%9D%A2%E7%BB%8F/attachments/ab9215d6a8d42cdf135b977e88fbf56b_MD5.jpeg)
+- 当实现方提供了接口和实现，我们可以通过调用实现方的接口从而拥有实现方给我们提供的能力，这就是 **API**。这种情况下，接口和实现都是放在实现方的包中。调用方通过接口调用实现方的功能，而不需要关心具体的实现细节。
+- 当接口存在于调用方这边时，这就是 **SPI** 。由接口调用方确定接口规则，然后由不同的厂商根据这个规则对这个接口进行实现，从而提供服务。
+
+通过 SPI 机制能够大大地提高接口设计的灵活性，但是 SPI 机制也存在一些缺点，比如：
+
+- 需要遍历加载所有的实现类，不能做到按需加载，这样效率还是相对较低的。
+- 当多个 `ServiceLoader` 同时 `load` 时，会有并发问题。
+
+18. 序列化与反序列化
+对于不想进行序列化的变量，使用 `transient` 关键字修饰。
+关于 `transient` 还有几点注意：
+- `transient` 只能修饰变量，不能修饰类和方法。
+- `transient` 修饰的变量，在反序列化后变量值将会被置成类型的默认值。例如，如果是修饰 `int` 类型，那么反序列后结果就是 `0`。
+- `static` 变量因为不属于任何对象(Object)，所以无论有没有 `transient` 关键字修饰，均不会被序列化。
+
+常见的序列化协议：
+JDK 自带的序列化方式一般不会用 ，因为序列化效率低并且存在安全问题。比较常用的序列化协议有 Hessian、Kryo、Protobuf、ProtoStuff，这些都是基于二进制的序列化协议。
+像 JSON 和 XML 这种属于文本类序列化方式。虽然可读性比较好，但是性能较差，一般不会选择。
+
+**为什么不推荐使用JDK自带的序列化？**
+- **不支持跨语言调用** : 如果调用的是其他语言开发的服务的时候就不支持了。
+- **性能差**：相比于其他序列化框架性能更低，主要原因是序列化之后的字节数组体积较大，导致传输成本加大。
+- **存在安全问题**
+
+19. IO
+Java IO 流的 40 多个类都是从如下 4 个抽象类基类中派生出来的。
+- `InputStream`/`Reader`: 所有的输入流的基类，前者是字节输入流，后者是字符输入流。
+- `OutputStream`/`Writer`: 所有输出流的基类，前者是字节输出流，后者是字符输出流。
+**不管是文件读写还是网络发送接收，信息的最小存储单元都是字节，那为什么 I/O 流操作要分为字节流操作和字符流操作呢？**
+- 字符流是由 Java 虚拟机将字节转换得到的，这个过程还算是比较耗时；
+- 如果我们不知道编码类型的话，使用字节流的过程中很容易出现乱码问题。
+
+19. 语法糖
+Java 中真正支持语法糖的是 Java 编译器而不是 JVM，JVM无法识别语法糖
+`com.sun.tools.javac.main.JavaCompiler`的源码，你会发现在`compile()`中有一个步骤就是调用`desugar()`，这个方法就是负责解语法糖的实现的。
+Java 中最常用的语法糖主要有泛型、自动拆装箱、变长参数、枚举、内部类、增强 for 循环、try-with-resources 语法、lambda 表达式等。
+
+---
+## 重要知识点
+
+
+
+
+
+
+

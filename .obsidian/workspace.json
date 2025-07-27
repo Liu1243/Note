@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "javaGuide"
             }
+          },
+          {
+            "id": "aeb7a5c6a17efbdb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Java面经/javaGuide.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "javaGuide"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -78,7 +93,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -179,26 +195,26 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "68eb7c3aa4330613",
+  "active": "aeb7a5c6a17efbdb",
   "lastOpenFiles": [
+    "Java面经/attachments/ab9215d6a8d42cdf135b977e88fbf56b_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250727154438.png",
+    "Java面经/attachments/71182ba2ef9b0a64e16c79311cda6d0c_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250727150714.png",
+    "MySQL/MySQL45讲.md",
+    "MySQL/attachments/0d58a33919c308ed8334d426e9377d8b_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727123752.png",
+    "MySQL/attachments/98e85e71e0741b00f16500fd3adb536e_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727123655.png",
+    "MySQL/attachments/f633b6c346cf07a23df26c0b1557e0ba_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250727120920.png",
+    "Java面经/javaGuide.md",
     "Java面经/attachments/5e4182885c10b98e66114b4ce4319815_MD5.jpeg",
-    "Java面经/attachments/Pasted image 20250727103206.png",
-    "Java面经/attachments/64bb7a08bb3c7dc0bf7cdea835979c52_MD5.jpeg",
-    "Java面经/attachments/Pasted image 20250727102439.png",
-    "Java面经/attachments/9aac71c60e90934fa46fbac8ce48db06_MD5.jpeg",
-    "Java面经/attachments/Pasted image 20250727101553.png",
     "Java面经/attachments",
     "分布式/DDIA.md",
-    "Java面经/javaGuide.md",
     "Java面经",
     "学习.md",
     "分布式",
-    "MySQL/MySQL45讲.md",
-    "MySQL/attachments/731b9dd8b99c2c858ed47eff46e6b84a_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250726174518.png",
-    "MySQL/attachments/b22999cfe886d7ca99aa01bc77af89c9_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250726174153.png",
-    "MySQL/attachments/a22dc65f7c3dd17bd690fc8eb445a5b1_MD5.jpeg",
     "misc/佛教知识.md",
     "misc/attachments",
     "misc",

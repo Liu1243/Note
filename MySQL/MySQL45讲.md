@@ -185,3 +185,59 @@ select * from t limit @Y3，1；
 
 答案：
 先取出id值，然后直接where进行查询
+
+## 18 为什么这些SQL语句逻辑相同，性能却差异巨大？
+案例一：条件字段函数操作
+**对索引字段做函数操作，可能会破坏索引值的有序性，因此优化器就决定放弃走树搜索功能。**
+例如：
+`select count(*) from tradelog where month(t_modified)=7;`
+下图方框上就是month函数计算的结果
+![](MySQL/attachments/f633b6c346cf07a23df26c0b1557e0ba_MD5.jpeg)
+即使t_modified上有索引，但还是会全表扫描。因为B+树提供的快速定位能力，来源于同一层兄弟节点的有序性，而month函数会破坏这一特性。
+**优化：**
+```sql
+mysql> select count(*) from tradelog where -> (t_modified >= '2016-7-1' and t_modified<'2016-8-1') or -> (t_modified >= '2017-7-1' and t_modified<'2017-8-1') or -> (t_modified >= '2018-7-1' and t_modified<'2018-8-1');
+```
+显示的进行查询，这样可以利用到索引
+
+案例二：隐式类型转换
+`mysql> select * from tradelog where tradeid=110717;`
+其中tradeid的类型为varchar(32)，输入的类型为整型，对比时需要类型转换。
+==MySQL中的转换规则是将字符串转换成数组。==
+对于优化器而言，上述语句等价于：
+`mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;`
+出发了规则一：对索引字段做函数操作，优化器会放弃走树搜索功能。
+
+案例三：隐式字符编码转换
+tradelog字符集为utf8mb4，trade_detail字符集为utf8，且tradeid上都有索引。
+
+但执行下述sql，会发现第二行进行了全表扫描，并没有用到trade_detail中tradeid的索引。
+![](MySQL/attachments/98e85e71e0741b00f16500fd3adb536e_MD5.jpeg)
+1. 第一行显示优化器会先在交易记录表tradelog上查到id=2的行，这个步骤用上了主键索引，rows=1表示只扫描一行；
+2. 第二行key=NULL，表示没有用上交易详情表trade_detail上的tradeid索引，进行了全表扫描。
+![](MySQL/attachments/0d58a33919c308ed8334d426e9377d8b_MD5.jpeg)
+在这个执行计划里，是从tradelog表中取tradeid字段，再去trade_detail表里查询匹配字段。因此，我们把tradelog称为**驱动表**，把trade_detail称为**被驱动表**，把tradeid称为**关联字段**。
+
+单独把第三步改成SQL来看，是：
+`mysql> select * from trade_detail where tradeid=$L2.tradeid.value;`
+$L2.tradeid.value的字符集是utf8mb4，并且utf8mb4是utf8的超集，MySQL会进行转换，等价于：
+`select * from trade_detail where CONVERT(traideid USING utf8mb4)=$L2.tradeid.value;`
+也是违反了对索引字段做函数操作，优化器放弃走树搜索功能。
+**连接过程中要求在被驱动表的索引字段上加函数操作**，是直接导致对被驱动表做全表扫描的原因。
+优化：
+- 比较常见的优化方法是，把trade_detail表上的tradeid字段的字符集也改成utf8mb4，这样就没有字符集转换的问题了。
+- 如果能够修改字段的字符集的话，是最好不过了。但如果数据量比较大， 或者业务上暂时不能做这个DDL的话，那就只能采用修改SQL语句的方法了。
+  `select d.* from tradelog l , trade_detail d where d.tradeid=CONVERT(l.tradeid USING utf8) and l.id=2;`
+
+==因此，每次你的业务代码升级时，把可能出现的、新的SQL语句explain一下，是一个很好的习惯。==
+
+
+
+
+
+
+
+
+
+
+

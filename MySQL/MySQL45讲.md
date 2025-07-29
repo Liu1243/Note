@@ -385,9 +385,86 @@ RC锁力度小，仅锁定特定行，加上row格式的binlog可以实现数据
 RC保证事务提交后才写binlog，并且记录的是数据本身的变化，而不是sql语句，避免了因sql语句顺序而导致的不一致性。
 
 ## 21 为什么只改了一行的语句，锁这么多？
+间隙锁在可重复读RP隔离级别下才有效
 
+加锁规则包含两个“原则”、两个“优化”和一个“bug”
+1. 原则1：加锁的基本单位是next-key lock，前开后闭区间
+2. 原则2：查找过程中访问到的对象才会加锁
+3. 优化1：索引上的等值查询，给唯一索引加锁的时候，next-key lock退化为行锁
+4. 优化2：索引上的等值查询，向右遍历时且最后一个值不满足等值条件的时候，next-key lock退化为间隙锁
+5. 1个bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止
 
+**案例一：等值查询间隙锁**
+![](MySQL/attachments/3c1bafb7478c8d7b5d809f043d7b69a9_MD5.jpeg)
+1. 原则1，加锁单位为next-key lock，sessionA加锁范围为(5, 10]
+2. 优化2，next-key lock退化为间隙锁，(5, 10)
+所以最终id=8插入会被阻塞，id=10的更新ok
 
+**案例二：非唯一索引等值锁**
+![](MySQL/attachments/3071bd13b6424f35e49112cef7074ee0_MD5.jpeg)
+1. 原则1，(0, 5]加next-key lock
+2. 但是c是普通索引，需要向右遍历，直到查询到c=10；根据原则2，访问到的对象都要加锁，(5, 10]
+3. 优化2，第二个next-key lock退化为间隙锁，(5, 10)
+4. 原则2，该查询使用覆盖索引，并不需要访问主键索引，所以主键索引上没有加任何锁，因此sessionB的update语句可以执行
+sessionC会被sessionA的(5, 10)间隙锁锁住；需要注意，lock in share mode只会锁覆盖索引，如果是for update，系统会认为接下来需要更新数据，会顺便在主键索引上满足条件的行加行锁。
+==锁是加在索引上的==，如果要用lock in share mode给行加锁避免数据被更新，必须绕过覆盖索引的优化，在查询字段中加入索引中不存在的字段
+
+==案例三：主键索引范围锁==
+![](MySQL/attachments/029f4df569a620163feb3d1d9ade1785_MD5.jpeg)
+1. 找到第一个id=10的行，next-key lock(5, 10]，根据优化1，退化为行锁id=10
+2. 范围查询继续往后找，找到id=15停下，原则2，next-key lock(10, 15]
+for update，sessionA锁的范围在主键索引上，行锁id=10，next-key lock(10, 15]
+注意，首次id=10是等值查询来判断的，向右扫描到id=15的时候，使用的是范围查询判断
+
+**案例四：非唯一索引范围锁**
+![](MySQL/attachments/692b50a1955dda3038cb5793a2c557e4_MD5.jpeg)
+c=10定位记录，索引c加next-key lock(5, 10]，c是非唯一索引，没有优化1，不会蜕变为行锁；第二个c=15是范围查询，加next-key lock(10, 15]；
+
+**案例五：唯一索引范围锁bug**
+![](MySQL/attachments/ca1333b4953cd2ad0833d99f43ed4ff7_MD5.jpeg)
+首先是索引id加上next-key lock(10, 15]，因为id是唯一索引，所以循环判断到id=15应该停止。
+但是事实上，InnoDB会往前扫描第一个不满足条件的行为止，也就是id=20。由于是范围扫描，会加next-key lock(15, 20]
+所以这是一个bug
+
+**案例六：非唯一索引上存在“等值”的情况**
+![](MySQL/attachments/286f4fed8bf3a97b948de1fe4667f324_MD5.jpeg)
+![](MySQL/attachments/72522034276cbd41e77d6e781941d8a7_MD5.jpeg)
+首先访问第一个c=10的记录，按照原则1，加next-key lock（c=5，id=5）到（c=10，id=10）
+c不是唯一索引，向右查找，直到碰到（c=15，id=15）这一行循环结束。根据优化2，等值查询向右查询到不满足条件的行，会退化为（c=10，id=10）到（c=15，id=15）的间隙锁
+加锁范围是如下蓝色区域覆盖的部分，虚线表示开区间
+![](MySQL/attachments/7b5c4db403adb54e0462244078980472_MD5.jpeg)
+
+**案例七：limit语句加锁**
+![](MySQL/attachments/11cc70347275ac0342ac10cd46d2c672_MD5.jpeg)
+sessionA的delete语句加了limit 2。而表t里c=10记录就两条，加不加limit 2，删除的效果都是一样的，但是加锁的效果却不同。
+这是因为，因为limit 2，在遍历到（c=10，id=30）这一行之后，满足条件的语句已经有两条，循环就结束了
+所以索引c加锁范围就从（c=5，id=5）到（c=10，id=30）前开后闭区间
+![](MySQL/attachments/227805395e8f4dde5d385846a638c840_MD5.jpeg)
+==指导意义就会死删除数据的时候尽量加limit==，不仅可以控制删除数据的条目，让操作更安全，还可以减少加锁的范围
+
+**案例八：一个死锁的例子**
+next-key lock实际上是间隙锁和行锁加起来的结果
+![](MySQL/attachments/d709ebbce5216f9ea4bc5c3f812c45a7_MD5.jpeg)
+1. sessionA加lock in share mode，索引c上加next-key lock(5, 10] (10, 15]，优化2，第二个锁退化为间隙锁(10, 15)
+2. sessionB，在索引c上添加next-key lock(5,10]，进入锁等待
+3. sessionA插入（8，8，8），被sessionB的next-key lock锁住，出纤死锁，sessionB回滚
+sessionB的next-key lock不是还没申请成功吗？
+其实next-key lock加锁的操作分为两步：先加（5，10）间隙锁，加锁成功；然后加c=10行锁，这样才被锁住。
+
+==分析加锁规则的时候用next-key lock分析，但是具体的执行过程，会分为间隙锁和行锁两阶段来执行的==
+
+### 小结
+上述案例在可重复读隔离级别下验证的，遵循两阶段锁协议，所有加锁的资源，都是在事务提交或者回滚的时候释放
+
+读提交隔离级别下，锁的范围更小，锁的时间更短；在语句执行过程中加上的行锁，会在语句执行完成后，把“不满足条件的行”上的行锁直接释放，不需要等到事务提交
+
+问题：
+![](MySQL/attachments/4277873ed3468980a82889de445e9c34_MD5.jpeg)
+答案：
+1. 由于是order by c desc，第一个要定位的是索引c“最右边”c=20的行，加上间隙锁（20，25）和next-key lock(15, 20]
+2. 在索引c上向左遍历，直到c=10停下来，所以next-key lock会加到(5, 10]
+3. c=20、c=15、c=10三行存在，并且是select \*，所以会在主键id上加三个行锁
+所以锁范围就是：索引c上（5，25）、id=15、20两个行锁
 
 
 

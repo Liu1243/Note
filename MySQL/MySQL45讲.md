@@ -466,5 +466,125 @@ sessionB的next-key lock不是还没申请成功吗？
 3. c=20、c=15、c=10三行存在，并且是select \*，所以会在主键id上加三个行锁
 所以锁范围就是：索引c上（5，25）、id=15、20两个行锁
 
+## 22 MySQL有哪些“饮鸠止渴”提高性能的方法？
+**短连接风暴**
+正常的短连接模式就是连接到数据库后，执行很少的SQL语句就断开，下次需要时再重连。
+但是MySQL建立连接的过程成本很高，需要登陆权限判断和获得数据读写权限。
+风险就是当数据库处理的慢，连接数会暴涨。max_connections参数控制MySQL实例同时存在的连接数的上限，超过后会拒绝连接请求，提示“Too many connections”。
+自然的想法就是提高max_connections值。但这样风险：改的太大，让更多的连接进来，系统负载会进一步加大，大量的资源耗费在权限认证等逻辑，结果适得其反，已经连接的线程拿不到CPU资源去执行业务SQL。
+==第一种方法：先处理掉占着连接但是不工作的线程==
+对于不需要保持的连接，通过kill connection主动踢掉；同样的可以设置wait_timeout，一个线程空闲wait_timeout之后，会被MySQL主动断开连接。
+但是在show processlist结果里踢掉sleep线程，可能是有损的。
+![](MySQL/attachments/eca3b7d2dd8f55792c99aecc57497bd7_MD5.jpeg)
+如果断开sessionA连接，因为还未提交，只能回滚；而断开sessionB没有影响。
+如何判断事务外空闲呢？
+![](MySQL/attachments/aa95a5b92a5e9dd8eb25416c1f070b7b_MD5.jpeg)
+id=4与id=5都是sleep状态，查看事务具体状态，查看information_schema库的innodb_trx表
+![](MySQL/attachments/75f1837b421dd7128c135bb2023c040b_MD5.jpeg)
+trx_mysql_thread_id=4表示id=4的线程处在事务中
+如果连接数太多，优先断开事务外空闲太久的连接；如果还不够，考虑断开事务内空闲太久的连接。
+从服务端断开的命令是kill connection+id命令。断开后，客户端并不会直接指导，在下一个请求会报错“ERROR 2013 (HY000): Lost connection to MySQL server during query”
+从数据库端主动断开连接可能是有损的，尤其是应用端收到错误，不重新连接，导致从应用端看上去“MySQL一直没有恢复”
+==第二种方法：减少连接过程的消耗==
+让数据库跳过权限验证阶段，但会存在安全问题
+方法：重启数据库，使用-skip-grant-tables参数启动，MySQL会跳过所有权限验证阶段，包括连接过程以及语句执行过程；但在MySQL8.0，使用该参数会把--skip-networking打开，表示数据库只能被本地的客户端连接
 
+**慢查询性能问题**
+三种可能：
+1. 索引没有设计好
+紧急创建索引，MySQL5.6版本之后，创建索引支持Online DDL。最高效的做法是直接alter table。
+理想的做法是现在备库执行，流程是：
+	1. 备库B执行set sql_log_bin=off，不写binlog，然后执行alter table加索引
+	2. 主备切换
+	3. 这时主库为B，备库是B。在A上执行set sql_log_bin=off，然后执行alter table加索引
+平时也可以考虑gh-ost方案
+2. SQL语句没写好
+SQL语句不好，导致语句没有使用上索引。
+MySQL5.7提供了query_rewrite，可以把一个语句改写成另外一种模式。
+3. MySQL选错了索引
+应急方案即使在语句上添加force index
+
+---
+以上三种可能，出现最多的是前两种，而前两种可以避免：
+1. 上线前，在测试环境把慢记录日志打开，并且把long_query_time设置为0，确保每个语句都会记录在慢记录日志
+2. 测试表里插入模拟线上数据，做回归测试
+3. 观察row_examined是否与预期一致
+全量回归测试使用开源工具pt-query-digest
+
+**QPS突增问题**
+由于业务高峰或者程序bug导致某个语句的QPS暴增，导致MySQL压力过大，影响服务
+新功能bug导致，最理想情况是业务把功能下掉
+而从数据库端处理，对于不同的背景，有不同的方法：
+1. 全新业务bug。假设DB运维规范，也就是白名单是一个一个加的，如果确定业务方会下掉功能，可以从数据库端直接把白名单去掉
+2. 如果新功能使用的是单独的数据库用户，直接用管理员账号把用户删掉，断开现有连接
+3. 如果新增功能跟主体功能是部署在一起的，只能通过处理语句来限制。可以使用查询重写，把压力最大的SQL语句重写为“select 1”
+重写sql风险很高，会有副作用：如果其他功能也用到了相同的sql模板，会误伤；业务不只是靠一个语句完成，这会导致后面的业务逻辑失败
+==虚拟化、白名单机制、业务账号分离，建立规范的运维体系==
+
+## 23 MySQL如何保证数据不丢？
+该篇与数据的可靠性有关，在前面提到WAL机制，只要redo log和binlog保证持久化到磁盘，就能保证MySQL异常重启后，数据就可以恢复。
+那么，如何保证redo log真实写入磁盘，以及binlog、redo log写入流程。
+
+**binlog写入机制**
+事务执行过程中，先把日志写入到binlog cache，事务提交的时候，再把binlog cache写入到binlog文件中。
+binlog cache在内存中，每个线程一个，binlog_cache_size控制单个线程内binlog cache所占内存的大小。
+![](MySQL/attachments/523ea72af2012ef83102b758b72d326a_MD5.jpeg)
+每个线程都有自己的binlog cache，但是共用一份binlog文件。
+- write，将日志写入文件系统的page cache（也是在内存中）
+- fsync，将数据持久化到磁盘中，占磁盘的IOPS
+write和fsync的机制，由==sync_binlog==控制：
+- sync_binlog=0，每次提交事务只write，不fsync
+- sync_binlog=1，每次提交事务都fsync
+- sync_binlog=N，每次提交事务都write，积累N个事务后fsync
+出现IO瓶颈的时候，将sync_binlog设置为一个较大的值，可以提高性能。一般设置为100-1000，风险就是主机异常重启，会丢失最近N个事务的binlog日志
+
+**redo log的写入机制**
+事务执行的过程中，生成的redo log会先写到redo log buffer，那什么时候会持久化到磁盘呢？
+redo log可能存在三种状态：
+![](MySQL/attachments/b5faa30455fde8ba63fe44e3b17a1538_MD5.jpeg)
+- 存在redo log buffer中，物理上是在MySQL的进程内存中
+- write写到磁盘，但是没有fsync持久化，物理上是在文件系统的page cache中
+- 持久化到磁盘，对应的是hard disk
+为了控制redo log的写入策略，InnoDB提供了==innodb_flush_log_at_trx_commit==参数：
+- 0，每次事务提交只是把redo log留在redo log buffer
+- 1，每次提交都把redo log直接持久化到磁盘
+- 2，每次只是把redo log写到page cache
+InnoDB后台线程每次1s，将redo log buffer中的日志，调用write写到文件系统的page cache中，然后调用fsync持久化到磁盘。
+也就是说，一个没有提交的事务的redo log也可能已经被持久化到磁盘了。
+除了轮询外，还有两种场景也会把一个没有提交的事务的redo log持久化到磁盘中：
+- redo log buffer占用空间达到innodb_log_buffer_size的一半，后台线程会主动写盘。只是write，没有fsync
+- 并行的事务提交的时候，顺带将这个事务的redo log buffer持久化到磁盘
+两阶段提交中，时序上redo log先prepare，再写binlog，最后redo log commit。
+崩溃恢复逻辑是依赖于prepare的redo log，再加上binlog来恢复的；每秒一次的轮询刷盘，InnoDB认为redo log在commit的时候不需要fsync，只会write到文件系统的page cache中就够了
+通常的“双1”配置，就是sync_binlog与innodn_flush_log_at_trx_commit都是1。也就是说一个事务完整提交前，需要等待两次刷盘，一次是redo log（prepare），一次是binlog
+
+为了进一步提高TPS，使用==组提交策略==
+先介绍日志逻辑序列号（log sequence number，LSN），是单调递增的，对应redo log的一个个写入点
+如图是三个并发的事务（trx1，trx2，trx3）在prepare阶段，都写完redo log buffer，持久化到磁盘的过程，对应的LSN为50、120、160
+
+![](MySQL/attachments/3478c3caa0f7551d76415b36fb38e9e6_MD5.jpeg)
+1. trx1第一个到达，被选为这组的leader；
+2. 等trx1写盘的时候，组里面已经有三个事务，LSN变为160；
+3. trx1写盘的时候，带LSN=160，等trx1返回时，所有LSN小于等于160的redo log都已经被持久化到磁盘中
+4. trx2、trx3直接返回
+一次group commit中，组员越多，节约磁盘IOPS越好。并发场景下，第一个事务写完redo log buffer，接下来fsync越晚调用，组员会更多，节约的IOPS效果越好。
+==MySQL优化是拖时间==，将redo log的fsync拖到binlog write之后。
+![](MySQL/attachments/ee38e761241445d9e84b61656a266bce_MD5.jpeg)
+通常情况下，步骤3执行的很快，所以binlog的write和fsync间隔时间短，导致能一起持久化的binlog比较少，组提交的效果不好。
+提升binlog组提交的效果，设置binlog_group_commit_sync_delay和binlog_group_commit_sync_no_delay_count来实现。
+- delay表示延迟多少微妙后调用fsync
+- count表示积累多少次后调用fsync
+两个条件是或的关系，只要有一个满足就会调用fsync
+> WAL机制得益于两个方面：顺序写、组提交
+
+==如果MySQL出现IO性能瓶颈==，可以考虑以下三种方法：
+1. 设置delay、count参数，通过组提交，减少binlog写盘次数；但会增加语句的响应时间
+2. sync_binlog设置为100-1000；风险是主机掉电会丢失binlog日志
+3. innodb_flush_log_at_trx_commit设置为2；风险是掉电丢失数据
+
+**小结**
+数据库的crash-safe保证的是：
+1. 客户端收到事务成功的消息，事务一定是持久化
+2. 客户端收到事务失败，事务一定失败
+3. 客户端收到“执行异常”的消息，应用需要重练后查询当前状态；数据库只需要保证内部的一致性（数据和日志、主库和备库）
 

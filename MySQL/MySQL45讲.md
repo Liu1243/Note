@@ -739,3 +739,124 @@ seconds_behind_master的计算方式是：
 > `begin; select * from t limit 1;`
 > 这时主库对表t做了一个加字段的操作，DDL在备库应用的时候会被堵住
 
+## 26 备库为什么会延迟好几个小时？
+不论是偶发性的查询压力，还是备份，对备库延迟的影响都是分钟级的，备库在恢复正常以后都能追上来。
+但是如果备库执行日志的速度持续低于主库生成日志的速度，那么延迟可能成为小时级别。对于压力大的主库，备库可能永远都追不上。
+主备的并行复制能力关注图中黑色的两个箭头。一个代表客户端写入主库，另一个代表备库上sql_thread执行中转日志（relay log）。按照并行度来看，第一个比第二个高。
+![](MySQL/attachments/8235974f486e2ea07a36284893739009_MD5.jpeg)
+主库上影响并行度的原因就是各种锁，备库则是sql_thread更新数据的逻辑。
+MySQL5.6之前，只支持单线程复制，在主库并发高，TPS高时会出现严重的主备延迟问题。
+所有的多线程复制机制，都是将一个线程的sql_thread拆成多个线程：
+![](MySQL/attachments/823999aaefd88c78d90010f29bdb0093_MD5.jpeg)
+图中coordinator负责读取中转日志和分发事务，worker线程更新日志，由参数slave_parallel_workers决定的。32核物理机的情况下，设置为8-16之间最好，因为备库可能还要提供读查询。
+coordinator在分发的时候，需要满足以下两个基本要求：
+1. 不能造成更新覆盖。更新同一行的两个事务，必须被分发到同一个worker中
+2. 同一个事务不能被拆开，必须放到同一个事务中
+
+---
+常见的策略：
+**按表分发策略**
+如果两个事务更新不同的表，他们是可以并行的
+![](MySQL/attachments/932820b89bb50fdd493196f0b7b2cf13_MD5.jpeg)
+每个worker对应一个hash表，保存当前worker的“执行队列”里事务所涉及的表。key是“库名.表名”，value是当前队列中有多少个事务修改这个表
+新事物T的分配流程，该事务修改的行涉及到表t1和t3：
+1. 事务T中涉及修改t1，而worker1队列中有事务在修改表t1，事务T和队列中的某个事物要修改同一个表的数据，事务T和worker1是冲突的
+2. 顺序判断事务T和每个worker队列的冲突关系，发现事务T跟worker2也冲突
+3. 事务T跟多于一个worker冲突，coordinator线程进入等待
+4. worker继续执行，同时修改hash_table，假设修改t3的事务先完成
+5. coordinator发现跟事务T冲突的worker只有worker1，因此把它分配给worker1
+6. coordinator继续读取下一个日志，继续分配事务
+每个事务在分发的时候，跟所有worker冲突关系有：
+- 如果跟所有worker都不冲突，分配给最空闲的
+- 如果跟多于一个worker冲突，进入等待状态
+- 如果只跟一个worker冲突，分配给存在冲突的worker
+==这个按表分发的方案，在多个表负载均匀的场景里效果好==，如果碰到热点表，所有的更新事务都会涉及到一个表的时候，所有事务都会被分配到同一个worker中，就会变成单线程复制。
+
+**按行分发策略**
+解决热点表的并行复制问题，就需要一个按行并行复制的方案。核心思路：如果两个事务没有更新相同的行，那么在备库上可以并行执行，要求row格式的binlog。
+基于行的策略需要同时考虑主键id以及唯一键，key应该是“库名+表名+索引a的名字+a的值”，例如`update t1 set a=1 where id=2`，解析的hash表：
+- key=hash_func(db1+t1+“PRIMARY”+2), value=2; 这里value=2是因为修改前后的行id值不变，出现了两次。
+- key=hash_func(db1+t1+“a”+2), value=1，表示会影响到这个表a=2的行
+- key=hash_func(db1+t1+“a”+1), value=1，表示会影响到这个表a=1的行
+==相比于表的并行分发策略，按行并行策略在决定线程分发的时候，需要消耗更多的计算资源==
+以上两种方案约束条件：
+1. 要能够从binlog解析出来表名、主键值和唯一索引的值，必须是row格式的binlog
+2. 表必须有主键
+3. 不能有外键。如果有外键，级联更新的行不会记录在binlog中，冲突检测不准确
+对于3的解释参考：[Site Unreachable](https://zhuanlan.zhihu.com/p/489942393)，**被级联的操作不会被记录在binlog中**
+
+按行分发策略的问题：
+1. 耗费内存。例如一个语句要删除100w行数据，hash表就要记录100w个项
+2. 耗费cpu。解析binlog，计算hash
+所以，在实现按行分发的策略时，会设置一个阈值，单个事务如果超过设置的行数阈值，就暂时退化到单线程模式，退化逻辑：
+- coordinator暂时hold住事务
+- 等待所有worker都执行完成，变成空队列
+- coordinator直接执行这个事务
+- 恢复并行模式
+---
+**MySQL5.5版本的并行复制策略**
+5.5版本不支持 并行复制
+
+**MySQL5.6**
+支持的粒度是按库并行，hash表里key就是数据库名。
+这个策略的并行效果取决于各个DB的压力均衡。
+相较于按表以及按行分发，有两个优势：
+1. 构造hash值很快，只需要库名；并且一个实例上的DB数不多，不会出现要构造100w个项的情况
+2. 不要求binlog的格式，statement格式的binlog也可以拿到库名
+
+**MariaDB的并行复制策略**
+MariaDB利用redo log组提交优化这个特性：
+1. 能够在同一个组里提交的事务，一定不会修改同一行；如果修改同一行，就只能串行执行，而不能并行提交
+2. 主库上可以并行执行的事务，备库上一定可以并行执行
+
+---
+实现上：
+1. 一组里面一起提交的事务，有相同的commit_id，下一组就是commit_id+1
+2. commit_id直接写到binlog中
+3. 传到备库应用的时候，相同的commit_id事务分发到多个worker执行
+4. 这一组全部执行完成后欧，coordinator再去取下一批
+MariaDB策略目标就是“模拟主库的并行模式”，问题是没有实现“真正的模拟主库并发度”这个目标。
+下图是主库并行事务，第一组事务提交完成的时候，下一组事务很快进入commit状态
+![](MySQL/attachments/2a138cc0c0cc7b0004fd3b3e1ae78328_MD5.jpeg)
+按照MariaDB的并行复制策略，备库上的执行效果如下图：
+![](MySQL/attachments/d1749c40836bbcf1773b231008240ff5_MD5.jpeg)
+系统的吞吐量不够；并且很容易被大事务拖后腿，假设trx2是一个超大事务，备库应用的时候，trx1和trx3执行完成后，只能等待trx2完全执行完成，下一组才能执行，这段时间只有一个worker线程在工作。
+
+**MySQL5.7**
+参数slave-parallel-type参数控制并行复制策略：
+1. DATABASE，使用MySQL5.6按库并行
+2. LOGICAL_CLOCK，使用类似于MariaDB的策略
+
+MariaDB策略的核心，是“所有处于commit”的事务可以并行，事务处于commit，表示已经通过了锁冲突的检测。
+![](MySQL/attachments/ee38e761241445d9e84b61656a266bce_MD5.jpeg)
+其实只要能够达到redo log prepare阶段，就表示事务已经通过锁冲突的检测。
+MySQL5.7并行复制策略的思想是：
+1. 同时处于prepare的事务，备库使可以并行的
+2. 处于prepare，与处于commit的事务之间，在备库执行也是可以并行的
+binlog_group_commit_sync_delay、binlog_group_commit_sync_no_delay_count在binlog组提交的时候是故意拉长binlog从write到fsync的时间，减少binlog的写盘次数 ；在5.7并行复制策略中，可以用来制造更多的“同时处于prepare阶段的事务”，增加了备库复制的并行度。
+==这两个参数，接可以故意让主库提交的慢些，也可以让备库执行的快些==
+
+**MySQL5.7.22**
+新增了基于WRITESET的并行复制。
+参数binlog-transaction-dependency-tracking可选值：
+- COMMIT_ORDER，根据同时进入prepare和commit判断是否可以并行的策略
+- WRITESET，表示对于事务涉及的每一行，计算这一行的hash值，组成集合writeset。如果两个事务没有操作相同的行，writeset没有交集，就可以并行
+- WRITESET_SESSION，比WRITESET多了一个约束，在主库上同一个线程先后执行的两个事务，备库执行时保证相同的先后顺序
+hash值是通过“库名+表名+索引名+值”计算出来的。对于唯一索引，也要计算hash。
+与前面介绍的按行分发的策略是差不多的，优势是：
+1. writeset是在主库生成后直接写入到binlog中，备库执行的时候，不需要解析binlog的内容，节省了计算量
+2. 不需要把整个事务的binlog扫描决定分发，更省内存
+3. 由于备库的分发策略不依赖于binlog的内容，binlog是statement格式也是可以的
+==对于没主键和外键约束的场景，WRITEWSET也是无法并行的，暂时退化到单线程模型==
+
+**小结**
+MySQL5.7版本的并行策略，修改了binlog的内容，协议不向上兼容。
+
+**问题**：
+假设一个MySQL 5.7.22版本的主库，单线程插入了很多数据，过了3个小时后，我们要给这个主库搭建一个相同版本的备库。
+这时候，你为了更快地让备库追上主库，要开并行复制。在binlog-transaction-dependency-tracking参数的COMMIT_ORDER、WRITESET和WRITE_SESSION这三个取值中，你会选择哪一个呢？
+你选择的原因是什么？如果设置另外两个参数，你认为会出现什么现象呢？
+答案：
+> 应该设置为WRITESET。主库是单线程，所以每个事务的commit_id不同，设置为COMMIT_ORDER模式，从库也只能单线程执行；WRITESET_SESSION要求备库应用日志的时候，同一个线程的日志必须与主库上执行的先后顺序相同，也会导致单线程执行。
+
+

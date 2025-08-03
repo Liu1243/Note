@@ -896,3 +896,56 @@ B会报告Duplicate entry ‘id_of_R’ for key ‘PRIMARY’ 错误，提示出
 等到主备同步关系建立完成，并稳定执行一段时间后，需要将slave_skip_errors设置为空，以免出现主从不一致。
 
 **GTID**
+通过跳过事务和忽略错误的方法，虽然最终都可以建立从库B和新主库A‘的主备关系，但操作都很复杂，容易出错。MySQL5.6引入GTID。
+GTID全程Global Transaction Identifier，全局事务ID，是一个事务在提交的时候生成的，是这个事务的唯一表示。格式为：
+`GTID=server_uuid:gno`
+其中server_uuid是一个实例第一次启动自动生成的，是一个全局唯一的值；gno是一个整数，初始值是1，每次提交事务的时候分配给这个事务并加1；
+官方文档里定义为：`GTID=source_id:transcation_id`与上面表示是一样的，只是这种方式会造成误解。
+GTID模式的启动需要启动MySQL实例的时候加上参数gtid_mode=on, enforce_gtid_consistency=on。
+GTID的是两种生成方式：
+1. gtid_next=automatic，代表使用默认值。MySQL会把server_uuid:gno分配给这个事务。
+2. gtid是一个指定的值，例如gtid_next='current_gtid'，那么有两种可能：
+	1. 如果current值已经存在实例的GTID集合中，接下来执行的事务会被忽略
+	2. 如果不存在，就将这个current分配给接下来的事务
+每个MySQL实例都维护了一个GTID集合，对应“这个实例执行过的所有的事务”。
+
+**基于GTID的主备切换**
+GTID模式下，备库B设置为新主库A‘的从库的语法为：
+```sql
+CHANGE MASTER TO MASTER_HOST=$host_name MASTER_PORT=$port MASTER_USER=$user_name MASTER_PASSWORD=$password master_auto_position=1
+```
+master_auto_position=1表示主备关系使用的GTID协议，不需要执行位点。
+主备切换逻辑，实例A‘的GTID集合记为set_a，实例B的GTID集合记为set_b：
+1. 实例B指定主库A‘，基于主备协议建立连接
+2. 实例B把set_b发给主库A‘
+3. 实例A’计算两个集合的差集，存在于set_a，不存在set_b的集合，判断A‘本地是否已经包含了这个差集需要的所有binlog日志。
+	1. 如果不包含，说明A’已经把实例B需要的binlog删除了，直接返回错误
+	2. 如果包含，A‘从自己的binlog文件中，找到第一个不在set_b的事务，发给B
+设计思想：基于GTID的主备关系，只要建立主备关系，就必须保证主库发给备库的日志是完整的。
+
+基于位点的协议，由备库指定位点，不做日志完整性判断。
+
+**GTID和在线DDL**
+之前探讨业务高峰期慢查询，分析到如果是由于索引缺失引起的性能问题，可以通过在线加索引解决。考虑到避免新索引对主库性能造成的影响，可以现在备库加索引，然后再切换。
+双M结构下，备库执行的DDL语句会回传给主库，为了避免传回后对主库造成影响，通过set sql_log_bin=off关掉binlog。
+提出了一个问题：这样操作的话，数据库里面是加了索引，但是binlog并没有记录下这一个更新，是不是会导致数据和日志不一致？
+GTID可以解决这个问题；假设，这两个互为主备关系的库还是实例X和实例Y，且当前主库是X，并且都打开了GTID模式。这时的主备切换流程可以变成下面这样：
+- 在实例X上执行stop slave。
+- 在实例Y上执行DDL语句。注意，这里并不需要关闭binlog。
+- 执行完成后，查出这个DDL语句对应的GTID，并记为 server_uuid_of_Y:gno。
+- 到实例X上执行以下语句序列：
+	> set GTID_NEXT="server_uuid_of_Y:gno"; begin; 
+	> commit; 
+	> set gtid_next=automatic; 
+	> start slave;
+	
+这样既可以让实例Y更新有binlog日志，同时确保不会再实例X上执行这条更新。
+- 接下来，执行主备切换，按照以上流程再执行一边
+
+**问题：**
+你在GTID模式下设置主从关系的时候，从库执行start slave命令后，主库发现需要的binlog已经被删除掉了，导致主备创建不成功。这种情况下，你觉得可以怎么处理呢？
+答案：
+> 1. 如果业务允许主从不一致的情况，那么可以在主库上先执行show global variables like ‘gtid_purged’，得到主库已经删除的GTID集合，假设是gtid_purged1；然后先在从库上执行reset master，再执行set global gtid_purged =‘gtid_purged1’；最后执行start slave，就会从主库现存的binlog开始同步。binlog缺失的那一部分，数据在从库上就可能会有丢失，造成主从不一致
+> 2. 如果需要主从数据一致的话，最好还是通过重新搭建从库来做。
+> 3. 如果有其他的从库保留有全量的binlog的话，可以把新的从库先接到这个保留了全量binlog的从库，追上日志以后，如果有需要，再接回主库。
+> 4. 如果binlog有备份的情况，可以先在从库上应用缺失的binlog，然后再执行start slave。

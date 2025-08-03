@@ -859,4 +859,40 @@ MySQL5.7版本的并行策略，修改了binlog的内容，协议不向上兼容
 答案：
 > 应该设置为WRITESET。主库是单线程，所以每个事务的commit_id不同，设置为COMMIT_ORDER模式，从库也只能单线程执行；WRITESET_SESSION要求备库应用日志的时候，同一个线程的日志必须与主库上执行的先后顺序相同，也会导致单线程执行。
 
+## 27 主库出问题了，从库怎么办？
+为了解决数据库层读性能问题，接下来讨论的架构师：一主多从。先谈论一主多从的切换正确性，下图是一个基本的一主多从结构。
+![](MySQL/attachments/cab272241e580fea054925277d512d58_MD5.jpeg)
+虚线箭头表示的是主备关系，A与A‘互为主备，从库B、C、D指向的是主库A。一主多从用于读写分离，主库复制所有的写入和一部分读，其他读请求由从库分担。
+下图是主库发生故障，主备切换后的结果。
+![](MySQL/attachments/addb255095d5e1d506c41f2d5b1d8ec5_MD5.jpeg)
+相比于一主一备，一主多从结构切换后A‘会成为新的主库，从库B、C、D要改接到A’。
 
+**基于点位的主备切换**
+节点B设置为节点A‘从库时，需要执行change master命令：
+```sql
+CHANGE MASTER TO MASTER_HOST=$host_name MASTER_PORT=$port MASTER_USER=$user_name MASTER_PASSWORD=$password MASTER_LOG_FILE=$master_log_name MASTER_LOG_POS=$master_log_pos
+```
+最后两个参数MASTER_LOG_FILE和MASTER_LOG_POS表示，要从主库的master_log_name文件的master_log_pos这个位置的日志继续同步。而这个位置就是我们所说的同步位点，也就是主库对应的文件名和日志偏移量。
+相同的日志，点位是不同的，因此“找同步位点”这个操作是很难精确获取到。
+一般取同步点位的方法是：
+1. 等待新主库A'把relay log全部同步完成；
+2. A‘上执行show master status，得到A’上最新的FIle和Position；
+3. 取原主库故障的时刻T；
+4. 用mysqlbiblog工具解析A‘的File，得到T时刻的位点
+假设获取位点为123
+但这个位点并不精确，因为在时刻T有可能A已经执行insert并将binlog传给A‘以及B，然后传完掉电。
+这时系统状态：
+- B上同步了binlog
+- A’也同步了binlog，是在123之后
+- B执行change master，指向A‘的123，会把insert又同步到B执行
+B会报告Duplicate entry ‘id_of_R’ for key ‘PRIMARY’ 错误，提示出现了主键冲突，然后停止同步。
+
+**通常情况下，切换任务的时候，要主动跳过错误**
+两种做法：
+一种是主动跳过一个事务，sql_slave_skip_counter
+另一种是跳过指定的错误，slave_skip_errors，通常跳过：
+- 1062错误是插入数据时唯一键冲突；
+- 1032错误是删除数据时找不到行。
+等到主备同步关系建立完成，并稳定执行一段时间后，需要将slave_skip_errors设置为空，以免出现主从不一致。
+
+**GTID**

@@ -323,7 +323,7 @@ insert
 以上语句都会读取数据的最新版本，而不是快照版本，并会加上行锁或间隙锁，防止并发事物的干扰
 
 ==假设只在id=5这一行加锁==，查看以下场景：
-![](MySQL/attachments/7096a908257b225cfb7ecccec70b7d03_MD5.jpeg)
+![](MySQL/attachments/5a729948bda236fdc947073e9fc508f5_MD5.jpeg)
 for update使用的是当前读
 其中，Q3读到id=1这一行的现象，被称为“幻读”。也就是说，幻读指的是一个事务在前后两次查询同一个范围的时候，后一次查询看到了前一次查询没有看到的行。
 
@@ -335,7 +335,7 @@ for update使用的是当前读
 **首先是语义上的**，sessionA中T1时刻“把d=5的行锁住”，这个语义被破坏了。sessionB、sessionC按理来说应该是要被阻塞的，虽然在顺序上加锁的时刻还没有看到sessionB与sessionC的操作。
 
 **其次是数据一致性的问题**
-![](MySQL/attachments/e8a0c15ef4dc37ce4762abdf9e6c2fa0_MD5.jpeg)
+![](MySQL/attachments/cf24f9e2def438030ef8e791b092f841_MD5.jpeg)
 上图的执行顺序在binlog中是
 ```sql
 update t set d=5 where id=0; /*(0,0,5)*/ 
@@ -348,7 +348,7 @@ update t set d=100 where d=5;/*所有d=5的行，d改成100*/
 也就是说，id=0和id=1这两行，发生了数据不一致。
 ==也就是说只给d=5这一行加锁是不行的==
 那么给所有扫描到的行加写锁：
-![](MySQL/attachments/365fa7a8234432f9e9a3fab8bb06ac11_MD5.jpeg)
+![](MySQL/attachments/fab7d1bad2c8006a45fd3dc81282cab9_MD5.jpeg)
 binlog中
 ```sql
 insert into t values(1,1,5); /*(1,1,5)*/ 
@@ -361,12 +361,12 @@ id=0这一行的问题解决了，但是id=1这一行，也就是幻读的问题
 ==即使把所有的记录都加上锁，还是阻止不了新插入的记录==
 **如何解决幻读？**
 InnoDB引入间隙锁（Gap Lock）
-![](MySQL/attachments/4422ee2bc77ff409cbf0a0f753832294_MD5.jpeg)
+![](MySQL/attachments/a43a48ab6ff3cd65e53f07dea8124fbd_MD5.jpeg)
 这样加了6个行锁，7个间隙锁，确保了无法再插入新的记录。
 间隙锁和行锁合称next-key lock，前开后闭区间， (-∞,0]、(0,5]、(5,10]、(10,15]、(15,20]、(20, 25]、(25, +supremum]
 supremum是一个不存在的最大值，是为了符合前开后闭区间这一规则
 ==间隙锁和next-key lock的引入解决了幻读的问题，但也会存在一些问题（死锁）==
-![](MySQL/attachments/54430050289c71a3ef44f130824f7ef9_MD5.jpeg)
+![](MySQL/attachments/30cb0a2478ffa9644f01f355548ce920_MD5.jpeg)
 间隙锁之间不会冲突，sessionA与sessionB的间隙锁发生了死锁。
 **间隙锁的引入，可能会导致同样的语句锁住更大的范围，这其实是影响了并发度的**
 ==间隙锁在可重复读RP隔离级别才会生效==
@@ -395,13 +395,13 @@ RC保证事务提交后才写binlog，并且记录的是数据本身的变化，
 5. 1个bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止
 
 **案例一：等值查询间隙锁**
-![](MySQL/attachments/3c1bafb7478c8d7b5d809f043d7b69a9_MD5.jpeg)
+![](MySQL/attachments/525c9b48a22f9ed3d521fea381604616_MD5.jpeg)
 1. 原则1，加锁单位为next-key lock，sessionA加锁范围为(5, 10]
 2. 优化2，next-key lock退化为间隙锁，(5, 10)
 所以最终id=8插入会被阻塞，id=10的更新ok
 
 **案例二：非唯一索引等值锁**
-![](MySQL/attachments/3071bd13b6424f35e49112cef7074ee0_MD5.jpeg)
+![](MySQL/attachments/445537dfe9a487a471422fb250b08b28_MD5.jpeg)
 1. 原则1，(0, 5]加next-key lock
 2. 但是c是普通索引，需要向右遍历，直到查询到c=10；根据原则2，访问到的对象都要加锁，(5, 10]
 3. 优化2，第二个next-key lock退化为间隙锁，(5, 10)
@@ -410,41 +410,41 @@ sessionC会被sessionA的(5, 10)间隙锁锁住；需要注意，lock in share m
 ==锁是加在索引上的==，如果要用lock in share mode给行加锁避免数据被更新，必须绕过覆盖索引的优化，在查询字段中加入索引中不存在的字段
 
 ==案例三：主键索引范围锁==
-![](MySQL/attachments/029f4df569a620163feb3d1d9ade1785_MD5.jpeg)
+![](MySQL/attachments/8874ddb7047b41727f97811a3ec62f63_MD5.jpeg)
 1. 找到第一个id=10的行，next-key lock(5, 10]，根据优化1，退化为行锁id=10
 2. 范围查询继续往后找，找到id=15停下，原则2，next-key lock(10, 15]
 for update，sessionA锁的范围在主键索引上，行锁id=10，next-key lock(10, 15]
 注意，首次id=10是等值查询来判断的，向右扫描到id=15的时候，使用的是范围查询判断
 
 **案例四：非唯一索引范围锁**
-![](MySQL/attachments/692b50a1955dda3038cb5793a2c557e4_MD5.jpeg)
+![](MySQL/attachments/5799a6b79a9b19c1826067832d4d383f_MD5.jpeg)
 c=10定位记录，索引c加next-key lock(5, 10]，c是非唯一索引，没有优化1，不会蜕变为行锁；第二个c=15是范围查询，加next-key lock(10, 15]；
 
 **案例五：唯一索引范围锁bug**
-![](MySQL/attachments/ca1333b4953cd2ad0833d99f43ed4ff7_MD5.jpeg)
+![](MySQL/attachments/04ccf9ead994b2f3095d0c6025deb842_MD5.jpeg)
 首先是索引id加上next-key lock(10, 15]，因为id是唯一索引，所以循环判断到id=15应该停止。
 但是事实上，InnoDB会往前扫描第一个不满足条件的行为止，也就是id=20。由于是范围扫描，会加next-key lock(15, 20]
 所以这是一个bug
 
 **案例六：非唯一索引上存在“等值”的情况**
-![](MySQL/attachments/286f4fed8bf3a97b948de1fe4667f324_MD5.jpeg)
-![](MySQL/attachments/72522034276cbd41e77d6e781941d8a7_MD5.jpeg)
+![](MySQL/attachments/88d41a13ab46917964bcb2562cc21fa7_MD5.jpeg)
+![](MySQL/attachments/ee6e78084bb8e7ef4da35ca278f0acbc_MD5.jpeg)
 首先访问第一个c=10的记录，按照原则1，加next-key lock（c=5，id=5）到（c=10，id=10）
 c不是唯一索引，向右查找，直到碰到（c=15，id=15）这一行循环结束。根据优化2，等值查询向右查询到不满足条件的行，会退化为（c=10，id=10）到（c=15，id=15）的间隙锁
 加锁范围是如下蓝色区域覆盖的部分，虚线表示开区间
-![](MySQL/attachments/7b5c4db403adb54e0462244078980472_MD5.jpeg)
+![](MySQL/attachments/1c60e7ea4643cb11e8b0c7521faaf382_MD5.jpeg)
 
 **案例七：limit语句加锁**
-![](MySQL/attachments/11cc70347275ac0342ac10cd46d2c672_MD5.jpeg)
+![](MySQL/attachments/f7788aa4b6bc1e3c94f5462ac168b00f_MD5.jpeg)
 sessionA的delete语句加了limit 2。而表t里c=10记录就两条，加不加limit 2，删除的效果都是一样的，但是加锁的效果却不同。
 这是因为，因为limit 2，在遍历到（c=10，id=30）这一行之后，满足条件的语句已经有两条，循环就结束了
 所以索引c加锁范围就从（c=5，id=5）到（c=10，id=30）前开后闭区间
-![](MySQL/attachments/227805395e8f4dde5d385846a638c840_MD5.jpeg)
+![](MySQL/attachments/46741edf835ff3b34ec192448db3ec9d_MD5.jpeg)
 ==指导意义就会死删除数据的时候尽量加limit==，不仅可以控制删除数据的条目，让操作更安全，还可以减少加锁的范围
 
 **案例八：一个死锁的例子**
 next-key lock实际上是间隙锁和行锁加起来的结果
-![](MySQL/attachments/d709ebbce5216f9ea4bc5c3f812c45a7_MD5.jpeg)
+![](MySQL/attachments/7d5b424d4d28669e318ee95c02cdedd5_MD5.jpeg)
 1. sessionA加lock in share mode，索引c上加next-key lock(5, 10] (10, 15]，优化2，第二个锁退化为间隙锁(10, 15)
 2. sessionB，在索引c上添加next-key lock(5,10]，进入锁等待
 3. sessionA插入（8，8，8），被sessionB的next-key lock锁住，出纤死锁，sessionB回滚
@@ -459,7 +459,7 @@ sessionB的next-key lock不是还没申请成功吗？
 读提交隔离级别下，锁的范围更小，锁的时间更短；在语句执行过程中加上的行锁，会在语句执行完成后，把“不满足条件的行”上的行锁直接释放，不需要等到事务提交
 
 问题：
-![](MySQL/attachments/4277873ed3468980a82889de445e9c34_MD5.jpeg)
+![](MySQL/attachments/bcebee5a8564710e1939a090a2836c77_MD5.jpeg)
 答案：
 1. 由于是order by c desc，第一个要定位的是索引c“最右边”c=20的行，加上间隙锁（20，25）和next-key lock(15, 20]
 2. 在索引c上向左遍历，直到c=10停下来，所以next-key lock会加到(5, 10]
@@ -475,12 +475,12 @@ sessionB的next-key lock不是还没申请成功吗？
 ==第一种方法：先处理掉占着连接但是不工作的线程==
 对于不需要保持的连接，通过kill connection主动踢掉；同样的可以设置wait_timeout，一个线程空闲wait_timeout之后，会被MySQL主动断开连接。
 但是在show processlist结果里踢掉sleep线程，可能是有损的。
-![](MySQL/attachments/eca3b7d2dd8f55792c99aecc57497bd7_MD5.jpeg)
+![](MySQL/attachments/cf7ae5b7cbfb94601972b24544296423_MD5.jpeg)
 如果断开sessionA连接，因为还未提交，只能回滚；而断开sessionB没有影响。
 如何判断事务外空闲呢？
-![](MySQL/attachments/aa95a5b92a5e9dd8eb25416c1f070b7b_MD5.jpeg)
+![](MySQL/attachments/a66bdf6946e54b38061af5cbba779411_MD5.jpeg)
 id=4与id=5都是sleep状态，查看事务具体状态，查看information_schema库的innodb_trx表
-![](MySQL/attachments/75f1837b421dd7128c135bb2023c040b_MD5.jpeg)
+![](MySQL/attachments/0457c26256e73efc6d694d4ba8c3d706_MD5.jpeg)
 trx_mysql_thread_id=4表示id=4的线程处在事务中
 如果连接数太多，优先断开事务外空闲太久的连接；如果还不够，考虑断开事务内空闲太久的连接。
 从服务端断开的命令是kill connection+id命令。断开后，客户端并不会直接指导，在下一个请求会报错“ERROR 2013 (HY000): Lost connection to MySQL server during query”
@@ -528,7 +528,7 @@ MySQL5.7提供了query_rewrite，可以把一个语句改写成另外一种模�
 **binlog写入机制**
 事务执行过程中，先把日志写入到binlog cache，事务提交的时候，再把binlog cache写入到binlog文件中。
 binlog cache在内存中，每个线程一个，binlog_cache_size控制单个线程内binlog cache所占内存的大小。
-![](MySQL/attachments/523ea72af2012ef83102b758b72d326a_MD5.jpeg)
+![](MySQL/attachments/5464fac84ae1bd52148003098c2421c2_MD5.jpeg)
 每个线程都有自己的binlog cache，但是共用一份binlog文件。
 - write，将日志写入文件系统的page cache（也是在内存中）
 - fsync，将数据持久化到磁盘中，占磁盘的IOPS
@@ -541,7 +541,7 @@ write和fsync的机制，由==sync_binlog==控制：
 **redo log的写入机制**
 事务执行的过程中，生成的redo log会先写到redo log buffer，那什么时候会持久化到磁盘呢？
 redo log可能存在三种状态：
-![](MySQL/attachments/b5faa30455fde8ba63fe44e3b17a1538_MD5.jpeg)
+![](MySQL/attachments/df6f5d11e0149eb037f61a9f46ab5a16_MD5.jpeg)
 - 存在redo log buffer中，物理上是在MySQL的进程内存中
 - write写到磁盘，但是没有fsync持久化，物理上是在文件系统的page cache中
 - 持久化到磁盘，对应的是hard disk
@@ -562,14 +562,14 @@ InnoDB后台线程每次1s，将redo log buffer中的日志，调用write写到�
 先介绍日志逻辑序列号（log sequence number，LSN），是单调递增的，对应redo log的一个个写入点
 如图是三个并发的事务（trx1，trx2，trx3）在prepare阶段，都写完redo log buffer，持久化到磁盘的过程，对应的LSN为50、120、160
 
-![](MySQL/attachments/3478c3caa0f7551d76415b36fb38e9e6_MD5.jpeg)
+![](MySQL/attachments/cc93112e8289b7d7cd285084c3388447_MD5.jpeg)
 1. trx1第一个到达，被选为这组的leader；
 2. 等trx1写盘的时候，组里面已经有三个事务，LSN变为160；
 3. trx1写盘的时候，带LSN=160，等trx1返回时，所有LSN小于等于160的redo log都已经被持久化到磁盘中
 4. trx2、trx3直接返回
 一次group commit中，组员越多，节约磁盘IOPS越好。并发场景下，第一个事务写完redo log buffer，接下来fsync越晚调用，组员会更多，节约的IOPS效果越好。
 ==MySQL优化是拖时间==，将redo log的fsync拖到binlog write之后。
-![](MySQL/attachments/ee38e761241445d9e84b61656a266bce_MD5.jpeg)
+![](MySQL/attachments/03409c88013ab4df53f8335db6117058_MD5.jpeg)
 通常情况下，步骤3执行的很快，所以binlog的write和fsync间隔时间短，导致能一起持久化的binlog比较少，组提交的效果不好。
 提升binlog组提交的效果，设置binlog_group_commit_sync_delay和binlog_group_commit_sync_no_delay_count来实现。
 - delay表示延迟多少微妙后调用fsync
@@ -602,12 +602,12 @@ InnoDB后台线程每次1s，将redo log buffer中的日志，调用write写到�
 binlog可以实现归档，也可以用来主备同步
 **MySQL主备的基本原理**
 下图是基本的主备切换流程
-![](MySQL/attachments/9ce71c0a5bd670c44552bd47b0887ec1_MD5.jpeg)
+![](MySQL/attachments/3ce59e3787e4d52fd98944febd13708b_MD5.jpeg)
 备库一般设置为只读（readonly）模式
 备库只读了，如何和主库保持同步更新呢？
 readonly设置对超级（super）权限用户无效，而同步更新的线程拥有超级权限。
 下图是update语句在节点A执行，然后同步到节点B的完整流程图。
-![](MySQL/attachments/920be8ec8c8597f8d7f4ba598a654368_MD5.jpeg)
+![](MySQL/attachments/b9e0a72eb99ed25606010304c2594ff0_MD5.jpeg)
 备库B与主库A之间维持了一个长连接，事务日志用不完整过程：
 1. 备库B通过change master命令，设置主库A的IP、端口、用户名、密码，以及binlog的请求位置（文件名、日志偏移量）
 2. 备库B执行start slave，备库会启动两个线程：io_thread、sql_thread，io_thread负责与主库建立连接
@@ -618,12 +618,12 @@ readonly设置对超级（super）权限用户无效，而同步更新的线程�
 **binlog三种格式对比**
 statement、row以及mixed
 statement格式binlog如下，存储的是SQL语句原文
-![](MySQL/attachments/6f989f7da9ff7932fc5869643bc9557c_MD5.jpeg)
+![](MySQL/attachments/9b7f4b41475ff8a357c5482847182935_MD5.jpeg)
 statement格式的缺陷是：在主库执行SQL语句用的是索引a，备库执行使用索引t_modified，这样可能会导致主备不一致，所以需要用到row格式。
 row格式如下
-![](MySQL/attachments/3ac156e078ea07d856ae21d32d75a60f_MD5.jpeg)
+![](MySQL/attachments/e5e0cdecdaa7c45b245de30a1bcaaaf3_MD5.jpeg)
 借助mysqlbinlog工具解析结果
-![](MySQL/attachments/4c6caa76f319ddabfde136a08638dd1e_MD5.jpeg)
+![](MySQL/attachments/4471f931a50eedbc9f0c5bad5f5e3233_MD5.jpeg)
 可以看出，row格式记录了真实删除行的主键id，这样就不会有主备删除不同行的情况。
 **为什么会有mixed格式的binlog？**
 - statement格式的binlog会导致主备不一致，所以要用到row格式
@@ -634,14 +634,14 @@ row格式如下
 row格式的binlog还有一个好处就是可以：**恢复数据**；不管是在insert、update还是delete语句，row格式都记录了完整的数据，可以使用row格式的binlog进行操作回滚；MariaDB的Flashback工具就是基于以上原理实现回滚数据的。
 
 用mysqlbinlog解析出来日志的statement语句直接拷贝出来执行是有风险的，有些语句依赖上下文命令，直接执行的结果可能是错误的，经典的例子就是`insert into t values(10,10, now());`
-![](MySQL/attachments/874552164156b83e6fba94a2d6b18dbf_MD5.jpeg)
-![](MySQL/attachments/112c2008c43a972bda9abc8e26131afb_MD5.jpeg)
+![](MySQL/attachments/63c3dd95c7230a50f95882df9a1533f6_MD5.jpeg)
+![](MySQL/attachments/f8fd1ab08f4ed994a3279fca2aa8efe0_MD5.jpeg)
 binlog恢复数据的标准做法就是用musqlbinlog工具解析出来，把整个解析结果发给MySQL执行：
 `mysqlbinlog master.000001 --start-position=2738 --stop-position=2973 | mysql -h127.0.0.1 -P13000 -u$user -p$pwd;`
 
 **循环复制问题**
 实际生产上使用比较多的是双M结构，也就是下图的主备切换流程，节点A和节点B互为主备关系。
-![](MySQL/attachments/d249406c47a6fa27678cec72663210db_MD5.jpeg)
+![](MySQL/attachments/a7b1d62a604ecc7bb8a96d0592e4541a_MD5.jpeg)
 节点A更新一条语句，生成binlog发给节点B，节点B执行完语句也会生成binlog（建议log_slave_updates设置为on，表示备库执行relay log后生成binlog），那么节点A和B之间会不断循环执行这个更新语句，也就是循环复制了，怎么解决呢？
 可以使用实例的server id解决：
 1. 规定两个库的server id必须不同，如果相同不能是主备关系
@@ -652,7 +652,7 @@ binlog恢复数据的标准做法就是用musqlbinlog工具解析出来，把整
 循环复制问题，通过判断server id的方式还不够完备，还是有可能出现死循环，构造出场景，如何解决？
 答案：
 > 一个场景是，主库更新事务，用命令set global server_id=x修改了server_id。
-> 另外一个场景是，有三个节点的时候，B的binlog传给A，然后A与A‘搭建了双M结构，A与A’之间会出现循环复制![](MySQL/attachments/2d1c05f70a0af5e951c2272d8cf7bf8e_MD5.jpeg)
+> 另外一个场景是，有三个节点的时候，B的binlog传给A，然后A与A‘搭建了双M结构，A与A’之间会出现循环复制![](MySQL/attachments/e92be17f83144125bb58a4a56529bc6b_MD5.jpeg)
 >这种场景在做数据库迁移的时候会出现，可以在A或者A‘上执行：
 >`stop slave； 
 >`CHANGE MASTER TO IGNORE_SERVER_IDS=(server_id_of_B);`
@@ -709,7 +709,7 @@ seconds_behind_master的计算方式是：
 > 3. 判断备库B的seconds_behind_master，直到0
 > 4. 备库B改为可读写，readonly设置false
 > 5. 业务请求切换到备库B
-![](MySQL/attachments/ec30023137724c5f57873668f99ef806_MD5.jpeg)
+![](MySQL/attachments/9cbabb74088fee0bc2bf6f70516910a9_MD5.jpeg)
 图中SBM是seconds_behind_master的简写
 
 这个切换流程存在不可用时间，所以要在步骤1判断SBM值要足够小。
@@ -726,12 +726,12 @@ seconds_behind_master的计算方式是：
 
 **可靠性优先，异常切换效果？**
 如果主备间延迟时间长，主库A掉电，HA切换B作为主库，使用可靠性优先策略的话，需要等待SBM=0，这时系统会出现完全不可用的情况。
-![](MySQL/attachments/b6f9e0e76018293642d116f1653ba3bc_MD5.jpeg)
+![](MySQL/attachments/5cdfaf4cf413cebd8b684e3f8d268740_MD5.jpeg)
 
 **问题：**
 一般现在的数据库运维系统都有备库延迟监控，其实就是在备库上执行 show slave status，采集seconds_behind_master的值。
 假设，现在你看到你维护的一个备库，它的延迟监控的图像类似图6，是一个45°斜向上的线段，你觉得可能是什么原因导致呢？你又会怎么去确认这个原因呢？
-![](MySQL/attachments/8fa3f3f3946aad4adbc5599f2077bc0e_MD5.jpeg)
+![](MySQL/attachments/1159cc95693fcdc4866de68b63ff77f7_MD5.jpeg)
 答案：
 > 主库被完全堵住：
 > 1. 大事务（大表DDL、一个事务操作很多行）
@@ -743,11 +743,11 @@ seconds_behind_master的计算方式是：
 不论是偶发性的查询压力，还是备份，对备库延迟的影响都是分钟级的，备库在恢复正常以后都能追上来。
 但是如果备库执行日志的速度持续低于主库生成日志的速度，那么延迟可能成为小时级别。对于压力大的主库，备库可能永远都追不上。
 主备的并行复制能力关注图中黑色的两个箭头。一个代表客户端写入主库，另一个代表备库上sql_thread执行中转日志（relay log）。按照并行度来看，第一个比第二个高。
-![](MySQL/attachments/8235974f486e2ea07a36284893739009_MD5.jpeg)
+![](MySQL/attachments/e8983f649ef42c95c2dba975d67e76a5_MD5.jpeg)
 主库上影响并行度的原因就是各种锁，备库则是sql_thread更新数据的逻辑。
 MySQL5.6之前，只支持单线程复制，在主库并发高，TPS高时会出现严重的主备延迟问题。
 所有的多线程复制机制，都是将一个线程的sql_thread拆成多个线程：
-![](MySQL/attachments/823999aaefd88c78d90010f29bdb0093_MD5.jpeg)
+![](MySQL/attachments/c9710175a800a605b98fd53ae27cdd95_MD5.jpeg)
 图中coordinator负责读取中转日志和分发事务，worker线程更新日志，由参数slave_parallel_workers决定的。32核物理机的情况下，设置为8-16之间最好，因为备库可能还要提供读查询。
 coordinator在分发的时候，需要满足以下两个基本要求：
 1. 不能造成更新覆盖。更新同一行的两个事务，必须被分发到同一个worker中
@@ -757,7 +757,7 @@ coordinator在分发的时候，需要满足以下两个基本要求：
 常见的策略：
 **按表分发策略**
 如果两个事务更新不同的表，他们是可以并行的
-![](MySQL/attachments/932820b89bb50fdd493196f0b7b2cf13_MD5.jpeg)
+![](MySQL/attachments/46c5ecfb7dffeb924d671b9e61c5872f_MD5.jpeg)
 每个worker对应一个hash表，保存当前worker的“执行队列”里事务所涉及的表。key是“库名.表名”，value是当前队列中有多少个事务修改这个表
 新事物T的分配流程，该事务修改的行涉及到表t1和t3：
 1. 事务T中涉及修改t1，而worker1队列中有事务在修改表t1，事务T和队列中的某个事物要修改同一个表的数据，事务T和worker1是冲突的
@@ -817,9 +817,9 @@ MariaDB利用redo log组提交优化这个特性：
 4. 这一组全部执行完成后欧，coordinator再去取下一批
 MariaDB策略目标就是“模拟主库的并行模式”，问题是没有实现“真正的模拟主库并发度”这个目标。
 下图是主库并行事务，第一组事务提交完成的时候，下一组事务很快进入commit状态
-![](MySQL/attachments/2a138cc0c0cc7b0004fd3b3e1ae78328_MD5.jpeg)
+![](MySQL/attachments/c7b4005111414c8db52a88ad733a5de2_MD5.jpeg)
 按照MariaDB的并行复制策略，备库上的执行效果如下图：
-![](MySQL/attachments/d1749c40836bbcf1773b231008240ff5_MD5.jpeg)
+![](MySQL/attachments/13ccdabb8e5a60692f7a084dd5646e0c_MD5.jpeg)
 系统的吞吐量不够；并且很容易被大事务拖后腿，假设trx2是一个超大事务，备库应用的时候，trx1和trx3执行完成后，只能等待trx2完全执行完成，下一组才能执行，这段时间只有一个worker线程在工作。
 
 **MySQL5.7**
@@ -828,7 +828,7 @@ MariaDB策略目标就是“模拟主库的并行模式”，问题是没有实�
 2. LOGICAL_CLOCK，使用类似于MariaDB的策略
 
 MariaDB策略的核心，是“所有处于commit”的事务可以并行，事务处于commit，表示已经通过了锁冲突的检测。
-![](MySQL/attachments/ee38e761241445d9e84b61656a266bce_MD5.jpeg)
+![](MySQL/attachments/03409c88013ab4df53f8335db6117058_MD5.jpeg)
 其实只要能够达到redo log prepare阶段，就表示事务已经通过锁冲突的检测。
 MySQL5.7并行复制策略的思想是：
 1. 同时处于prepare的事务，备库使可以并行的
@@ -861,10 +861,10 @@ MySQL5.7版本的并行策略，修改了binlog的内容，协议不向上兼容
 
 ## 27 主库出问题了，从库怎么办？
 为了解决数据库层读性能问题，接下来讨论的架构师：一主多从。先谈论一主多从的切换正确性，下图是一个基本的一主多从结构。
-![](MySQL/attachments/cab272241e580fea054925277d512d58_MD5.jpeg)
+![](MySQL/attachments/5c08cd7353d79873df09048f09e1928c_MD5.jpeg)
 虚线箭头表示的是主备关系，A与A‘互为主备，从库B、C、D指向的是主库A。一主多从用于读写分离，主库复制所有的写入和一部分读，其他读请求由从库分担。
 下图是主库发生故障，主备切换后的结果。
-![](MySQL/attachments/addb255095d5e1d506c41f2d5b1d8ec5_MD5.jpeg)
+![](MySQL/attachments/3cfcbad5cd3789363b97dd14ec8b3b48_MD5.jpeg)
 相比于一主一备，一主多从结构切换后A‘会成为新的主库，从库B、C、D要改接到A’。
 
 **基于点位的主备切换**
@@ -951,3 +951,137 @@ GTID可以解决这个问题；假设，这两个互为主备关系的库还是�
 > 4. 如果binlog有备份的情况，可以先在从库上应用缺失的binlog，然后再执行start slave。
 
 ## 28 读写分离有哪些坑？
+一主多从架构的经典应用场景：读写分离，如何处理主备延迟导致的读写分离问题。
+读写分离的基本结构如下：
+![](MySQL/attachments/8d7df217cdedc4576d47a5d195228ec0_MD5.jpeg)
+读写分离的目的是分摊主库的压力。上面是client主动做负载均衡，将数据库的连接信息放在client的连接层。
+下面是MySQL和client中间有一个proxy，client连接proxy，由代理根据请求类型以及上下文决定请求的分发路由。
+![](MySQL/attachments/809319e4f22ffd2f6906591cda0361a0_MD5.jpeg)
+各自的特点：
+1. 客户端直连方案，因为少了一层proxy转发，所以查询性能稍微好一点儿，并且整体架构简单，排查问题更方便。但是这种方案，由于要了解后端部署细节，所以在出现主备切换、库迁移等操作的时候，客户端都会感知到，并且需要调整数据库连接信息。你可能会觉得这样客户端也太麻烦了，信息大量冗余，架构很丑。其实也未必，一般采用这样的架构，一定会伴随一个负责管理后端的组件，比如Zookeeper，尽量让业务端只专注于业务逻开发。
+2. 带proxy的架构，对客户端比较友好。客户端不需要关注后端细节，连接维护、后端信息维护等工作，都是由proxy完成的。但这样的话，对后端维护团队的要求会更高。而且，proxy也需要有高可用架构。因此，带proxy架构的整体就相对比较复杂。
+
+目前趋势是proxy架构方向。
+**这种“在从库上会读到系统的一个过期状态”的现象，在这篇文章里，我们暂且称之为“过期读”。**
+解决的方案有：
+- 强制走主库方案；
+- sleep方案；
+- 判断主备无延迟方案；
+- 配合semi-sync方案；
+- 等主库位点方案；
+- 等GTID方案。
+
+**强制走主库方案**
+将请求做分类：
+1. 必须拿到最新结果的请求，强制将其发到主库上。
+2. 对于可以读到旧数据的请求，才将其发到从库上
+但是，在一些“所有查询都不能是过期读”的场景下，就必须放弃读写分离，所有读写压力都在主库上，放弃了拓展性。
+
+接下来的方案是可以支持读写分离的场景下，有哪些解决过期读的方案。
+
+**Sleep方案**
+主库更新后，从库先sleep以下。类似于执行select sleep(1)。
+这个方案的假设是：大多数情况下主备延迟在1s之内，做一个sleep可以有很大概率拿到最新的数据。
+但从严格意义上讲，这个方案存在的问题就是不精确：
+1. 如果这个请求本来0.5s可以拿到最新结果，也会等1s
+2. 如果延迟超过1s，还是会出现过期读
+
+**判断主备无延迟方案**
+确保备库无延迟，有三种做法。
+==第一种做法是，每次从库执行查询请求前判断seconds_behind_master是否已经等于0==。如果还不等于0，等到参数变成0才能执行查询请求。
+SBM单位是秒，精度不够还可以使用对比位点和GTID的方法确保主备无延迟。
+以下是show slave status的结果截图：
+![](MySQL/attachments/4e20f185eeee0f4a4594678950778e9a_MD5.jpeg)
+==第二种方法，对比位点确保主备无延迟==
+- Master_Log_File和Read_Master_Log_Pos，表示的是读到的主库的最新位点；
+- Relay_Master_Log_File和Exec_Master_Log_Pos，表示的是备库执行的最新位点。
+如果Master_Log_File和Relay_Master_Log_File、Read_Master_Log_Pos和Exec_Master_Log_Pos这两组值完全相同，就表示接收到的日志已经同步完成。
+==第三种方法，对比GTID集合确保主备无延迟==
+- Auto_Position=1 ，表示这对主备关系使用了GTID协议。
+- Retrieved_Gtid_Set，是备库收到的所有日志的GTID集合；
+- Executed_Gtid_Set，是备库所有已经执行完成的GTID集合。
+如果这两个集合相同，也表示备库接收到的日志都已经同步完成。
+
+第二、三种方法都比判断SBM是否为0准确。
+相比于sleep方案，这三种方法准确度确实提高了，但是还没有达到精确的程度。
+一个事务的binlog在主备库之间的状态：
+1. 主库执行完成，写入binlog，并反馈给客户端；
+2. binlog被从主库发送给备库，备库收到；
+3. 在备库执行binlog完成。
+上面判断主备无延迟的逻辑，是“备库收到的日志都执行完了”。但是还有一部分日志是客户端已经收到提交确认，备库还未收到日志的状态。
+![](MySQL/attachments/d717231ae9cc79e91890c5e2c4e589bc_MD5.jpeg)
+这时，主库上执行完成了三个事务trx1、trx2和trx3，其中
+- trx1和trx2已经传到从库，并且已经执行完成了；
+-  trx3在主库执行完成，并且已经回复给客户端，但是还没有传到从库中。
+从库认为没有同步延迟，但还是查不到trx3，出现了过期读。
+
+**配合semi-sync**
+引入半同步复制，semi-sync replication。
+semi-sync设计是：
+1. 事务提交的时候，主库把binlog发给从库；
+2. 从库收到binlog以后，发回给主库一个ack，表示收到了；
+3. 主库收到这个ack以后，才能给客户端返回“事务完成”的确认。
+也就是说，如果启用了semi-sync，就表示所有给客户端发送过确认的事务，都确保了备库已经收到了这个日志。
+
+但semi-sync+位点判断的方案，只对一主一从的场景是成立的。一主多从的场景中，主库只需要等到一个从库的ack，就对客户端返回确认。这时，在从库上执行查询，就有可能产生过期读的问题。
+其次，如果在业务更新的高峰期，主库的位点或者GTID集合更新很快，那么上面的两个位点等值判断就会一直不成立，很可能出现从库上迟迟无法响应查询请求的情况。
+
+实际上，回到我们最初的业务逻辑里，当发起一个查询请求以后，我们要得到准确的结果，其实**并不需要等到“主备完全同步”**。
+![](MySQL/attachments/ec3e523496340bc86ca8fa2b58b9be29_MD5.jpeg)
+上图就是一个等待位点方案的bad case。从状态1到状态4一直处于延迟一个事务的状态。
+但是，其实客户端是在发完trx1更新后发起的select语句，我们只需要确保trx1已经执行完成就可以执行select语句了。也就是说，如果在状态3执行查询请求，得到的就是预期结果了。
+
+到这里，我们小结一下，semi-sync配合判断主备无延迟的方案，存在两个问题：
+1. 一主多从的时候，在某些从库执行查询请求会存在过期读的现象；
+2. 在持续延迟的情况下，可能出现过度等待的问题。
+
+**等主库位点方案**
+`select master_pos_wait(file, pos[, timeout]);`
+这条命令的逻辑如下：
+1. 它是在从库执行的；
+2. 参数file和pos指的是主库上的文件名和位置；
+3. timeout可选，设置为正整数N表示这个函数最多等待N秒。
+这个命令正常返回的结果是一个正整数M，表示从命令开始执行，到应用完file和pos表示的binlog位置，执行了多少事务。
+当然，除了正常返回一个正整数M外，这条命令还会返回一些其他结果，包括：
+4. 如果执行期间，备库同步线程发生异常，则返回NULL；
+5. 如果等待超过N秒，就返回-1；
+6. 如果刚开始执行的时候，就发现已经执行过这个位置了，则返回0。
+
+对于先执行trx1，在执行一个查询请求的逻辑，要保证能够查到正确的数据，可以使用这个逻辑：
+1. trx1事务更新完成后，马上执行show master status得到当前主库执行到的File和Position；
+2. 选定一个从库执行查询语句；
+3. 在从库上执行select master_pos_wait(File, Position, 1)；
+4. 如果返回值是>=0的正整数，则在这个从库执行查询语句；
+5. 否则，到主库执行查询语句。
+![](MySQL/attachments/56e004c919f86279d58c2fa2b5861903_MD5.jpeg)
+
+**GTID方案**
+`select wait_for_executed_gtid_set(gtid_set, 1);`
+这条命令的逻辑是：
+1. 等待，直到这个库执行的事务中包含传入的gtid_set，返回0；
+2. 超时返回1。
+在前面等位点的方案中，我们执行完事务后，还要主动去主库执行show master status。而MySQL 5.7.6版本开始，允许在执行完更新类事务后，把这个事务的GTID返回给客户端，这样等GTID的方案就可以减少一次查询。
+这时，等GTID的执行流程就变成了：
+3. trx1事务更新完成后，从返回包直接获取这个事务的GTID，记为gtid1；
+4. 选定一个从库执行查询语句；
+5. 在从库上执行 select wait_for_executed_gtid_set(gtid1, 1)；
+6. 如果返回值是0，则在这个从库执行查询语句；
+7. 否则，到主库执行查询语句。
+
+等待超时后是否直接到主库查询，需要业务开发考虑限流。
+怎么能够让MySQL在执行事务后，返回包中带上GTID呢？
+将参数session_track_gtids设置为OWN_GTID，然后通过API接口mysql_session_track_get_first从返回包解析出GTID的值即可。
+
+**小结**
+一主多从做读写分离，可能会碰到过期读的场景。
+虽然最后等待位点和等待GTID这两个方案比较准确，但是如果从库读延迟，那么请求就会全部落在主库上，这是可能会由于压力增大，把主库打挂。
+在实际应用中，这几种方案是可以混合使用的：现在客户端对请求做分类，区分哪些请求可以接收过期读，哪些请求完全不能接收过期读；对不能接收过期读的语句，在使用等GTID或等位点的方案。
+
+**问题**
+假设你的系统采用了我们文中介绍的最后一个方案，也就是等GTID的方案，现在你要对主库的一张大表做DDL，可能会出现什么情况呢？为了避免这种情况，你会怎么做呢？
+答案：
+> 假设，这条语句在主库上要执行10分钟，提交后传到备库就要10分钟（典型的大事务）。那么，在主库DDL之后再提交的事务的GTID，去备库查的时候，就会等10分钟才出现。
+> 这样，这个读写分离机制在这10分钟之内都会超时，然后走主库。
+> 这种预期内的操作，应该在业务低峰期的时候，确保主库能够支持所有业务查询，然后把读请求都切到主库，再在主库上做DDL。等备库延迟追上以后，再把读请求切回备库。
+> 当然了，使用gh-ost方案来解决这个问题也是不错的选择。
+

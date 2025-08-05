@@ -233,11 +233,435 @@ Java 中真正支持语法糖的是 Java 编译器而不是 JVM，JVM无法识�
 Java 中最常用的语法糖主要有泛型、自动拆装箱、变长参数、枚举、内部类、增强 for 循环、try-with-resources 语法、lambda 表达式等。
 
 ---
-## 重要知识点
+### 重要知识点
+1. Java中只有值传递
+- 如果参数是基本类型的话，很简单，传递的就是基本类型的字面量值的拷贝，会创建副本。
+- 如果参数是引用类型，传递的就是实参所引用的对象在堆中地址值的拷贝，同样也会创建副本。
+2. 为什么不引入引用传递呢？
+出于安全考虑，方法内部对值进行的操作，对于调用者都是未知的（把方法定义为接口，调用方不关心具体实现）。
+3. 序列化和反序列化
+序列化协议在TCP/IP四层协议的应用层，OSI七层协议的表示层。
+JDK 自带的序列化方式一般不会用 ，因为序列化效率低并且存在安全问题。比较常用的序列化协议有 Hessian、Kryo、Protobuf、ProtoStuff，这些都是基于二进制的序列化协议。
+像 JSON 和 XML 这种属于文本类序列化方式。虽然可读性比较好，但是性能较差，一般不会选择。
+**Java自带的序列化方式**
+只需要实现`java.io.Serializable`接口
+```java
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Builder
+@ToString
+public class RpcRequest implements Serializable {
+    private static final long serialVersionUID = 1905122041950251207L;
+    private String requestId;
+    private String interfaceName;
+    private String methodName;
+    private Object[] parameters;
+    private Class<?>[] paramTypes;
+    private RpcMessageTypeEnum rpcMessageTypeEnum;
+}
+```
+序列化号 `serialVersionUID` 属于版本控制的作用。反序列化时，会检查 `serialVersionUID` 是否和当前类的 `serialVersionUID` 一致。如果 `serialVersionUID` 不一致则会抛出 `InvalidClassException` 异常。强烈推荐每个序列化类都手动指定其 `serialVersionUID`，如果不手动指定，那么编译器会动态生成默认的 `serialVersionUID`。
+通常static变量属于类，不属于任何单个对象实例，所以不会包含在对象序列化的数据流里。==但是serialVersionUID是一个特例，序列化做了特殊处理，serialVersionUID的值会被写入到序列化的二进制流中，作为一个版本标识符。==
+> 如果想显式指定 `serialVersionUID` ，则需要在类中使用 `static` 和 `final` 关键字来修饰一个 `long` 类型的变量，变量名字必须为 `"serialVersionUID"` 。
+
+不想被序列化的变量，使用`transient`关键字修饰。 
+关于 `transient` 还有几点注意：
+- `transient` 只能修饰变量，不能修饰类和方法。
+- `transient` 修饰的变量，在反序列化后变量值将会被置成类型的默认值。例如，如果是修饰 `int` 类型，那么反序列后结果就是 `0`。
+- `static` 变量因为不属于任何对象(Object)，所以无论有没有 `transient` 关键字修饰，均不会被序列化。
+为什么不推荐使用JDK自带的序列化？
+- **不支持跨语言调用** : 如果调用的是其他语言开发的服务的时候就不支持了。
+- **性能差**：相比于其他序列化框架性能更低，主要原因是序列化之后的字节数组体积较大，导致传输成本加大。
+- **存在安全问题**：序列化和反序列化本身并不存在问题。但当输入的反序列化的数据可被用户控制，那么攻击者即可通过构造恶意输入，让反序列化产生非预期的对象，在此过程中执行构造的任意代码。
+**Kryo**
+Kryo 是一个高性能的序列化/反序列化工具，由于其变长存储特性并使用了字节码生成机制，拥有较高的运行速度和较小的字节码体积。
+另外，Kryo 已经是一种非常成熟的序列化实现了，已经在 Twitter、Groupon、Yahoo 以及多个著名开源项目（如 Hive、Storm）中广泛的使用。
+**Protobuf**
+Protobuf 出自于 Google，性能还比较优秀，也支持多种语言，同时还是跨平台的。就是在使用中过于繁琐，因为你需要自己定义 IDL 文件和生成对应的序列化代码。这样虽然不灵活，但是，另一方面导致 protobuf 没有序列化漏洞的风险。
+**ProtoStuff**
+由于 Protobuf 的易用性较差，它的哥哥 Protostuff 诞生了。
+protostuff 基于 Google protobuf，但是提供了更多的功能和更简易的用法。虽然更加易用，但是不代表 ProtoStuff 性能更差。
+**Hessian**
+Hessian 是一个轻量级的，自定义描述的二进制 RPC 协议。Hessian 是一个比较老的序列化实现了，并且同样也是跨语言的。
+Dubbo2.x默认启用的序列化方式是Hessian2，但对其进行了修改。
+==Kryo 是专门针对 Java 语言序列化方式并且性能非常好，如果你的应用是专门针对 Java 语言的话可以考虑使用==
+
+4. 泛型 && 通配符
+Java 泛型（Generics） 是 JDK 5 中引入的一个新特性。
+泛型一般有三种使用方式:泛型类、泛型接口、泛型方法。
+项目中哪里用到了泛型？
+自定义接口通用返回结果 CommonResult《T》 通过参数 T 可根据具体的返回类型动态指定结果的数据类型
+构建集合工具类（参考 Collections 中的 sort , binarySearch 方法）。
+
+什么是泛型擦除机制？为什么要擦除？
+Java 的泛型是伪泛型，这是因为 Java 在编译期间，所有的泛型信息都会被擦掉，这也就是通常所说类型擦除 。
+泛型本质上其实还是编译器的行为，为了保证引入泛型机制但不创建新的类型，减少虚拟机的运行开销，编译器通过擦除将泛型类转化为一般类。
+
+既然编译器要把泛型擦除，那为什么还要用泛型呢？用 Object 代替不行吗？
+使用泛型可在编译期间进行类型检测。
+使用 Object 类型需要手动添加强制类型转换，降低代码可读性，提高出错概率。
+泛型可以使用自限定类型如 T extends Comparable 。
+
+什么是桥方法？
+桥方法（Bridge Method）用于继承泛型类时保证多态。
+桥方法为编译器自动生成，非手写。
+**桥方法是为了解决泛型擦除后，子类重写父类方法时方法签名不一致的问题。**
+```java
+class Node<T> {
+    public T data;
+    public void setData(T data) {
+        this.data = data;
+    }
+}
+
+class StringNode extends Node<String> {
+    @Override
+    public void setData(String data) {
+        this.data = data;
+    }
+}
+```
+类型擦除后，
+- `Node<T>` 的 `setData(T)` 变成了 `setData(Object)`。
+- `StringNode` 的 `setData(String)` 变成了 `setData(String)`。
+此时，**方法签名不一致**，看起来子类并没有重写父类的方法，这违反了多态。
+编译器会**自动生成一个桥方法**：
+```java
+class StringNode extends Node<String> {
+    // 桥方法（编译器自动生成）
+    @Override
+    public void setData(Object data) {
+        setData((String) data); // 强转后调用真正的实现
+    }
+
+    // 子类真正的实现
+    @Override
+    public void setData(String data) {
+        this.data = data;
+    }
+}
+```
+
+泛型有哪些限制？为什么？
+泛型的限制由泛型擦除机制导致的。擦除为Object后无法进行类型判断。
+- 只能声名不能实例化T类型变量
+- 泛型参数不能是基本类型int等；只能是引用类型Integer等
+- 不能实例化泛型参数的数组；**因为 Java 的泛型是「类型擦除」的，运行时无法确定泛型参数的具体类型，也就无法创建具有具体类型的数组，否则会破坏 Java 数组的类型安全机制。**
+- 不能实例化泛型数组。Java泛型在运行时会被擦除为Object，而数组需要在运行时确定元素类型以用来类型检查。
+- 泛型⽆法使⽤ Instance of 和 getClass() 进⾏类型判断。
+- 不能实现两个不同泛型参数的同⼀接⼝，擦除后多个⽗类的桥⽅法将冲突
+- 不能使⽤ static 修饰泛型变量
+
+**通配符**
+泛型类型是固定的，某些场景下使⽤起来不太灵活，于是，通配符就来了！通配符可以允
+许类型参数变化，⽤来解决泛型⽆法协变的问题。
+> **协变（Covariance）是指：如果 `A` 是 `B` 的子类型，那么 `Container<A>` 也被视为 `Container<B>` 的子类型，即支持“向上转型”的泛型关系。**
+> 例如数组支持协变：
+> String[] strArray = new String[10];
+> Object[] objArray = strArray; 合法，数组协变
+> objArray[0] = "Hellol"; 运行正常
+> objArray[0]=123; 运行时错误，ArrayStoreException
+
+**数组是协变的**，但**运行时检查类型**，防止存储错误类型。
+**泛型默认不支持协变：**
+List\<String> strList = new ArrayList<>();
+List\<Object> objList = strList; // ❌ 编译错误！
+- 即使 `String` 是 `Object` 的子类，`List<String>` **也不是** `List<Object>` 的子类。
+- **这是为了防止类型不安全操作**（如向 `List<String>` 中插入 `Integer`）。
+如何实现泛型协变？（使用通配符 `? extends`）
+List\<String> strList = new ArrayList<>();
+List\<? extends Object> objList = strList; // ✅ 合法！协变
+**只能读取（get），不能写入（add）**，因为具体类型未知。
+
+**协变是指子类型可以替换父类型的关系，例如 `String[]` 可以赋值给 `Object[]`。但 Java 泛型默认不支持协变，因为会引发类型安全问题，不过可以通过通配符 `? extends T` 实现协变，限制为只读操作。**
+
+**T 是类型参数，用于定义类或方法时的占位符，表示一个确定的类型，支持类型一致性；而 ? 是通配符，表示未知类型，常用于方法参数中，支持上下边界限制，但不能用于定义类或方法。简单来说，T 是“类型变量”，? 是“类型通配”，用途不同，不能互换。**
+
+List\<?> list 和 List有什么区别？
+- List\<?> list 表示 list 是持有某种特定类型的 List，但是不知道具体是哪种类型。因此，我们添加元素进去的时候会报错。
+- List list 表示 list 是持有的元素的类型是 Object ，因此可以添加任何类型的对象，只不过编译器会有警告信息。
+
+什么是上边界通配符？什么是下边界通配符？
+- **上边界通配符 `<? extends T>`：只能接收 `T` 或其子类型，常用于「读取」场景，不能写入（除了 `null`）。**
+- **下边界通配符 `<? super T>`：只能接收 `T` 或其父类型，常用于「写入」场景，读取时只能拿到 `Object`。**
+上边界通配符，只读
+List\<? extends Number> list = new ArrayList\<Integer>();
+Number n = list.get(0);  // ✅ 合法
+list.add(123);           // ❌ 编译错误
+下边界通配符，只写
+List\<? super Integer\> list = new ArrayList\<Number>();
+list.add(123);           // ✅ 合法
+Integer i = list.get(0); // ❌ 编译错误，只能拿到 Object
+
+Class\<?> 和 Class 的区别？
+**`Class<?>` 是泛型写法，表示“某个未知类型的 Class 对象”，编译器会帮你做类型检查；`Class` 是非泛型（原始类型）写法，编译器会给出“未经检查的转换”警告，两者功能一样但前者更安全。**
+
+4. Java反射机制
+反射能够在运行时分析类以及执行类中方法。通过反射你可以获取任意一个类的所有属性和方法，你还可以调用这些方法和属性。
+
+反射的应用场景了解吗？
+像 Spring/Spring Boot、MyBatis 等等框架中都大量使用了反射机制。
+**这些框架中也大量使用了动态代理，而动态代理的实现也依赖反射。**
+比如下面是通过 JDK 实现动态代理的示例代码，其中就使用了反射类 `Method` 来调用指定的方法。
+```java
+public class DebugInvocationHandler implements InvocationHandler {
+    /**
+     * 代理类中的真实对象
+     */
+    private final Object target;
+
+    public DebugInvocationHandler(Object target) {
+        this.target = target;
+    }
 
 
+    public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+        System.out.println("before method " + method.getName());
+        Object result = method.invoke(target, args);
+        System.out.println("after method " + method.getName());
+        return result;
+    }
+}
+```
+Java中的注解的实现也用到了反射。
+
+反射的优缺点？
+**优点**：可以让咱们的代码更加灵活、为各种框架提供开箱即用的功能提供了便利
+**缺点**：让我们在运行时有了分析操作类的能力，这同样也增加了安全问题。比如可以无视泛型参数的安全检查（泛型参数的安全检查发生在编译时）。另外，反射的性能也要稍差点，不过，对于框架来说实际是影响不大的。
+
+获取Class对象的四种方式？
+- 知道具体类的情况
+`Class alunbarClass = TargetObject.class;`
+一般不知道具体类，基本是遍历包下的类来获取Class对象；这种方法获取的Class对象不会进行初始化
+- 通过Class.forName()传入类的全路径获取
+`Class alunbarClass1 = Class.forName("cn.javaguide.TargetObject");`
+- 通过对象实例instance.getClass()
+```java
+TargetObject o = new TargetObject();
+Class alunbarClass2 = o.getClass();
+```
+- **通过类加载器`xxxClassLoader.loadClass()`传入类路径获取:**
+`ClassLoader.getSystemClassLoader().loadClass("cn.javaguide.TargetObject");`
+通过类加载器获取 Class 对象不会进行初始化，意味着不进行包括初始化等一系列步骤，静态代码块和静态对象不会得到执行
 
 
+5. Java代理模式详解
+**我们使用代理对象来代替对真实对象(real object)的访问，这样就可以在不修改原目标对象的前提下，提供额外的功能操作，扩展目标对象的功能。**
+**代理模式的主要作用是扩展目标对象的功能，比如说在目标对象的某个方法执行前后你可以增加一些自定义的操作。**
+代理模式有静态代理和动态代理两种实现方式
+**静态代理**
+**静态代理中，我们对目标对象的每个方法的增强都是手动完成的**，**非常不灵活（_比如接口一旦新增加方法，目标对象和代理对象都要进行修改_）且麻烦(_需要对每个目标类都单独写一个代理类_）。**实际应用场景非常非常少，日常开发几乎看不到使用静态代理的场景。
+从 JVM 层面来说， **静态代理在编译时就将接口、实现类、代理类这些都变成了一个个实际的 class 文件。**
+静态代理实现步骤:
+- 定义一个接口及其实现类；
+```java
+public interface SmsService {
+    String send(String message);
+}
+```
+```java
+public class SmsServiceImpl implements SmsService {
+    public String send(String message) {
+        System.out.println("send message:" + message);
+        return message;
+    }
+}
+```
+- 创建一个代理类同样实现这个接口
+```java
+public class SmsProxy implements SmsService {
+
+    private final SmsService smsService;
+
+    public SmsProxy(SmsService smsService) {
+        this.smsService = smsService;
+    }
+
+    @Override
+    public String send(String message) {
+        //调用方法之前，我们可以添加自己的操作
+        System.out.println("before method send()");
+        smsService.send(message);
+        //调用方法之后，我们同样可以添加自己的操作
+        System.out.println("after method send()");
+        return null;
+    }
+}
+```
+- 将目标对象注入进代理类，然后在代理类的对应方法调用目标类中的对应方法。这样的话，我们就可以通过代理类屏蔽对目标对象的访问，并且可以在目标方法执行前后做一些自己想做的事情。
+```java
+public class Main {
+    public static void main(String[] args) {
+        SmsService smsService = new SmsServiceImpl();
+        SmsProxy smsProxy = new SmsProxy(smsService);
+        smsProxy.send("java");
+    }
+}
+```
+
+**动态代理**
+相比于静态代理来说，动态代理更加灵活。我们不需要针对每个目标类都单独创建一个代理类，并且也不需要我们必须实现接口，我们可以直接代理实现类( _CGLIB 动态代理机制_)。
+**从 JVM 角度来说，动态代理是在运行时动态生成类字节码，并加载到 JVM 中的。**
+Spring AOP、RPC框架中都使用了动态代理。
+就 Java 来说，动态代理的实现方式有很多种，比如 **JDK 动态代理**、**CGLIB 动态代理**等等。
+
+Java动态代理
+**在 Java 动态代理机制中 `InvocationHandler` 接口和 `Proxy` 类是核心。**
+JDK动态代理类使用步骤：
+- 定义一个接口及其实现类；
+```java
+public interface SmsService {
+    String send(String message);
+}
+```
+```java
+public class SmsServiceImpl implements SmsService {
+    public String send(String message) {
+        System.out.println("send message:" + message);
+        return message;
+    }
+}
+```
+- 自定义 `InvocationHandler` 并重写`invoke`方法，在 `invoke` 方法中我们会调用原生方法（被代理类的方法）并自定义一些处理逻辑；
+```java
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+/**
+ * @author shuang.kou
+ * @createTime 2020年05月11日 11:23:00
+ */
+public class DebugInvocationHandler implements InvocationHandler {
+    /**
+     * 代理类中的真实对象
+     */
+    private final Object target;
+
+    public DebugInvocationHandler(Object target) {
+        this.target = target;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+        //调用方法之前，我们可以添加自己的操作
+        System.out.println("before method " + method.getName());
+        Object result = method.invoke(target, args);
+        //调用方法之后，我们同样可以添加自己的操作
+        System.out.println("after method " + method.getName());
+        return result;
+    }
+}
+```
+- 通过 `Proxy.newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHandler h)` 方法创建代理对象；
+```java
+public class JdkProxyFactory {
+    public static Object getProxy(Object target) {
+        return Proxy.newProxyInstance(
+                target.getClass().getClassLoader(), // 目标类的类加载器
+                target.getClass().getInterfaces(),  // 代理需要实现的接口，可指定多个
+                new DebugInvocationHandler(target)   // 代理对象对应的自定义 InvocationHandler
+        );
+    }
+}
+```
+- 实际使用
+```java
+SmsService smsService = (SmsService) JdkProxyFactory.getProxy(new SmsServiceImpl());
+smsService.send("java");
+```
+
+CGLIB动态代理机制
+**JDK 动态代理有一个最致命的问题是其只能代理实现了接口的类。**
+**为了解决这个问题，我们可以用 CGLIB 动态代理机制来避免。**
+[CGLIB](https://github.com/cglib/cglib)(_Code Generation Library_)是一个基于[ASM](http://www.baeldung.com/java-asm)的字节码生成库，它允许我们在运行时对字节码进行修改和动态生成。CGLIB 通过继承方式实现代理。很多知名的开源框架都使用到了[CGLIB](https://github.com/cglib/cglib)， 例如 Spring 中的 AOP 模块中：如果目标对象实现了接口，则默认采用 JDK 动态代理，否则采用 CGLIB 动态代理。
+
+**在 CGLIB 动态代理机制中 `MethodInterceptor` 接口和 `Enhancer` 类是核心。**
+
+CGLIB动态代理类使用步骤：
+- 引入依赖
+```java
+<dependency>
+  <groupId>cglib</groupId>
+  <artifactId>cglib</artifactId>
+  <version>3.3.0</version>
+</dependency>
+```
+- 定义一个类；
+```java
+package github.javaguide.dynamicProxy.cglibDynamicProxy;
+
+public class AliSmsService {
+    public String send(String message) {
+        System.out.println("send message:" + message);
+        return message;
+    }
+}
+```
+- 自定义 `MethodInterceptor` 并重写 `intercept` 方法，`intercept` 用于拦截增强被代理类的方法，和 JDK 动态代理中的 `invoke` 方法类似；
+```java
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+
+import java.lang.reflect.Method;
+
+/**
+ * 自定义MethodInterceptor
+ */
+public class DebugMethodInterceptor implements MethodInterceptor {
 
 
+    /**
+     * @param o           被代理的对象（需要增强的对象）
+     * @param method      被拦截的方法（需要增强的方法）
+     * @param args        方法入参
+     * @param methodProxy 用于调用原始方法
+     */
+    @Override
+    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+        //调用方法之前，我们可以添加自己的操作
+        System.out.println("before method " + method.getName());
+        Object object = methodProxy.invokeSuper(o, args);
+        //调用方法之后，我们同样可以添加自己的操作
+        System.out.println("after method " + method.getName());
+        return object;
+    }
 
+}
+```
+- 通过 `Enhancer` 类的 `create()`创建代理类
+```java
+import net.sf.cglib.proxy.Enhancer;
+
+public class CglibProxyFactory {
+
+    public static Object getProxy(Class<?> clazz) {
+        // 创建动态代理增强类
+        Enhancer enhancer = new Enhancer();
+        // 设置类加载器
+        enhancer.setClassLoader(clazz.getClassLoader());
+        // 设置被代理类
+        enhancer.setSuperclass(clazz);
+        // 设置方法拦截器
+        enhancer.setCallback(new DebugMethodInterceptor());
+        // 创建代理类
+        return enhancer.create();
+    }
+}
+```
+- 实际使用
+```java
+AliSmsService aliSmsService = (AliSmsService) CglibProxyFactory.getProxy(AliSmsService.class);
+aliSmsService.send("java");
+```
+
+**JDK动态代理和CGLIB动态代理对比**
+- **JDK 动态代理只能代理实现了接口的类或者直接代理接口，而 CGLIB 可以代理未实现任何接口的类。** 另外， CGLIB 动态代理是通过生成一个被代理类的子类来拦截被代理类的方法调用，因此不能代理声明为 final 类型的类和方法。
+- 就二者的效率来说，大部分情况都是 JDK 动态代理更优秀，随着 JDK 版本的升级，这个优势更加明显。
+
+**静态代理和动态代理的对比**
+- **灵活性**：动态代理更加灵活，不需要必须实现接口，可以直接代理实现类，并且可以不需要针对每个目标类都创建一个代理类。另外，静态代理中，接口一旦新增加方法，目标对象和代理对象都要进行修改，这是非常麻烦的！
+- **JVM 层面**：静态代理在编译时就将接口、实现类、代理类这些都变成了一个个实际的 class 文件。而动态代理是在运行时动态生成类字节码，并加载到 JVM 中的。
+
+6. BigDecimal详解

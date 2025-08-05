@@ -665,3 +665,40 @@ aliSmsService.send("java");
 - **JVM 层面**：静态代理在编译时就将接口、实现类、代理类这些都变成了一个个实际的 class 文件。而动态代理是在运行时动态生成类字节码，并加载到 JVM 中的。
 
 6. BigDecimal详解
+为了避免精度丢失，可以使用 `BigDecimal` 来进行浮点数的运算。
+`BigDecimal` 可以实现对小数的运算，不会造成精度丢失。
+**浮点数之间的等值判断，基本数据类型不能用 == 来比较，包装数据类型不能用 equals 来判断。**
+![](Java%E9%9D%A2%E7%BB%8F/attachments/8e9e9383cfb32ba95ffbcc1769e39748_MD5.jpeg)
+
+**BigDecimal常见用法**
+创建
+`BigDecimal(String val)`构造方法或者 `BigDecimal.valueOf(double val)` 静态方法来创建对象。
+![](Java%E9%9D%A2%E7%BB%8F/attachments/ff4d4425616b821da95b91310ae213c9_MD5.jpeg)
+
+加减乘除
+`add` 方法用于将两个 `BigDecimal` 对象相加，`subtract` 方法用于将两个 `BigDecimal` 对象相减。`multiply` 方法用于将两个 `BigDecimal` 对象相乘，`divide` 方法用于将两个 `BigDecimal` 对象相除。
+使用 `divide` 方法的时候尽量使用 3 个参数版本，并且`RoundingMode` 不要选择 `UNNECESSARY`，否则很可能会遇到 `ArithmeticException`（无法除尽出现无限循环小数的时候），其中 `scale` 表示要保留几位小数，`roundingMode` 代表保留规则。
+
+大小比较
+`a.compareTo(b)` : 返回 -1 表示 `a` 小于 `b`，0 表示 `a` 等于 `b` ， 1 表示 `a` 大于 `b`。
+
+保留几位小数
+通过 `setScale`方法设置保留几位小数以及保留规则。保留规则有挺多种，不需要记，IDEA 会提示。
+
+**BigDecimal等值比较问题**
+![](Java%E9%9D%A2%E7%BB%8F/attachments/aca80cadcdc67e7ed200909e30748d43_MD5.jpeg)
+`equals()` 方法不仅仅会比较值的大小（value）还会比较精度（scale），而 `compareTo()` 方法比较的时候会忽略精度。
+
+`BigDecimal` 的实现利用到了 `BigInteger` （用来操作大整数）, 所不同的是 `BigDecimal` 加入了小数位的概念。
+
+7. Java魔法类Unsafe详解
+
+
+
+
+8. Java SPI机制详解
+
+9. Java语法糖详解
+
+
+

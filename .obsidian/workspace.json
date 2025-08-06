@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -139,13 +140,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Java面经/javaguide/基础.md",
+                "file": "Java面经/javaguide/集合.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "基础 的大纲"
+              "title": "集合 的大纲"
             }
           },
           {
@@ -181,20 +182,20 @@
   },
   "active": "b21285a76eb6b101",
   "lastOpenFiles": [
+    "Java面经/javaguide/attachments/Pasted image 20250806163106.png",
+    "Java面经/javaguide/attachments/Pasted image 20250806163016.png",
+    "Java面经/javaguide/attachments/096bd22fb416128e7cde714c3f1bfbee_MD5.jpeg",
+    "Java面经/javaguide/attachments/35528eca8136cfa79687c1297d9c51c9_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250806161858.png",
+    "Java面经/javaguide/attachments/Pasted image 20250806161847.png",
+    "Java面经/javaguide/attachments/ec2c392da8494b447379ea14ad7ae2e6_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250806161248.png",
+    "Java面经/javaguide/attachments/eb9ef95c34a951f648a1550afb21a1cd_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250806151339.png",
     "Java面经/javaguide/attachments/0c7a319a7513a5603a272f77f2c6f39d_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250806123457.png",
-    "Java面经/javaguide/attachments/55dabd0347572d5d6291da6e25fcf19a_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250806111615.png",
     "Java面经/javaguide/基础.md",
     "Java面经/javaguide/集合.md",
-    "Java面经/javaguide/attachments/f95575fb11f4536eaa2da776ef968a94_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250806110942.png",
-    "Java面经/javaguide/attachments/ab9215d6a8d42cdf135b977e88fbf56b_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250806110909.png",
     "MySQL/29 如何判断一个数据库是不是出问题了.md",
-    "MySQL/attachments/5b7083307c4e5b32b8228e30a6cf74a2_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250806001946.png",
-    "MySQL/attachments/6de27db554ccb773a1b0b2b8136b3d07_MD5.jpeg",
     "MySQL/MySQL45讲.md",
     "Java面经/javaguide/attachments",
     "Java面经/未命名.md",

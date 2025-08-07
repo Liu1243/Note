@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/32 为什么还有kill不掉的语句？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "32 为什么还有kill不掉的语句？"
+              "title": "并发编程"
             }
           }
         ]
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MySQL/32 为什么还有kill不掉的语句？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "32 为什么还有kill不掉的语句？ 的反向链接列表"
+              "title": "并发编程 的反向链接列表"
             }
           },
           {
@@ -114,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MySQL/32 为什么还有kill不掉的语句？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "32 为什么还有kill不掉的语句？ 的出链列表"
+              "title": "并发编程 的出链列表"
             }
           },
           {
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/32 为什么还有kill不掉的语句？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "32 为什么还有kill不掉的语句？ 的大纲"
+              "title": "并发编程 的大纲"
             }
           }
         ],
@@ -174,6 +174,7 @@
   },
   "active": "55b0714d03b37af9",
   "lastOpenFiles": [
+    "MySQL/32 为什么还有kill不掉的语句？.md",
     "MySQL/attachments/99e8a9f00802029b4d2dbbec12e18f6a_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250808010325.png",
     "MySQL/attachments/e6d40630c2dfb0dfaf4998098d274589_MD5.jpeg",
@@ -183,10 +184,8 @@
     "MySQL/attachments/232221b74e61d872d7feb6093d540e69_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250808005427.png",
     "MySQL/31 误删数据除了跑路，还能怎么办？.md",
-    "MySQL/32 为什么还有kill不掉的语句？.md",
     "MySQL/attachments/c22054b335bec713fd41ec6a4d280802_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250807171943.png",
-    "MySQL/attachments/b4528db44396c9145719e22ab26ffd37_MD5.jpeg",
     "Java面经/javaguide/并发编程.md",
     "Java面经/javaguide/集合.md",
     "MySQL/30 用动态的观点看加锁.md",

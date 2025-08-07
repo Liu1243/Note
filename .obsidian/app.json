@@ -1,5 +1,5 @@
 {
-  "promptDelete": false,
+  "promptDelete": true,
   "newFileLocation": "current",
   "showLineNumber": false,
   "livePreview": true,
@@ -7,5 +7,8 @@
   "alwaysUpdateLinks": true,
   "attachmentFolderPath": "./attachments",
   "readableLineLength": false,
-  "useMarkdownLinks": true
+  "useMarkdownLinks": true,
+  "rightToLeft": false,
+  "strictLineBreaks": false,
+  "vimMode": true
 }

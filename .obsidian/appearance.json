@@ -1,7 +1,14 @@
 {
   "baseFontSizeAction": true,
-  "baseFontSize": 22,
-  "cssTheme": "Minimal",
-  "enabledCssSnippets": [],
-  "theme": "moonstone"
+  "baseFontSize": 21,
+  "cssTheme": "Atom",
+  "enabledCssSnippets": [
+    "hyphenation-and-justification",
+    "custom-icons-differing-files-and-folders",
+    "line-height"
+  ],
+  "theme": "system",
+  "interfaceFontFamily": "JetBrains Mono",
+  "textFontFamily": "JetBrains Mono",
+  "monospaceFontFamily": "JetBrains Mono"
 }

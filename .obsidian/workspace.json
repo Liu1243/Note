@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Java面经/javaguide/并发编程.md",
+                "file": "MySQL/31 误删数据除了跑路，还能怎么办？.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "并发编程"
+              "title": "31 误删数据除了跑路，还能怎么办？"
             }
           }
         ]
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Java面经/javaguide/并发编程.md",
+                "file": "MySQL/31 误删数据除了跑路，还能怎么办？.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "并发编程 的反向链接列表"
+              "title": "31 误删数据除了跑路，还能怎么办？ 的反向链接列表"
             }
           },
           {
@@ -114,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Java面经/javaguide/并发编程.md",
+                "file": "MySQL/31 误删数据除了跑路，还能怎么办？.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "并发编程 的出链列表"
+              "title": "31 误删数据除了跑路，还能怎么办？ 的出链列表"
             }
           },
           {
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Java面经/javaguide/并发编程.md",
+                "file": "MySQL/31 误删数据除了跑路，还能怎么办？.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "并发编程 的大纲"
+              "title": "31 误删数据除了跑路，还能怎么办？ 的大纲"
             }
           }
         ],
@@ -174,6 +174,12 @@
   },
   "active": "55b0714d03b37af9",
   "lastOpenFiles": [
+    "MySQL/attachments/c22054b335bec713fd41ec6a4d280802_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250807171943.png",
+    "MySQL/attachments/b4528db44396c9145719e22ab26ffd37_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250807164844.png",
+    "Java面经/javaguide/并发编程.md",
+    "MySQL/31 误删数据除了跑路，还能怎么办？.md",
     "Java面经/javaguide/attachments/c1a30c6e664efa4ffea05b927dddf6ca_MD5.jpeg",
     "Java面经/javaguide/attachments/Pasted image 20250807133842.png",
     "Java面经/javaguide/attachments/215e702dd14a8cc1bf344509d1bd36df_MD5.jpeg",
@@ -181,12 +187,7 @@
     "Java面经/javaguide/attachments/68dc0b437827a3e863d12eba264815db_MD5.jpeg",
     "Java面经/javaguide/attachments/Pasted image 20250807133123.png",
     "Java面经/javaguide/集合.md",
-    "Java面经/javaguide/并发编程.md",
     "Java面经/javaguide/attachments/Pasted image 20250807122246.png",
-    "Java面经/javaguide/attachments/Pasted image 20250807105228.png",
-    "Java面经/javaguide/attachments/d94f37447c22aad97313b6b99559a6b1_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250807105027.png",
-    "Java面经/javaguide/attachments/ac1ec28defec68b3dda7f3bb49e81e63_MD5.jpeg",
     "MySQL/30 用动态的观点看加锁.md",
     "MySQL/MySQL45讲.md",
     "MySQL/29 如何判断一个数据库是不是出问题了.md",
@@ -218,7 +219,6 @@
     "BigData/大数据学习路线.md",
     "bigdata/大数据学习路线.md",
     "IM/手写分布式IM系统/协议设计/02 消息的可用性（可靠性 + 一致性）.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md"
+    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md"
   ]
 }

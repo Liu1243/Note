@@ -174,6 +174,12 @@
   },
   "active": "55b0714d03b37af9",
   "lastOpenFiles": [
+    "Java面经/javaguide/attachments/c1a30c6e664efa4ffea05b927dddf6ca_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250807133842.png",
+    "Java面经/javaguide/attachments/215e702dd14a8cc1bf344509d1bd36df_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250807133246.png",
+    "Java面经/javaguide/attachments/68dc0b437827a3e863d12eba264815db_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250807133123.png",
     "Java面经/javaguide/集合.md",
     "Java面经/javaguide/并发编程.md",
     "Java面经/javaguide/attachments/Pasted image 20250807122246.png",
@@ -181,9 +187,6 @@
     "Java面经/javaguide/attachments/d94f37447c22aad97313b6b99559a6b1_MD5.jpeg",
     "Java面经/javaguide/attachments/Pasted image 20250807105027.png",
     "Java面经/javaguide/attachments/ac1ec28defec68b3dda7f3bb49e81e63_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250807103635.png",
-    "Java面经/javaguide/attachments/62aef5bfd5481c21b9b8678e8c9401c3_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250807100358.png",
     "MySQL/30 用动态的观点看加锁.md",
     "MySQL/MySQL45讲.md",
     "MySQL/29 如何判断一个数据库是不是出问题了.md",
@@ -194,8 +197,6 @@
     "开发内功/网络管理/01 深入理解三次握手原理.md",
     "微服务：从设计到部署.md",
     "学习.md",
-    "attachments/ae0199a68f2d4b6f24af8686ac893558_MD5.jpeg",
-    "attachments/Pasted image 20250807014019.png",
     "分布式/MIT6824.md",
     "Java面经/javaguide/基础.md",
     "Java面经/javaguide/attachments",
@@ -218,7 +219,6 @@
     "bigdata/大数据学习路线.md",
     "IM/手写分布式IM系统/协议设计/02 消息的可用性（可靠性 + 一致性）.md",
     "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
-    "IM/手写分布式IM系统/前置学习资料.md"
+    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md"
   ]
 }

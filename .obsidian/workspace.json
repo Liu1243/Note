@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "33 查这么多数据，会不会把数据库内存打爆？"
+              "title": "并发编程"
             }
           }
         ]
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "33 查这么多数据，会不会把数据库内存打爆？ 的反向链接列表"
+              "title": "并发编程 的反向链接列表"
             }
           },
           {
@@ -114,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "33 查这么多数据，会不会把数据库内存打爆？ 的出链列表"
+              "title": "并发编程 的出链列表"
             }
           },
           {
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
+                "file": "Java面经/javaguide/并发编程.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "33 查这么多数据，会不会把数据库内存打爆？ 的大纲"
+              "title": "并发编程 的大纲"
             }
           }
         ],
@@ -174,19 +174,19 @@
   },
   "active": "25c6d2c95a5eb41a",
   "lastOpenFiles": [
-    "MySQL/attachments/ff2eb3947082399aa263f96290e2df41_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250808160253.png",
-    "MySQL/attachments/df60b92ec198462f73b1c9f38ce7ba24_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250808160130.png",
-    "MySQL/attachments/6489ad305cd9a9e6fafbac4c24268677_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250808160105.png",
+    "Java面经/javaguide/attachments/b25d44f25a99e7cb1220be3c37614fb4_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250808180852.png",
+    "Java面经/javaguide/attachments/18ca74cb588d713774a20b6e97123e89_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250808174144.png",
+    "Java面经/javaguide/attachments/1fc08506f8322af32d713a7e6304c35a_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250808172320.png",
+    "Java面经/javaguide/attachments/2ce7c51d8ac55d366698781f5941cd04_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250808171049.png",
+    "Java面经/javaguide/attachments/af35976677d4c355c31386e848c3c422_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250808170856.png",
+    "Java面经/javaguide/attachments/260ac4109b23f51c1aa2aa67ff98a9d3_MD5.jpeg",
     "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
-    "MySQL/attachments/92cd377feb8aa08bbc3a3a2f118f6f56_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250808155414.png",
-    "MySQL/attachments/05ed74ac50815649b3e9482f678d9fc5_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250808155212.png",
     "Java面经/javaguide/并发编程.md",
-    "Java面经/javaguide/attachments/8ae221b4f62564bf9504a71a5662f8ee_MD5.jpeg",
     "MySQL/32 为什么还有kill不掉的语句？.md",
     "MySQL/31 误删数据除了跑路，还能怎么办？.md",
     "Java面经/javaguide/集合.md",

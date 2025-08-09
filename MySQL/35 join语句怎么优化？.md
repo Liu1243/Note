@@ -98,5 +98,12 @@ join逻辑
 > 1. 如果驱动表是t1，则连接顺序是t1->t2->t3，要在被驱动表字段创建上索引，也就是t2.a 和 t3.b上创建索引；
 > 2. 如果驱动表是t3，则连接顺序是t3->t2->t1，需要在t2.b 和 t1.a上创建索引。
 > 同时，我们还需要在第一个驱动表的字段c上创建索引。
+> 以下是联合索引，减少回表：
+> ALTER TABLE t1 ADD INDEX idx_c_a (c, a);
+  ALTER TABLE t2 ADD INDEX idx_a_c_b (a, c, b);
+  ALTER TABLE t3 ADD INDEX idx_b_c (b, c);
 > 第二种情况是，如果选出来的第一个驱动表是表t2的话，则需要评估另外两个条件的过滤效果。
 > 总之，整体的思路就是，尽量让每一次参与join的驱动表的数据集，越小越好，因为这样我们的驱动表就会越小。
+> CREATE INDEX idx_c_a_b ON t2(c, a, b);
+> CREATE INDEX idx_a_c ON t1(a, c);
+> CREATE INDEX idx_b_c ON t3(b, c);

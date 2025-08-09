@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/34 到底可不可以使用join？.md",
+                "file": "MySQL/35 join语句怎么优化？.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "34 到底可不可以使用join？"
+              "title": "35 join语句怎么优化？"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MySQL/34 到底可不可以使用join？.md",
+                "file": "MySQL/35 join语句怎么优化？.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "34 到底可不可以使用join？ 的反向链接列表"
+              "title": "35 join语句怎么优化？ 的反向链接列表"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MySQL/34 到底可不可以使用join？.md",
+                "file": "MySQL/35 join语句怎么优化？.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "34 到底可不可以使用join？ 的出链列表"
+              "title": "35 join语句怎么优化？ 的出链列表"
             }
           },
           {
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/34 到底可不可以使用join？.md",
+                "file": "MySQL/35 join语句怎么优化？.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "34 到底可不可以使用join？ 的大纲"
+              "title": "35 join语句怎么优化？ 的大纲"
             }
           }
         ],
@@ -173,24 +173,25 @@
   },
   "active": "25c6d2c95a5eb41a",
   "lastOpenFiles": [
-    "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
     "MySQL/34 到底可不可以使用join？.md",
+    "MySQL/35 join语句怎么优化？.md",
+    "MySQL/MySQL45讲.md",
+    "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
+    "MySQL/attachments/db754c07642ac698021b1d7950dfd823_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250809113104.png",
+    "MySQL/attachments/a3b48b3e47951e48f0c79706b05e10bb_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250809112934.png",
+    "MySQL/attachments/e660b6c64490ce327523698aa5f7ba6a_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250809112830.png",
+    "MySQL/attachments/9bc1bea61070096b5912a01fa347e8f2_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250809112821.png",
+    "MySQL/attachments/a63366db5b1ce425aecb5eb05dcea00a_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250809112650.png",
     "MySQL/32 为什么还有kill不掉的语句？.md",
-    "MySQL/attachments/b59c6b955c237140bad2c0be44d266bd_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250809011252.png",
-    "MySQL/attachments/efcf025599fc4843642850bb94913da8_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250809010756.png",
-    "MySQL/attachments/475842be4759939ae20d126374d6ca7d_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250809010739.png",
-    "MySQL/attachments/900a3c53b5524ae9fe413041129b533d_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250809005954.png",
-    "MySQL/attachments/608c5fb693a727f2263ef12d1317f3c2_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250809005515.png",
     "Java面经/javaguide/并发编程.md",
     "MySQL/31 误删数据除了跑路，还能怎么办？.md",
     "Java面经/javaguide/集合.md",
     "MySQL/30 用动态的观点看加锁.md",
-    "MySQL/MySQL45讲.md",
     "MySQL/29 如何判断一个数据库是不是出问题了.md",
     "IM/手写分布式IM系统/存储层/分布式缓存设计（一） -- 低延迟&高吞吐优化策略.md",
     "IM/手写分布式IM系统/存储层/分布式存储（一） -- IM的存储模型设计.md",
@@ -216,7 +217,6 @@
     "MySQL/attachments",
     "MySQL",
     "IM/plato整体架构设计总结.md",
-    "IM/手写分布式IM系统/存储层/分布式缓存设计（二） -- 高可用&一致性优化策略.md",
-    "BigData/大数据学习路线.md"
+    "IM/手写分布式IM系统/存储层/分布式缓存设计（二） -- 高可用&一致性优化策略.md"
   ]
 }

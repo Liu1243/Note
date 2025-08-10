@@ -1,6 +1,6 @@
 {
   "baseFontSizeAction": true,
-  "baseFontSize": 19,
+  "baseFontSize": 18,
   "cssTheme": "Atom",
   "enabledCssSnippets": [
     "hyphenation-and-justification",

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/36 为什么临时表可以重名？.md",
+                "file": "MySQL/37 什么时候会使用内部临时表.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "36 为什么临时表可以重名？"
+              "title": "37 什么时候会使用内部临时表"
             }
           }
         ]
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MySQL/36 为什么临时表可以重名？.md",
+                "file": "MySQL/37 什么时候会使用内部临时表.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "36 为什么临时表可以重名？ 的反向链接列表"
+              "title": "37 什么时候会使用内部临时表 的反向链接列表"
             }
           },
           {
@@ -114,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MySQL/36 为什么临时表可以重名？.md",
+                "file": "MySQL/37 什么时候会使用内部临时表.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "36 为什么临时表可以重名？ 的出链列表"
+              "title": "37 什么时候会使用内部临时表 的出链列表"
             }
           },
           {
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/36 为什么临时表可以重名？.md",
+                "file": "MySQL/37 什么时候会使用内部临时表.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "36 为什么临时表可以重名？ 的大纲"
+              "title": "37 什么时候会使用内部临时表 的大纲"
             }
           }
         ],
@@ -174,19 +174,20 @@
   },
   "active": "13c1a51d41dd60dc",
   "lastOpenFiles": [
-    "MySQL/attachments/7b3fb69c0c57cfec8a9b12eb2f7a183c_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250810124448.png",
-    "MySQL/attachments/053911743f27851a656859c60b71f5dc_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250810124325.png",
-    "MySQL/attachments/ead9ecdccab5c6de2faea955c04c6e9b_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250810122849.png",
-    "Java面经/javaguide/JVM.md",
+    "MySQL/attachments/16b7e234d146b9466e7c54bc258460d0_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250811165337.png",
+    "MySQL/attachments/bb4c9aac79fb4f609c990cce8191691c_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250811165319.png",
+    "MySQL/attachments/e7edbabd4981d01148c7bf59b9bae901_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250811165137.png",
+    "MySQL/attachments/a5f97ea3a70007829aeb1176273e0f29_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250811165017.png",
+    "MySQL/attachments/18471f8856081a76028ac6622e54e732_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250811164754.png",
+    "MySQL/attachments/9a410931df7bb925a333109bfc1dac87_MD5.jpeg",
     "MySQL/36 为什么临时表可以重名？.md",
-    "Java面经/javaguide/attachments/609e8f5409799ab844aed02645c8f000_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250810122438.png",
-    "Java面经/javaguide/attachments/59047e30035d9ad94bbc349f40c0a77b_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250810122413.png",
-    "Java面经/javaguide/attachments/8562a92e0fd7ae12eabb07c0ac79aa67_MD5.jpeg",
+    "MySQL/37 什么时候会使用内部临时表.md",
+    "Java面经/javaguide/JVM.md",
     "VIM命令.md",
     "Java面经/javaguide/IO.md",
     "Java面经/javaguide/并发编程.md",
@@ -213,7 +214,6 @@
     "misc/佛教知识.md",
     "分布式/attachments",
     "Java面经/attachments",
-    "分布式/DDIA.md",
     "Java面经",
     "分布式",
     "misc/attachments",

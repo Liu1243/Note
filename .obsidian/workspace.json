@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
+                "file": "Java面经/javaguide/JVM.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "38 都说InnoDB好，还要不要使用Memory引擎？"
+              "title": "JVM"
             }
           }
         ]
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
+                "file": "Java面经/javaguide/JVM.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "38 都说InnoDB好，还要不要使用Memory引擎？ 的反向链接列表"
+              "title": "JVM 的反向链接列表"
             }
           },
           {
@@ -114,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
+                "file": "Java面经/javaguide/JVM.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "38 都说InnoDB好，还要不要使用Memory引擎？ 的出链列表"
+              "title": "JVM 的出链列表"
             }
           },
           {
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
+                "file": "Java面经/javaguide/JVM.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "38 都说InnoDB好，还要不要使用Memory引擎？ 的大纲"
+              "title": "JVM 的大纲"
             }
           },
           {
@@ -184,20 +184,20 @@
   },
   "active": "13c1a51d41dd60dc",
   "lastOpenFiles": [
-    "MySQL/attachments/627d0749b0c8f6cfc715f5fd7fee2749_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250812154138.png",
-    "MySQL/attachments/fe30f66f0e57783cb1f71916b3aaef6a_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250812153941.png",
-    "MySQL/attachments/495d73f63f9f29572ed3b339f83fe209_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250812153731.png",
-    "MySQL/attachments/e395c6f00e6f28af2db66b84ee011bcd_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250812153310.png",
-    "MySQL/attachments/77aa7769ecc143063c651da52cf5f91e_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250812153253.png",
-    "Java面经/javaguide/JVM.md",
+    "Java面经/javaguide/attachments/88eb64f31ac1413ee1e4b6309950d99b_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250812182306.png",
+    "Java面经/javaguide/attachments/Pasted image 20250812181611.png",
+    "Java面经/javaguide/attachments/a604a5a44156de1c4090de18e7bb1c2d_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250812181406.png",
+    "Java面经/javaguide/attachments/719b9773337d47e3bfd7a37322c8fb8c_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250812181107.png",
+    "Java面经/javaguide/attachments/fe5019a1b09522f4c33938d8438a9dda_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250812180602.png",
+    "Java面经/javaguide/attachments/0147f9779d75afadf35f3feca3aa86c0_MD5.jpeg",
+    "Java面经/javaguide/attachments/Pasted image 20250812180254.png",
     "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
+    "Java面经/javaguide/JVM.md",
     "MySQL/37 什么时候会使用内部临时表.md",
-    "MySQL/attachments/16b7e234d146b9466e7c54bc258460d0_MD5.jpeg",
     "MySQL/36 为什么临时表可以重名？.md",
     "VIM命令.md",
     "Java面经/javaguide/IO.md",

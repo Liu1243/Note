@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Java面经/Spring.md",
+                "file": "MySQL/39 自增主键为什么不是连续的.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Spring"
+              "title": "39 自增主键为什么不是连续的"
             }
           }
         ]
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Java面经/Spring.md",
+                "file": "MySQL/39 自增主键为什么不是连续的.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Spring 的反向链接列表"
+              "title": "39 自增主键为什么不是连续的 的反向链接列表"
             }
           },
           {
@@ -114,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Java面经/Spring.md",
+                "file": "MySQL/39 自增主键为什么不是连续的.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Spring 的出链列表"
+              "title": "39 自增主键为什么不是连续的 的出链列表"
             }
           },
           {
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Java面经/Spring.md",
+                "file": "MySQL/39 自增主键为什么不是连续的.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Spring 的大纲"
+              "title": "39 自增主键为什么不是连续的 的大纲"
             }
           },
           {
@@ -184,6 +184,12 @@
   },
   "active": "13c1a51d41dd60dc",
   "lastOpenFiles": [
+    "MySQL/attachments/c7b017cd6289b709c66e1aede9a6273b_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250813003654.png",
+    "MySQL/attachments/b2092884119fa8123cf41c0389f2a907_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250813003010.png",
+    "Java面经/Spring.md",
+    "MySQL/39 自增主键为什么不是连续的.md",
     "Java面经/attachments/f28bce733eb581db678a43de2b7a4df2_MD5.jpeg",
     "Java面经/attachments/Pasted image 20250812234200.png",
     "Java面经/attachments/e4af6aff17b5f4912af7d503cf00572f_MD5.jpeg",
@@ -191,12 +197,7 @@
     "Java面经/attachments/bfb5cbd8a81e42389fea62fb8c6ee9a0_MD5.jpeg",
     "Java面经/attachments/Pasted image 20250812215139.png",
     "Java面经/attachments/8285b0edcd3fd0a93479d08c1b1f5bc5_MD5.jpeg",
-    "Java面经/attachments/Pasted image 20250812215127.png",
     "Java面经/javaguide/JVM.md",
-    "Java面经/Spring.md",
-    "Java面经/javaguide/attachments/88eb64f31ac1413ee1e4b6309950d99b_MD5.jpeg",
-    "Java面经/javaguide/attachments/Pasted image 20250812182306.png",
-    "Java面经/javaguide/attachments/Pasted image 20250812181611.png",
     "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
     "MySQL/37 什么时候会使用内部临时表.md",
     "MySQL/36 为什么临时表可以重名？.md",
@@ -219,7 +220,6 @@
     "IM/零基础IM开发入门.md",
     "开发内功/网络管理/01 深入理解三次握手原理.md",
     "微服务：从设计到部署.md",
-    "学习.md",
     "Java面经/javaguide/attachments",
     "Java面经/javaguide",
     "分布式/attachments",

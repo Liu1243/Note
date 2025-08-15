@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/40 insert语句的锁为什么这么多？.md",
+                "file": "MySQL/41 怎么最快的复制一张表.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "40 insert语句的锁为什么这么多？"
+              "title": "41 怎么最快的复制一张表"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/40 insert语句的锁为什么这么多？.md",
+                "file": "MySQL/41 怎么最快的复制一张表.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "40 insert语句的锁为什么这么多？ 的大纲"
+              "title": "41 怎么最快的复制一张表 的大纲"
             }
           },
           {
@@ -184,6 +184,12 @@
   },
   "active": "13c1a51d41dd60dc",
   "lastOpenFiles": [
+    "MySQL/attachments/2d35d3aa56fe3798db53c9afbfb6d314_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250815180549.png",
+    "MySQL/attachments/d9d97d69c25192bf669aaaff68c5799e_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250815175328.png",
+    "MySQL/40 insert语句的锁为什么这么多？.md",
+    "MySQL/41 怎么最快的复制一张表.md",
     "MySQL/attachments/9126203b29566056a2b9c5d3044fb613_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250815004957.png",
     "MySQL/attachments/2e1aa1fbde51cba4fa92221f54aa4234_MD5.jpeg",
@@ -191,12 +197,7 @@
     "MySQL/attachments/243681921f0db2eb80d90ab4eb0795f7_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250815004403.png",
     "MySQL/attachments/8f3a31f18a57d48f366b5f572d399e13_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250815004158.png",
-    "MySQL/attachments/95eb1f8239054cbef56af8495ae4ac57_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250815003619.png",
-    "MySQL/attachments/a313028f78ad132a17644a8db6dda163_MD5.jpeg",
     "学习.md",
-    "MySQL/40 insert语句的锁为什么这么多？.md",
     "VIM命令.md",
     "MySQL/39 自增主键为什么不是连续的.md",
     "Java面经/Spring.md",
@@ -219,7 +220,6 @@
     "IM/手写分布式IM系统/存储层/分布式缓存设计（一） -- 低延迟&高吞吐优化策略.md",
     "IM/手写分布式IM系统/存储层/分布式存储（一） -- IM的存储模型设计.md",
     "IM/手写分布式IM系统/存储层/分布式存储（二） -- 万人群聊优化.md",
-    "IM/零基础IM开发入门.md",
     "Java面经/javaguide/attachments",
     "Java面经/javaguide",
     "分布式/attachments",

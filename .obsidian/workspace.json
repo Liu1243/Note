@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/41 怎么最快的复制一张表.md",
+                "file": "Java面经/Spring.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "41 怎么最快的复制一张表"
+              "title": "Spring"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/41 怎么最快的复制一张表.md",
+                "file": "Java面经/Spring.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "41 怎么最快的复制一张表 的大纲"
+              "title": "Spring 的大纲"
             }
           },
           {
@@ -160,6 +160,16 @@
               "state": {},
               "icon": "spreadsheet",
               "title": "Advanced Tables"
+            }
+          },
+          {
+            "id": "d6d33c5bf1d0eba1",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
             }
           }
         ],
@@ -184,24 +194,24 @@
   },
   "active": "13c1a51d41dd60dc",
   "lastOpenFiles": [
-    "MySQL/attachments/2d35d3aa56fe3798db53c9afbfb6d314_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250815180549.png",
-    "MySQL/attachments/d9d97d69c25192bf669aaaff68c5799e_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250815175328.png",
-    "MySQL/40 insert语句的锁为什么这么多？.md",
+    "Java面经/attachments/03a16829dd43807095f6e2b306649feb_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250815233810.png",
+    "Java面经/attachments/c6179ef8fa5557fb6c36b4b2f6992164_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250815233349.png",
+    "Java面经/attachments/5de152568401ef6fa111202934d8814b_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250815233251.png",
+    "Java面经/attachments/1d6fec2a01bb6b92689d5932b119a1ad_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250815232437.png",
+    "Java面经/attachments/bafb52a799c6dd7e1aa93f991c8c1232_MD5.jpeg",
+    "Java面经/attachments/Pasted image 20250815231335.png",
+    "Java面经/attachments/5765df9ce5d45eefd6bcf19c1933dd3f_MD5.jpeg",
+    "Java面经/javaguide/JVM.md",
     "MySQL/41 怎么最快的复制一张表.md",
-    "MySQL/attachments/9126203b29566056a2b9c5d3044fb613_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250815004957.png",
-    "MySQL/attachments/2e1aa1fbde51cba4fa92221f54aa4234_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250815004422.png",
-    "MySQL/attachments/243681921f0db2eb80d90ab4eb0795f7_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250815004403.png",
-    "MySQL/attachments/8f3a31f18a57d48f366b5f572d399e13_MD5.jpeg",
+    "MySQL/40 insert语句的锁为什么这么多？.md",
     "学习.md",
     "VIM命令.md",
     "MySQL/39 自增主键为什么不是连续的.md",
     "Java面经/Spring.md",
-    "Java面经/javaguide/JVM.md",
     "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
     "MySQL/37 什么时候会使用内部临时表.md",
     "MySQL/36 为什么临时表可以重名？.md",

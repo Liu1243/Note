@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Java面经/Spring.md",
+                "file": "MySQL/42 grant之后要跟着flush privileges吗？.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Spring"
+              "title": "42 grant之后要跟着flush privileges吗？"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Java面经/Spring.md",
+                "file": "MySQL/42 grant之后要跟着flush privileges吗？.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Spring 的大纲"
+              "title": "42 grant之后要跟着flush privileges吗？ 的大纲"
             }
           },
           {
@@ -194,6 +194,10 @@
   },
   "active": "13c1a51d41dd60dc",
   "lastOpenFiles": [
+    "MySQL/attachments/a88e1aca9c45af7090ef4cd84184545d_MD5.jpeg",
+    "MySQL/attachments/Pasted image 20250817230133.png",
+    "Java面经/Spring.md",
+    "MySQL/42 grant之后要跟着flush privileges吗？.md",
     "Java面经/attachments/03a16829dd43807095f6e2b306649feb_MD5.jpeg",
     "Java面经/attachments/Pasted image 20250815233810.png",
     "Java面经/attachments/c6179ef8fa5557fb6c36b4b2f6992164_MD5.jpeg",
@@ -203,15 +207,12 @@
     "Java面经/attachments/1d6fec2a01bb6b92689d5932b119a1ad_MD5.jpeg",
     "Java面经/attachments/Pasted image 20250815232437.png",
     "Java面经/attachments/bafb52a799c6dd7e1aa93f991c8c1232_MD5.jpeg",
-    "Java面经/attachments/Pasted image 20250815231335.png",
-    "Java面经/attachments/5765df9ce5d45eefd6bcf19c1933dd3f_MD5.jpeg",
     "Java面经/javaguide/JVM.md",
     "MySQL/41 怎么最快的复制一张表.md",
     "MySQL/40 insert语句的锁为什么这么多？.md",
     "学习.md",
     "VIM命令.md",
     "MySQL/39 自增主键为什么不是连续的.md",
-    "Java面经/Spring.md",
     "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
     "MySQL/37 什么时候会使用内部临时表.md",
     "MySQL/36 为什么临时表可以重名？.md",
@@ -229,7 +230,6 @@
     "MySQL/29 如何判断一个数据库是不是出问题了.md",
     "IM/手写分布式IM系统/存储层/分布式缓存设计（一） -- 低延迟&高吞吐优化策略.md",
     "IM/手写分布式IM系统/存储层/分布式存储（一） -- IM的存储模型设计.md",
-    "IM/手写分布式IM系统/存储层/分布式存储（二） -- 万人群聊优化.md",
     "Java面经/javaguide/attachments",
     "Java面经/javaguide",
     "分布式/attachments",

@@ -652,3 +652,51 @@ public static PasswordEncoder passwordEncoder() {
 ```
 只要在密码前加 `{id}` 前缀，就能区分不同加密算法。
 
+## Spring & SpringBoot常用注解总结
+`@SpringBootApplication` 是 Spring Boot 应用的核心注解，通常用于标注主启动类。
+`@SpringBootApplication`看作是下面三个注解的组合：
+- **`@EnableAutoConfiguration`**：启用 Spring Boot 的自动配置机制。
+- **`@ComponentScan`**：扫描 `@Component`、`@Service`、`@Repository`、`@Controller` 等注解的类。
+- **`@Configuration`**：允许注册额外的 Spring Bean 或导入其他配置类。
+
+依赖注入DI：
+`@Autowired` 用于自动注入依赖项（即其他 Spring Bean）。它可以标注在构造器、字段、Setter 方法或配置方法上，Spring 容器会自动查找匹配类型的 Bean 并将其注入。默认按照类型注入，与 `@Qualifier` 结合使用，通过指定 Bean 的名称来精确选择需要注入的实例。
+`@Primary`同样是为了解决同一类型存在多个 Bean 实例的注入问题。在 Bean 定义时（例如使用 `@Bean` 或类注解）添加 `@Primary` 注解，表示该 Bean 是**首选**的注入对象。当进行 `@Autowired` 注入时，如果没有使用 `@Qualifier` 指定名称，Spring 将优先选择带有 `@Primary` 的 Bean。
+@Resource(name="beanName")按照名称查找Bean，找不到按照类型查找，只能标注在字段 和 Setter 方法上，不支持构造器注入。
+
+Bean作用域：
+`@Scope("scopeName")` 定义 Spring Bean 的作用域，即 Bean 实例的生命周期和可见范围。常用的作用域包括：
+- **singleton** : IoC 容器中只有唯一的 bean 实例。Spring 中的 bean 默认都是单例的，是对单例设计模式的应用。
+- **prototype** : 每次获取都会创建一个新的 bean 实例。也就是说，连续 `getBean()` 两次，得到的是不同的 Bean 实例。
+- **request** （仅 Web 应用可用）: 每一次 HTTP 请求都会产生一个新的 bean（请求 bean），该 bean 仅在当前 HTTP request 内有效。
+- **session** （仅 Web 应用可用） : 每一次来自新 session 的 HTTP 请求都会产生一个新的 bean（会话 bean），该 bean 仅在当前 HTTP session 内有效。
+- **application/global-session** （仅 Web 应用可用）：每个 Web 应用在启动时创建一个 Bean（应用 Bean），该 bean 仅在当前应用启动时间内有效。
+- **websocket** （仅 Web 应用可用）：每一次 WebSocket 会话产生一个新的 bean。
+
+Bean注册：
+注册 Bean 的注解：
+- `@Component`：通用的注解，可标注任意类为 `Spring` 组件。如果一个 Bean 不知道属于哪个层，可以使用`@Component` 注解标注。
+- `@Repository` : 对应持久层即 Dao 层，主要用于数据库相关操作。
+- `@Service` : 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao 层。
+- `@Controller` : 对应 Spring MVC 控制层，主要用于接受用户请求并调用 Service 层返回数据给前端页面。
+- `@RestController`：一个组合注解，等效于 `@Controller` + `@ResponseBody`。它专门用于构建 RESTful Web 服务的控制器。标注了 `@RestController` 的类，其所有处理器方法（handler methods）的返回值都会被自动序列化（通常为 JSON）并写入 HTTP 响应体，而不是被解析为视图名称。
+
+`@Controller` vs `@RestController`：
+- `@Controller`：主要用于传统的 Spring MVC 应用，方法返回值通常是逻辑视图名，需要视图解析器配合渲染页面。如果需要返回数据（如 JSON），则需要在方法上额外添加 `@ResponseBody` 注解。
+- `@RestController`：专为构建返回数据的 RESTful API 设计。类上使用此注解后，所有方法的返回值都会默认被视为响应体内容（相当于每个方法都隐式添加了 `@ResponseBody`），通常用于返回 JSON 或 XML 数据。在现代前后端分离的应用中，`@RestController` 是更常用的选择。
+
+配置：
+`@Configuration` 主要用于声明一个类是 Spring 的配置类。
+读取配置信息：
+**集中存放在配置文件**（如 `application.yml` 或 `application.properties`）中
+读取配置的方式：
+- @Value("${property.key}")，支持SpEL
+- @ConfigurationProperties
+可以像使用普通的Bean一样，注入到类中使用。
+加载指定的配置文件：
+`@PropertySource` 注解允许加载自定义的配置文件。适用于需要将部分配置信息独立存储的场景。当使用 `@PropertySource` 时，确保外部文件路径正确，且文件在类路径（classpath）中。
+
+MVC
+
+
+

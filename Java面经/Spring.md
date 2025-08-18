@@ -697,6 +697,147 @@ Bean注册：
 `@PropertySource` 注解允许加载自定义的配置文件。适用于需要将部分配置信息独立存储的场景。当使用 `@PropertySource` 时，确保外部文件路径正确，且文件在类路径（classpath）中。
 
 MVC
+绑定请求体中的JSON数据
+`@RequestBody` 用于读取 Request 请求（可能是 POST,PUT,DELETE,GET 请求）的 body 部分并且**Content-Type 为 application/json** 格式的数据，接收到数据之后会自动将数据绑定到 Java 对象上去。系统会使用`HttpMessageConverter`或者自定义的`HttpMessageConverter`将请求的 body 中的 json 字符串转换为 java 对象。
+- 一个方法只能有一个 `@RequestBody` 参数，但可以有多个 `@PathVariable` 和 `@RequestParam`
+- 如果需要接收多个复杂对象，建议合并成一个单一对象。
 
+数据校验
+Bean Validation 是一套定义 JavaBean 参数校验标准的规范 (JSR 303, 349, 380)，它提供了一系列注解，可以直接用于 JavaBean 的属性上，从而实现便捷的参数校验。
+Bean Validation 本身只是一套**规范（接口和注解）**，我们需要一个实现了这套规范的**具体框架**来执行校验逻辑。目前，**Hibernate Validator** 是 Bean Validation 规范最权威、使用最广泛的参考实现。
+需要注意的是：所有的注解，推荐使用 JSR 注解，即`javax.validation.constraints`，而不是`org.hibernate.validator.constraints`
+
+验证请求体 RequestBody
+当 Controller 方法使用 `@RequestBody` 注解来接收请求体并将其绑定到一个对象时，可以在该参数前添加 `@Valid` 注解来触发对该对象的校验。如果验证失败，它将抛出`MethodArgumentNotValidException`。
+
+验证请求参数Path Variables和Request Parameters
+对于直接映射到方法参数的简单类型数据（如路径变量 `@PathVariable` 或请求参数 `@RequestParam`），校验方式略有不同：
+
+1. **在 Controller 类上添加 `@Validated` 注解**：这个注解是 Spring 提供的（非 JSR 标准），它使得 Spring 能够处理方法级别的参数校验注解。**这是必需步骤。**
+2. **将校验注解直接放在方法参数上**：将 `@Min`, `@Max`, `@Size`, `@Pattern` 等校验注解直接应用于对应的 `@PathVariable` 或 `@RequestParam` 参数。
+
+一定一定不要忘记在类上加上 `@Validated` 注解
+```java
+@RestController
+@RequestMapping("/api")
+@Validated // 关键步骤 1: 必须在类上添加 @Validated
+public class PersonController {
+
+    @GetMapping("/person/{id}")
+    public ResponseEntity<Integer> getPersonByID(
+            @PathVariable("id")
+            @Max(value = 5, message = "ID 不能超过 5") // 关键步骤 2: 校验注解直接放在参数上
+            Integer id
+    ) {
+        // 如果传入的 id > 5，Spring 会在进入方法体前抛出 ConstraintViolationException 异常。
+        // 全局异常处理器同样需要处理此异常。
+        return ResponseEntity.ok().body(id);
+    }
+
+    @GetMapping("/person")
+    public ResponseEntity<String> findPersonByName(
+            @RequestParam("name")
+            @NotBlank(message = "姓名不能为空") // 同样适用于 @RequestParam
+            @Size(max = 10, message = "姓名长度不能超过 10")
+            String name
+    ) {
+        return ResponseEntity.ok().body("Found person: " + name);
+    }
+}
+```
+
+全局异常处理
+1. `@ControllerAdvice` :注解定义全局异常处理类
+2. `@ExceptionHandler` :注解声明异常处理方法
+```java
+@ControllerAdvice
+@ResponseBody
+public class GlobalExceptionHandler {
+
+    /**
+     * 请求参数异常处理
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+       ......
+    }
+}
+```
+
+事务
+@Transactional(rollbackFor=xxx.class)
+我们知道 Exception 分为运行时异常 RuntimeException 和非运行时异常。在`@Transactional`注解中如果不配置`rollbackFor`属性,那么事务只会在遇到`RuntimeException`的时候才会回滚,加上`rollbackFor=Exception.class`,可以让事务在遇到非运行时异常时也回滚。
+`@Transactional` 注解一般可以作用在`类`或者`方法`上。
+- **作用于类**：当把`@Transactional` 注解放在类上时，表示所有该类的 public 方法都配置相同的事务属性信息。
+- **作用于方法**：当类配置了`@Transactional`，方法也配置了`@Transactional`，方法的事务会覆盖类的事务配置信息。
+
+JPA
+实现ORM
+`@Entity` 用于声明一个类为 JPA 实体类，与数据库中的表映射。`@Table` 指定实体对应的表名。
+```java
+@Entity
+@Table(name = "role")
+public class Role {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String description;
+
+    // 省略 getter/setter
+}
+```
+
+@Id声明字段为主键，@GeneratedValue指定主键的生成策略
+- **`GenerationType.TABLE`**：通过数据库表生成主键。
+- **`GenerationType.SEQUENCE`**：通过数据库序列生成主键（适用于 Oracle 等数据库）。
+- **`GenerationType.IDENTITY`**：主键自增长（适用于 MySQL 等数据库）。
+- **`GenerationType.AUTO`**：由 JPA 自动选择合适的生成策略（默认策略）。
+
+@Column用于指定实体字段与数据库列的映射关系
+- **`name`**：指定数据库列名。
+- **`nullable`**：指定是否允许为 `null`。
+- **`length`**：设置字段的长度（仅适用于 `String` 类型）。
+- **`columnDefinition`**：指定字段的数据库类型和默认值。
+
+`@Transient` 用于声明不需要持久化的字段。
+static、final以及使用transient声明的字段不会被序列化或持久化。
+
+@Lob用于声明大字段（如CLOB和BLOB）
+
+`@Enumerated` 用于将枚举类型映射为数据库字段。
+- **`EnumType.ORDINAL`**：存储枚举的序号（默认）。
+- **`EnumType.STRING`**：存储枚举的名称（推荐）。
+
+审计功能
+通过 JPA 的审计功能，可以在实体中自动记录创建时间、更新时间、创建人和更新人等信息。
+`@Modifying` 注解用于标识修改或删除操作，必须与 `@Transactional` 一起使用。
+
+JSON数据处理
+Web开发需要处理Java对象和JSON格式之间的切换，Spring 通常集成 Jackson 库来完成此任务。
+`@JsonIgnoreProperties` 作用在类上用于过滤掉特定字段不返回或者不解析。
+`@JsonIgnore`作用于字段或 `getter/setter` 方法级别，用于指定在序列化或反序列化时忽略该特定属性。
+`@JsonIgnoreProperties` 更适用于在类定义时明确排除多个字段，或继承场景下的字段排除；`@JsonIgnore` 则更直接地用于标记单个具体字段。
+
+`@JsonFormat` 用于指定属性在序列化和反序列化时的格式。常用于日期时间类型的格式化。
+
+`@JsonUnwrapped` 注解作用于字段上，用于在序列化时将其嵌套对象的属性“提升”到当前对象的层级，反序列化时执行相反操作。这可以使 JSON 结构更扁平。
+
+测试
+`@ActiveProfiles`一般作用于测试类上， 用于声明生效的 Spring 配置文件。
+```java
+public class MyServiceTest extends TestBase { // Assuming TestBase provides Spring context
+
+    @Test
+    @Transactional // 测试数据将回滚
+    @WithMockUser(username = "test-user", authorities = { "ROLE_TEACHER", "read" }) // 模拟一个名为 "test-user"，拥有 TEACHER 角色和 read 权限的用户
+    void should_perform_action_requiring_teacher_role() throws Exception {
+        // ... 测试逻辑 ...
+        // 这里可以调用需要 "ROLE_TEACHER" 权限的服务方法
+    }
+}
+```
 
 

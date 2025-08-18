@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/44 答疑文章，好问题.md",
+                "file": "Java面经/Spring.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "44 答疑文章，好问题"
+              "title": "Spring"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/44 答疑文章，好问题.md",
+                "file": "Java面经/Spring.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "44 答疑文章，好问题 的大纲"
+              "title": "Spring 的大纲"
             }
           },
           {
@@ -192,8 +192,9 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "13c1a51d41dd60dc",
+  "active": "bd6c58f72eb58486",
   "lastOpenFiles": [
+    "MySQL/44 答疑文章，好问题.md",
     "MySQL/attachments/7601eba4176c3b2e3728ed3b364c9cf2_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250818115803.png",
     "MySQL/attachments/f6bda2dc3eac9af2be94c4fda988471b_MD5.jpeg",
@@ -204,9 +205,7 @@
     "MySQL/attachments/Pasted image 20250818114856.png",
     "MySQL/attachments/cbb6cd6c0b0fa21de6e05a9f0d899822_MD5.jpeg",
     "MySQL/attachments/Pasted image 20250818114251.png",
-    "MySQL/attachments/e9e731bc8eb2e3917e0cd8fada60b44d_MD5.jpeg",
     "Java面经/Spring.md",
-    "MySQL/44 答疑文章，好问题.md",
     "MySQL/43 要不要使用分区表？.md",
     "MySQL/42 grant之后要跟着flush privileges吗？.md",
     "Java面经/javaguide/JVM.md",

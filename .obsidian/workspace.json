@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "MySQL/45 自增id用完了怎么办？.md",
+                "file": "左耳听风/分布式系统架构本质.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "45 自增id用完了怎么办？"
+              "title": "分布式系统架构本质"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "MySQL/45 自增id用完了怎么办？.md",
+                "file": "左耳听风/分布式系统架构本质.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "45 自增id用完了怎么办？ 的大纲"
+              "title": "分布式系统架构本质 的大纲"
             }
           },
           {
@@ -194,21 +194,25 @@
   },
   "active": "13c1a51d41dd60dc",
   "lastOpenFiles": [
-    "MySQL/attachments/f37d7a18802cb0ae44c5cb8367155f65_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250819003055.png",
-    "MySQL/attachments/cd3274d1182f30b1faac2bf6ed190a3d_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250819000315.png",
-    "Java面经/MyBatis.md",
+    "左耳听风/attachments/2a54f237bbfc3d398b31d55c6d210d2d_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250819172602.png",
+    "左耳听风/attachments/cd0eb32c953e2b7a616cd78b5396e7c8_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250819172028.png",
+    "左耳听风/attachments/255b606466f27cb76fdb774da0f5b53f_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250819171721.png",
+    "左耳听风/attachments/66922104f9bc640d32127429efbcacbd_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250819163612.png",
+    "左耳听风/attachments/eb90768e579bb2971775f1c8c52d0eb2_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250819163148.png",
+    "左耳听风/Init.md",
+    "左耳听风/分布式系统架构本质.md",
+    "左耳听风/attachments/56eee2fe07d1983f6916d108cc464b95_MD5.jpeg",
+    "左耳听风/attachments",
     "MySQL/45 自增id用完了怎么办？.md",
+    "左耳听风",
+    "Java面经/MyBatis.md",
     "Java面经/Spring.md",
     "MySQL/44 答疑文章，好问题.md",
-    "MySQL/attachments/7601eba4176c3b2e3728ed3b364c9cf2_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250818115803.png",
-    "MySQL/attachments/f6bda2dc3eac9af2be94c4fda988471b_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250818115155.png",
-    "MySQL/attachments/7991bce6c3eb5350fc856c4e1522e58e_MD5.jpeg",
-    "MySQL/attachments/Pasted image 20250818114940.png",
-    "MySQL/attachments/1914a17f12f14d0fc4c2c323593981a5_MD5.jpeg",
     "MySQL/43 要不要使用分区表？.md",
     "MySQL/42 grant之后要跟着flush privileges吗？.md",
     "Java面经/javaguide/JVM.md",
@@ -228,8 +232,6 @@
     "MySQL/34 到底可不可以使用join？.md",
     "MySQL/MySQL45讲.md",
     "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
-    "MySQL/32 为什么还有kill不掉的语句？.md",
-    "MySQL/31 误删数据除了跑路，还能怎么办？.md",
     "Java面经/javaguide/attachments",
     "Java面经/javaguide",
     "分布式/attachments",
@@ -237,8 +239,6 @@
     "Java面经",
     "分布式",
     "misc/attachments",
-    "misc",
-    "MySQL/attachments",
-    "MySQL"
+    "misc"
   ]
 }

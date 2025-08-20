@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "左耳听风/分布式系统架构本质.md",
+                "file": "左耳听风/分布式系统架构经典资料.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "分布式系统架构本质"
+              "title": "分布式系统架构经典资料"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "左耳听风/分布式系统架构本质.md",
+                "file": "左耳听风/分布式系统架构经典资料.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "分布式系统架构本质 的大纲"
+              "title": "分布式系统架构经典资料 的大纲"
             }
           },
           {
@@ -177,7 +177,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 288.5
+    "width": 289.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -195,18 +195,19 @@
   },
   "active": "7622b68eccdf5251",
   "lastOpenFiles": [
+    "左耳听风/attachments/e2aff59044d933e820983a6bc93c1ff8_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250820173102.png",
+    "左耳听风/attachments/977521f7dcecc84bc37fec1b60a6330d_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250820170532.png",
+    "左耳听风/分布式系统架构本质.md",
+    "左耳听风/分布式系统架构经典资料.md",
     "左耳听风/attachments/160d9686c3ea6ee0b4cbb7e1cb9dc27c_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250820165552.png",
     "左耳听风/attachments/6d4a208a61801fc3967a15e56aede7f8_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250820162949.png",
-    "左耳听风/分布式系统架构本质.md",
     "左耳听风/attachments/bf378e1c20b0d770fd70474bb7039dd3_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250820010801.png",
     "左耳听风/attachments/3d3527fe83b3966ae91e0fd5aa47692e_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250819234745.png",
-    "左耳听风/attachments/a9bcf5686925ba71735a8ede7aa088ef_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250819234022.png",
-    "左耳听风/attachments/46560a942b15d4cb7dfbaf7057d8f51f_MD5.jpeg",
     "左耳听风/Init.md",
     "学习.md",
     "左耳听风/attachments",
@@ -232,7 +233,6 @@
     "MySQL/35 join语句怎么优化？.md",
     "MySQL/34 到底可不可以使用join？.md",
     "MySQL/MySQL45讲.md",
-    "MySQL/33 查这么多数据，会不会把数据库内存打爆？.md",
     "Java面经/javaguide/attachments",
     "Java面经/javaguide",
     "分布式/attachments",

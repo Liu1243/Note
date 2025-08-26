@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "左耳听风/分布式系统设计模式--弹力设计.md",
+                "file": "左耳听风/分布式系统设计模式--管理设计.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "分布式系统设计模式--弹力设计"
+              "title": "分布式系统设计模式--管理设计"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 279.5
+    "width": 279.5,
+    "collapsed": true
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -142,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "左耳听风/分布式系统设计模式--弹力设计.md",
+                "file": "左耳听风/分布式系统设计模式--管理设计.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "分布式系统设计模式--弹力设计 的大纲"
+              "title": "分布式系统设计模式--管理设计 的大纲"
             }
           },
           {
@@ -194,18 +195,19 @@
   },
   "active": "362fd1fc6ee1e841",
   "lastOpenFiles": [
+    "左耳听风/attachments/3c8439c29d51746ca6318aa1ba2475a6_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250826173726.png",
+    "左耳听风/attachments/6e473cf311cd39397fc15baacb7c7215_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250826173606.png",
+    "左耳听风/attachments/30a2bd8b301028884bccd995d1d1a977_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250826173452.png",
+    "左耳听风/分布式系统设计模式--弹力设计.md",
+    "左耳听风/分布式系统设计模式--管理设计.md",
     "左耳听风/attachments/bf2ea00b31002c04660878be9a73549e_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250826112348.png",
     "左耳听风/attachments/d72019a80aa9ba812e58ef437abe30b8_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250826111930.png",
-    "左耳听风/分布式系统设计模式--弹力设计.md",
     "左耳听风/attachments/48564c005ad2e730059f7312e4ac8b82_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250825005244.png",
-    "左耳听风/attachments/93551c80d44c3f8eca2ce8bdf4fef432_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250825005028.png",
-    "左耳听风/attachments/fdd6a043c57e2729a160f485e38f2962_MD5.webp",
-    "左耳听风/attachments/a3cd0a74b8e8b0fc3d5913ab96e0ceae_MD5.webp",
-    "左耳听风/attachments/d1ee19d7d1eec462ce881ba0f44bf214_MD5.webp",
     "左耳听风/Init.md",
     "左耳听风/分布式系统架构经典资料.md",
     "左耳听风/分布式系统架构本质.md",
@@ -235,7 +237,6 @@
     "MySQL/40 insert语句的锁为什么这么多？.md",
     "MySQL/39 自增主键为什么不是连续的.md",
     "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
-    "MySQL/37 什么时候会使用内部临时表.md",
     "Java面经/javaguide/attachments",
     "Java面经/javaguide",
     "分布式/attachments",

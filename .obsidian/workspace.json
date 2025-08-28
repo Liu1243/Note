@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构与算法之美/04 复杂度分析.md",
+                "file": "左耳听风/分布式系统设计模式--管理设计.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "04 复杂度分析"
+              "title": "分布式系统设计模式--管理设计"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 279.5
+    "width": 279.5,
+    "collapsed": true
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -142,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "数据结构与算法之美/04 复杂度分析.md",
+                "file": "左耳听风/分布式系统设计模式--管理设计.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "04 复杂度分析 的大纲"
+              "title": "分布式系统设计模式--管理设计 的大纲"
             }
           },
           {
@@ -194,8 +195,15 @@
   },
   "active": "362fd1fc6ee1e841",
   "lastOpenFiles": [
-    "数据结构与算法之美/02 如何抓住重点，系统高效地学习数据结构与算法？.md",
+    "左耳听风/attachments/ad2f7087d94599a4c66585e8a6f51b06_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250828133556.png",
+    "左耳听风/attachments/ecf7f2c0cfb9c4efbb1a01b17bd2f729_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250828132955.png",
+    "左耳听风/attachments/fdb743e1e139b8fac4a38e2fecae7bff_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250828131346.png",
+    "数据结构与算法之美/05 数组.md",
     "数据结构与算法之美/04 复杂度分析.md",
+    "数据结构与算法之美/02 如何抓住重点，系统高效地学习数据结构与算法？.md",
     "左耳听风/分布式系统设计模式--管理设计.md",
     "左耳听风/attachments/82927fff48f656832539fc68dc835598_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250827175214.png",
@@ -203,11 +211,6 @@
     "左耳听风/attachments/f4c8885d2d2f1e0d38266865bd70287e_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250827114812.png",
     "左耳听风/attachments/7ea666aa5321c66745e206ed6e30d6ef_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250827114724.png",
-    "左耳听风/attachments/3c8439c29d51746ca6318aa1ba2475a6_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250826173726.png",
-    "左耳听风/attachments/6e473cf311cd39397fc15baacb7c7215_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250826173606.png",
     "左耳听风/分布式系统设计模式--弹力设计.md",
     "左耳听风/Init.md",
     "左耳听风/分布式系统架构经典资料.md",
@@ -234,8 +237,6 @@
     "Java面经/javaguide/JVM.md",
     "MySQL/41 怎么最快的复制一张表.md",
     "MySQL/40 insert语句的锁为什么这么多？.md",
-    "MySQL/39 自增主键为什么不是连续的.md",
-    "MySQL/38 都说InnoDB好，还要不要使用Memory引擎？.md",
     "Java面经/javaguide/attachments",
     "Java面经/javaguide",
     "分布式/attachments",

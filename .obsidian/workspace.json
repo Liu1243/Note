@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "IT老齐/老齐.md",
+                "file": "左耳听风/编程范式.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "老齐"
+              "title": "编程范式"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 279.5
+    "width": 279.5,
+    "collapsed": true
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -142,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "IT老齐/老齐.md",
+                "file": "左耳听风/编程范式.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "老齐 的大纲"
+              "title": "编程范式 的大纲"
             }
           },
           {
@@ -194,6 +195,7 @@
   },
   "active": "362fd1fc6ee1e841",
   "lastOpenFiles": [
+    "IT老齐/老齐.md",
     "IT老齐/attachments/5bb2591b039edd63040d3f526e6b3364_MD5.jpeg",
     "IT老齐/attachments/Pasted image 20250831221219.png",
     "IT老齐/attachments/d58a88eace695f0033c8b1271741bf50_MD5.jpeg",
@@ -204,10 +206,8 @@
     "IT老齐/attachments/Pasted image 20250831213735.png",
     "IT老齐/attachments/c67db46eb39f4783ddb9e23c015b05f4_MD5.jpeg",
     "IT老齐/attachments/Pasted image 20250831213642.png",
-    "IT老齐/attachments/8a3d455bd188654b0e9e7248b105dcab_MD5.jpeg",
     "IT老齐/attachments",
     "左耳听风/编程范式.md",
-    "IT老齐/老齐.md",
     "IT老齐",
     "左耳听风/Init.md",
     "系统架构师备考.md",

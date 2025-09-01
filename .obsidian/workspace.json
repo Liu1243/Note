@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "IT老齐/老齐.md",
+                "file": "左耳听风/编程范式.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "老齐"
+              "title": "编程范式"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "IT老齐/老齐.md",
+                "file": "左耳听风/编程范式.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "老齐 的大纲"
+              "title": "编程范式 的大纲"
             }
           },
           {
@@ -195,6 +195,9 @@
   },
   "active": "9a866ee9b35c7fe9",
   "lastOpenFiles": [
+    "左耳听风/attachments/af881ef364f3fb0865426c1115d117b5_MD5.jpeg",
+    "左耳听风/attachments/Pasted image 20250901150530.png",
+    "IT老齐/老齐.md",
     "IT老齐/attachments/a7655478eebbca48c6be218875f8c7d2_MD5.jpeg",
     "IT老齐/attachments/Pasted image 20250901103647.png",
     "IT老齐/attachments/6318728c9527d3c0f778b4408ec930ec_MD5.jpeg",
@@ -204,10 +207,7 @@
     "IT老齐/attachments/d83f3f14a4ba58d592741ed2f7de343b_MD5.jpeg",
     "IT老齐/attachments/Pasted image 20250901101855.png",
     "IT老齐/attachments/11a59f03f62c0b435b286c907012c5d7_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250901100711.png",
-    "IT老齐/attachments/1f5bd30d6cffdb2866ceceafd82e410a_MD5.jpeg",
     "MySQL/34 到底可不可以使用join？.md",
-    "IT老齐/老齐.md",
     "开发内功/网络管理/未命名.base",
     "开发内功/网络管理/01 深入理解三次握手原理.md",
     "MySQL/未命名.base",

@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "0c1736d29d62c80a",
+        "id": "5ef135538ec5e0ab",
         "type": "tabs",
         "children": [
           {
-            "id": "362fd1fc6ee1e841",
+            "id": "9a866ee9b35c7fe9",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "左耳听风/编程范式.md",
+                "file": "IT老齐/老齐.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "编程范式"
+              "title": "老齐"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "左耳听风/编程范式.md",
+                "file": "IT老齐/老齐.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "编程范式 的大纲"
+              "title": "老齐 的大纲"
             }
           },
           {
@@ -193,21 +193,27 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "362fd1fc6ee1e841",
+  "active": "9a866ee9b35c7fe9",
   "lastOpenFiles": [
+    "IT老齐/attachments/a7655478eebbca48c6be218875f8c7d2_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250901103647.png",
+    "IT老齐/attachments/6318728c9527d3c0f778b4408ec930ec_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250901103453.png",
+    "IT老齐/attachments/ecf0b8ac9208e93ebef0101004f6e7de_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250901103342.png",
+    "IT老齐/attachments/d83f3f14a4ba58d592741ed2f7de343b_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250901101855.png",
+    "IT老齐/attachments/11a59f03f62c0b435b286c907012c5d7_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250901100711.png",
+    "IT老齐/attachments/1f5bd30d6cffdb2866ceceafd82e410a_MD5.jpeg",
+    "MySQL/34 到底可不可以使用join？.md",
     "IT老齐/老齐.md",
-    "IT老齐/attachments/5bb2591b039edd63040d3f526e6b3364_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250831221219.png",
-    "IT老齐/attachments/d58a88eace695f0033c8b1271741bf50_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250831215431.png",
-    "IT老齐/attachments/e5b37ad4b41cb98f4ac52fb18a04d68c_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250831214206.png",
-    "IT老齐/attachments/d0cb0a7c036ca804c3e4f71bc7533fd5_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250831213735.png",
-    "IT老齐/attachments/c67db46eb39f4783ddb9e23c015b05f4_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250831213642.png",
-    "IT老齐/attachments",
+    "开发内功/网络管理/未命名.base",
+    "开发内功/网络管理/01 深入理解三次握手原理.md",
+    "MySQL/未命名.base",
+    "MySQL/35 join语句怎么优化？.md",
     "左耳听风/编程范式.md",
+    "IT老齐/attachments",
     "IT老齐",
     "左耳听风/Init.md",
     "系统架构师备考.md",
@@ -234,11 +240,6 @@
     "MySQL/45 自增id用完了怎么办？.md",
     "左耳听风",
     "Java面经/MyBatis.md",
-    "Java面经/Spring.md",
-    "MySQL/44 答疑文章，好问题.md",
-    "MySQL/43 要不要使用分区表？.md",
-    "MySQL/42 grant之后要跟着flush privileges吗？.md",
-    "Java面经/javaguide/attachments",
-    "Java面经/javaguide"
+    "Java面经/Spring.md"
   ]
 }

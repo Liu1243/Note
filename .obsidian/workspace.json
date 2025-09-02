@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "左耳听风/编程范式.md",
+                "file": "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "编程范式"
+              "title": "02 从搜索引擎到人工智能"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 279.5,
+    "width": 263.5,
     "collapsed": true
   },
   "right": {
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "左耳听风/编程范式.md",
+                "file": "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "编程范式 的大纲"
+              "title": "02 从搜索引擎到人工智能 的大纲"
             }
           },
           {
@@ -195,6 +195,17 @@
   },
   "active": "9a866ee9b35c7fe9",
   "lastOpenFiles": [
+    "BigData/从0开始学大数据/01 大数据发展史.md",
+    "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
+    "BigData/从0开始学大数据/attachments/0d7526449b279a5a1c623aafff5f67e7_MD5.jpeg",
+    "BigData/从0开始学大数据/attachments/Pasted image 20250902105501.png",
+    "BigData/从0开始学大数据/attachments",
+    "左耳听风/Init.md",
+    "BigData/从0开始学大数据",
+    "左耳听风/高效学习.md",
+    "系统性学习模板.md",
+    "系统架构师备考.md",
+    "左耳听风/编程范式.md",
     "左耳听风/attachments/654cdfd41dec071d8fc8f5afda59423c_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250902011822.png",
     "左耳听风/attachments/04c6c5d090ac559f417082bd0d5f804b_MD5.jpeg",
@@ -204,10 +215,6 @@
     "左耳听风/attachments/c593e2a0ce5951d744437d53c1ff0e1e_MD5.jpeg",
     "左耳听风/attachments/Pasted image 20250901181818.png",
     "IT老齐/老齐.md",
-    "IT老齐/attachments/b4c50193b127da4cabdc9416d6db23aa_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250901173402.png",
-    "IT老齐/attachments/604e886319289eb467d037c6c0ed85c6_MD5.jpeg",
-    "左耳听风/编程范式.md",
     "MySQL/34 到底可不可以使用join？.md",
     "开发内功/网络管理/未命名.base",
     "开发内功/网络管理/01 深入理解三次握手原理.md",
@@ -215,8 +222,6 @@
     "MySQL/35 join语句怎么优化？.md",
     "IT老齐/attachments",
     "IT老齐",
-    "左耳听风/Init.md",
-    "系统架构师备考.md",
     "左耳听风/分布式系统设计模式--性能设计.md",
     "左耳听风/分布式系统架构本质.md",
     "左耳听风/分布式系统架构经典资料.md",
@@ -235,11 +240,6 @@
     "大模型/AI大模型应用开发模型训练-RAG-Agent/课程内容.md",
     "大模型/AI大模型应用开发模型训练-RAG-Agent",
     "大模型",
-    "学习.md",
-    "左耳听风/attachments",
-    "MySQL/45 自增id用完了怎么办？.md",
-    "左耳听风",
-    "Java面经/MyBatis.md",
-    "Java面经/Spring.md"
+    "学习.md"
   ]
 }

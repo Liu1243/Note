@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
+                "file": "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "02 从搜索引擎到人工智能"
+              "title": "01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 263.5,
-    "collapsed": true
+    "width": 263.5
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -143,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
+                "file": "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "02 从搜索引擎到人工智能 的大纲"
+              "title": "01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图 的大纲"
             }
           },
           {
@@ -195,10 +194,25 @@
   },
   "active": "9a866ee9b35c7fe9",
   "lastOpenFiles": [
-    "BigData/从0开始学大数据/01 大数据发展史.md",
+    "BigData/大数据经典论文解读/attachments/460c6501ee7e224bf34229ba54f84791_MD5.webp",
+    "BigData/大数据经典论文解读/attachments/b504f50d18c8e7b6e2a14297e875108e_MD5.webp",
+    "BigData/大数据经典论文解读/attachments/400167eab7033e0ff7aa2d220b86c0e4_MD5.webp",
+    "BigData/大数据经典论文解读/attachments/b9a12ce80f10576e185ce1c0c1793db5_MD5.webp",
+    "BigData/大数据经典论文解读/attachments",
+    "IT老齐/老齐.md",
+    "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
+    "BigData/大数据经典论文解读",
+    "BigData/未命名.md",
+    "IT老齐/attachments/9717c9800d50a3addb3778a952ba1938_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250902121004.png",
+    "IT老齐/attachments/8fd9f0e8769be6c745c9a19ea8f26a70_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250902120932.png",
+    "IT老齐/attachments/b0354f41ef390a516f0122a027a05ac1_MD5.jpeg",
+    "IT老齐/attachments/Pasted image 20250902120814.png",
+    "IT老齐/attachments/c1fb1225de198dc63625ded94b78faa0_MD5.jpeg",
+    "BigData/从0开始学大数据/init.md",
     "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
-    "BigData/从0开始学大数据/attachments/0d7526449b279a5a1c623aafff5f67e7_MD5.jpeg",
-    "BigData/从0开始学大数据/attachments/Pasted image 20250902105501.png",
+    "BigData/从0开始学大数据/01 大数据发展史.md",
     "BigData/从0开始学大数据/attachments",
     "左耳听风/Init.md",
     "BigData/从0开始学大数据",
@@ -206,15 +220,6 @@
     "系统性学习模板.md",
     "系统架构师备考.md",
     "左耳听风/编程范式.md",
-    "左耳听风/attachments/654cdfd41dec071d8fc8f5afda59423c_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250902011822.png",
-    "左耳听风/attachments/04c6c5d090ac559f417082bd0d5f804b_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250902011758.png",
-    "左耳听风/attachments/06f357ac7831eb2a0ff6815d1ebb14c6_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250902011726.png",
-    "左耳听风/attachments/c593e2a0ce5951d744437d53c1ff0e1e_MD5.jpeg",
-    "左耳听风/attachments/Pasted image 20250901181818.png",
-    "IT老齐/老齐.md",
     "MySQL/34 到底可不可以使用join？.md",
     "开发内功/网络管理/未命名.base",
     "开发内功/网络管理/01 深入理解三次握手原理.md",
@@ -234,12 +239,6 @@
     "微服务：从设计到部署.md",
     "VIM命令.md",
     "数据结构与算法之美/attachments",
-    "数据结构与算法之美",
-    "可拓展的Web架构和分布式系统.md",
-    "大模型/AI大模型应用开发模型训练-RAG-Agent/大模型微调与部署.md",
-    "大模型/AI大模型应用开发模型训练-RAG-Agent/课程内容.md",
-    "大模型/AI大模型应用开发模型训练-RAG-Agent",
-    "大模型",
-    "学习.md"
+    "数据结构与算法之美"
   ]
 }

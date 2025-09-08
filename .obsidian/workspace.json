@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
+                "file": "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图"
+              "title": "02 - 学习方法：建立你的大数据知识网络"
             }
           }
         ]
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
+                "file": "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图 的大纲"
+              "title": "02 - 学习方法：建立你的大数据知识网络 的大纲"
             }
           },
           {
@@ -194,13 +194,15 @@
   },
   "active": "9a866ee9b35c7fe9",
   "lastOpenFiles": [
+    "BigData/大数据经典论文解读/attachments/f5273ad99ae28b0030357c22f55f3384_MD5.webp",
+    "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
+    "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
     "BigData/大数据经典论文解读/attachments/460c6501ee7e224bf34229ba54f84791_MD5.webp",
     "BigData/大数据经典论文解读/attachments/b504f50d18c8e7b6e2a14297e875108e_MD5.webp",
     "BigData/大数据经典论文解读/attachments/400167eab7033e0ff7aa2d220b86c0e4_MD5.webp",
     "BigData/大数据经典论文解读/attachments/b9a12ce80f10576e185ce1c0c1793db5_MD5.webp",
     "BigData/大数据经典论文解读/attachments",
     "IT老齐/老齐.md",
-    "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
     "BigData/大数据经典论文解读",
     "BigData/未命名.md",
     "IT老齐/attachments/9717c9800d50a3addb3778a952ba1938_MD5.jpeg",
@@ -209,7 +211,6 @@
     "IT老齐/attachments/Pasted image 20250902120932.png",
     "IT老齐/attachments/b0354f41ef390a516f0122a027a05ac1_MD5.jpeg",
     "IT老齐/attachments/Pasted image 20250902120814.png",
-    "IT老齐/attachments/c1fb1225de198dc63625ded94b78faa0_MD5.jpeg",
     "BigData/从0开始学大数据/init.md",
     "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
     "BigData/从0开始学大数据/01 大数据发展史.md",
@@ -237,7 +238,6 @@
     "数据结构与算法之美/02 如何抓住重点，系统高效地学习数据结构与算法？.md",
     "左耳听风/分布式系统设计模式--弹力设计.md",
     "微服务：从设计到部署.md",
-    "VIM命令.md",
     "数据结构与算法之美/attachments",
     "数据结构与算法之美"
   ]

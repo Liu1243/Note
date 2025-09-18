@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "横向对比/常见数据源对比.md",
+                "file": "横向对比/JDBC和JNDI.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "常见数据源对比"
+              "title": "JDBC和JNDI"
             }
           }
         ]
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "横向对比/常见数据源对比.md",
+                "file": "横向对比/JDBC和JNDI.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "常见数据源对比 的大纲"
+              "title": "JDBC和JNDI 的大纲"
             }
           },
           {
@@ -194,8 +194,9 @@
   },
   "active": "9a866ee9b35c7fe9",
   "lastOpenFiles": [
-    "横向对比/ShardingJDBC vs MyCat.md",
     "横向对比/常见数据源对比.md",
+    "横向对比/JDBC和JNDI.md",
+    "横向对比/ShardingJDBC vs MyCat.md",
     "系统性学习模板.md",
     "横向对比",
     "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
@@ -238,7 +239,6 @@
     "左耳听风/分布式系统设计模式--管理设计.md",
     "数据结构与算法之美/05 数组.md",
     "数据结构与算法之美/04 复杂度分析.md",
-    "左耳听风/分布式系统设计模式--弹力设计.md",
     "数据结构与算法之美/attachments"
   ]
 }

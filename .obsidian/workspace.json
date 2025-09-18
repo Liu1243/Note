@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
+                "file": "横向对比/常见数据源对比.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "02 - 学习方法：建立你的大数据知识网络"
+              "title": "常见数据源对比"
             }
           }
         ]
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
+                "file": "横向对比/常见数据源对比.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "02 - 学习方法：建立你的大数据知识网络 的大纲"
+              "title": "常见数据源对比 的大纲"
             }
           },
           {
@@ -194,9 +194,14 @@
   },
   "active": "9a866ee9b35c7fe9",
   "lastOpenFiles": [
-    "BigData/大数据经典论文解读/attachments/f5273ad99ae28b0030357c22f55f3384_MD5.webp",
+    "横向对比/ShardingJDBC vs MyCat.md",
+    "横向对比/常见数据源对比.md",
+    "系统性学习模板.md",
+    "横向对比",
     "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
     "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
+    "数据结构与算法之美/02 如何抓住重点，系统高效地学习数据结构与算法？.md",
+    "BigData/大数据经典论文解读/attachments/f5273ad99ae28b0030357c22f55f3384_MD5.webp",
     "BigData/大数据经典论文解读/attachments/460c6501ee7e224bf34229ba54f84791_MD5.webp",
     "BigData/大数据经典论文解读/attachments/b504f50d18c8e7b6e2a14297e875108e_MD5.webp",
     "BigData/大数据经典论文解读/attachments/400167eab7033e0ff7aa2d220b86c0e4_MD5.webp",
@@ -210,7 +215,6 @@
     "IT老齐/attachments/8fd9f0e8769be6c745c9a19ea8f26a70_MD5.jpeg",
     "IT老齐/attachments/Pasted image 20250902120932.png",
     "IT老齐/attachments/b0354f41ef390a516f0122a027a05ac1_MD5.jpeg",
-    "IT老齐/attachments/Pasted image 20250902120814.png",
     "BigData/从0开始学大数据/init.md",
     "BigData/从0开始学大数据/02 从搜索引擎到人工智能.md",
     "BigData/从0开始学大数据/01 大数据发展史.md",
@@ -218,7 +222,6 @@
     "左耳听风/Init.md",
     "BigData/从0开始学大数据",
     "左耳听风/高效学习.md",
-    "系统性学习模板.md",
     "系统架构师备考.md",
     "左耳听风/编程范式.md",
     "MySQL/34 到底可不可以使用join？.md",
@@ -235,10 +238,7 @@
     "左耳听风/分布式系统设计模式--管理设计.md",
     "数据结构与算法之美/05 数组.md",
     "数据结构与算法之美/04 复杂度分析.md",
-    "数据结构与算法之美/02 如何抓住重点，系统高效地学习数据结构与算法？.md",
     "左耳听风/分布式系统设计模式--弹力设计.md",
-    "微服务：从设计到部署.md",
-    "数据结构与算法之美/attachments",
-    "数据结构与算法之美"
+    "数据结构与算法之美/attachments"
   ]
 }

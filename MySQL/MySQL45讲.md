@@ -955,10 +955,10 @@ GTID可以解决这个问题；假设，这两个互为主备关系的库还是�
 ## 28 读写分离有哪些坑？
 一主多从架构的经典应用场景：读写分离，如何处理主备延迟导致的读写分离问题。
 读写分离的基本结构如下：
-![](MySQL/attachments/8d7df217cdedc4576d47a5d195228ec0_MD5.jpeg)
+![](MySQL/attachments/5f3384d331a62f77630acbb6c72416b8_MD5.jpeg)
 读写分离的目的是分摊主库的压力。上面是client主动做负载均衡，将数据库的连接信息放在client的连接层。
 下面是MySQL和client中间有一个proxy，client连接proxy，由代理根据请求类型以及上下文决定请求的分发路由。
-![](MySQL/attachments/809319e4f22ffd2f6906591cda0361a0_MD5.jpeg)
+![](MySQL/attachments/adaf8fd395246dad9baa90259f2cc531_MD5.jpeg)
 各自的特点：
 1. 客户端直连方案，因为少了一层proxy转发，所以查询性能稍微好一点儿，并且整体架构简单，排查问题更方便。但是这种方案，由于要了解后端部署细节，所以在出现主备切换、库迁移等操作的时候，客户端都会感知到，并且需要调整数据库连接信息。你可能会觉得这样客户端也太麻烦了，信息大量冗余，架构很丑。其实也未必，一般采用这样的架构，一定会伴随一个负责管理后端的组件，比如Zookeeper，尽量让业务端只专注于业务逻开发。
 2. 带proxy的架构，对客户端比较友好。客户端不需要关注后端细节，连接维护、后端信息维护等工作，都是由proxy完成的。但这样的话，对后端维护团队的要求会更高。而且，proxy也需要有高可用架构。因此，带proxy架构的整体就相对比较复杂。
@@ -993,7 +993,7 @@ GTID可以解决这个问题；假设，这两个互为主备关系的库还是�
 ==第一种做法是，每次从库执行查询请求前判断seconds_behind_master是否已经等于0==。如果还不等于0，等到参数变成0才能执行查询请求。
 SBM单位是秒，精度不够还可以使用对比位点和GTID的方法确保主备无延迟。
 以下是show slave status的结果截图：
-![](MySQL/attachments/4e20f185eeee0f4a4594678950778e9a_MD5.jpeg)
+![](MySQL/attachments/d54afa4db11dd7cabd7e93c290beda1d_MD5.jpeg)
 ==第二种方法，对比位点确保主备无延迟==
 - Master_Log_File和Read_Master_Log_Pos，表示的是读到的主库的最新位点；
 - Relay_Master_Log_File和Exec_Master_Log_Pos，表示的是备库执行的最新位点。
@@ -1011,7 +1011,7 @@ SBM单位是秒，精度不够还可以使用对比位点和GTID的方法确保�
 2. binlog被从主库发送给备库，备库收到；
 3. 在备库执行binlog完成。
 上面判断主备无延迟的逻辑，是“备库收到的日志都执行完了”。但是还有一部分日志是客户端已经收到提交确认，备库还未收到日志的状态。
-![](MySQL/attachments/d717231ae9cc79e91890c5e2c4e589bc_MD5.jpeg)
+![](MySQL/attachments/7777375de90242e26c0c8a32ae0aeaca_MD5.jpeg)
 这时，主库上执行完成了三个事务trx1、trx2和trx3，其中
 - trx1和trx2已经传到从库，并且已经执行完成了；
 -  trx3在主库执行完成，并且已经回复给客户端，但是还没有传到从库中。
@@ -1029,7 +1029,7 @@ semi-sync设计是：
 其次，如果在业务更新的高峰期，主库的位点或者GTID集合更新很快，那么上面的两个位点等值判断就会一直不成立，很可能出现从库上迟迟无法响应查询请求的情况。
 
 实际上，回到我们最初的业务逻辑里，当发起一个查询请求以后，我们要得到准确的结果，其实**并不需要等到“主备完全同步”**。
-![](MySQL/attachments/ec3e523496340bc86ca8fa2b58b9be29_MD5.jpeg)
+![](MySQL/attachments/63305fd1f388d11acbcbf0a3a1fe10d9_MD5.jpeg)
 上图就是一个等待位点方案的bad case。从状态1到状态4一直处于延迟一个事务的状态。
 但是，其实客户端是在发完trx1更新后发起的select语句，我们只需要确保trx1已经执行完成就可以执行select语句了。也就是说，如果在状态3执行查询请求，得到的就是预期结果了。
 
@@ -1055,7 +1055,7 @@ semi-sync设计是：
 3. 在从库上执行select master_pos_wait(File, Position, 1)；
 4. 如果返回值是>=0的正整数，则在这个从库执行查询语句；
 5. 否则，到主库执行查询语句。
-![](MySQL/attachments/56e004c919f86279d58c2fa2b5861903_MD5.jpeg)
+![](MySQL/attachments/781bf2d73bffd3baf2eac6873c01d1ec_MD5.jpeg)
 
 **GTID方案**
 `select wait_for_executed_gtid_set(gtid_set, 1);`

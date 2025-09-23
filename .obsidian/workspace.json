@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "知识点/分布式存储方案.md",
+                "file": "知识点/布隆过滤器.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "分布式存储方案"
+              "title": "布隆过滤器"
             }
           }
         ]
@@ -193,8 +193,16 @@
   },
   "active": "8664d94690b1f1da",
   "lastOpenFiles": [
-    "知识点/分布式共识协议的演进.md",
+    "知识点/attachments/c94235625f877dac5ae358b86cfaaba6_MD5.jpeg",
+    "知识点/attachments/Pasted image 20250923153505.png",
+    "知识点/attachments/e0e8a345d0cb64f89cc7194e1fc158e7_MD5.jpeg",
+    "知识点/attachments/Pasted image 20250923153415.png",
+    "知识点/attachments/50a2306ea4caf24dc1708b783e2ca957_MD5.jpeg",
+    "知识点/attachments/Pasted image 20250923153242.png",
+    "知识点/attachments",
     "知识点/分布式存储方案.md",
+    "知识点/布隆过滤器.md",
+    "知识点/分布式共识协议的演进.md",
     "知识点/docker macvlan.md",
     "知识点/建造者模式.md",
     "知识点/蓄水池算法.md",
@@ -214,11 +222,6 @@
     "左耳听风/attachments/b75100444a3147060c648e422ca05c7e_MD5.jpeg",
     "IT老齐/attachments/23412bf2d1ff488bda0e8bb5cd206979_MD5.jpeg",
     "IT老齐/attachments/f4de9a20c6b5337d8fcbbedbd971afa5_MD5.jpeg",
-    "IT老齐/attachments/87a2a804e42a213ce89340801bcdf674_MD5.jpeg",
-    "IT老齐/attachments/0b9fa54c11a69e7f8b0f5de67dd53ae9_MD5.jpeg",
-    "IT老齐/attachments/36d7aee4f883a8469a5c05c240a0eebb_MD5.jpeg",
-    "IT老齐/attachments/a3397d995c10eadbbb6decfeccdd131e_MD5.jpeg",
-    "BigData/大数据经典论文解读/attachments/f5273ad99ae28b0030357c22f55f3384_MD5.webp",
     "BigData/大数据经典论文解读/attachments",
     "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
     "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",
@@ -235,9 +238,6 @@
     "数据结构与算法之美/02 如何抓住重点，系统高效地学习数据结构与算法？.md",
     "数据结构与算法之美",
     "开发内功/网络管理/未命名.base",
-    "左耳听风/编程范式.md",
-    "左耳听风/分布式系统设计模式--管理设计.md",
-    "左耳听风/分布式系统设计模式--性能设计.md",
-    "左耳听风/attachments"
+    "左耳听风/编程范式.md"
   ]
 }

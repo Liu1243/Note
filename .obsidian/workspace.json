@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "知识点/布隆过滤器.md",
+                "file": "知识点/数据冷热分离.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "布隆过滤器"
+              "title": "数据冷热分离"
             }
           }
         ]
@@ -193,6 +193,8 @@
   },
   "active": "8664d94690b1f1da",
   "lastOpenFiles": [
+    "知识点/布隆过滤器.md",
+    "知识点/数据冷热分离.md",
     "知识点/attachments/c94235625f877dac5ae358b86cfaaba6_MD5.jpeg",
     "知识点/attachments/Pasted image 20250923153505.png",
     "知识点/attachments/e0e8a345d0cb64f89cc7194e1fc158e7_MD5.jpeg",
@@ -201,7 +203,6 @@
     "知识点/attachments/Pasted image 20250923153242.png",
     "知识点/attachments",
     "知识点/分布式存储方案.md",
-    "知识点/布隆过滤器.md",
     "知识点/分布式共识协议的演进.md",
     "知识点/docker macvlan.md",
     "知识点/建造者模式.md",
@@ -221,7 +222,6 @@
     "左耳听风/attachments/613fc4a587b6498fe5abe21ded793bb0_MD5.jpeg",
     "左耳听风/attachments/b75100444a3147060c648e422ca05c7e_MD5.jpeg",
     "IT老齐/attachments/23412bf2d1ff488bda0e8bb5cd206979_MD5.jpeg",
-    "IT老齐/attachments/f4de9a20c6b5337d8fcbbedbd971afa5_MD5.jpeg",
     "BigData/大数据经典论文解读/attachments",
     "BigData/大数据经典论文解读/02 - 学习方法：建立你的大数据知识网络.md",
     "BigData/大数据经典论文解读/01 - 什么是大数据：从GFS到Dataflow，12年大数据生态演化图.md",

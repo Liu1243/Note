@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "知识点/MySQL5 vs MySQL8.md",
+                "file": "知识点/MySQL 性能优化实践.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "MySQL5 vs MySQL8"
+              "title": "MySQL 性能优化实践"
             }
           }
         ]
@@ -193,8 +193,11 @@
   },
   "active": "c4d8eb39ba04159c",
   "lastOpenFiles": [
-    "知识点/延迟任务实现方案.md",
     "知识点/MySQL5 vs MySQL8.md",
+    "知识点/MySQL 性能优化实践.md",
+    "知识点/attachments/fdd158d6cf356f4c58d5ab5f3171a7e9_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251007162105.png",
+    "知识点/延迟任务实现方案.md",
     "知识点/attachments/29fc9ff0fd93df3d08d603c057515de7_MD5.jpeg",
     "知识点/attachments/Pasted image 20251003161655.png",
     "知识点/attachments/d6577af8b67bca29cdaadbec43aa8f7b_MD5.jpeg",
@@ -217,8 +220,6 @@
     "知识点/attachments/Pasted image 20250923153505.png",
     "知识点/attachments/e0e8a345d0cb64f89cc7194e1fc158e7_MD5.jpeg",
     "知识点/attachments/Pasted image 20250923153415.png",
-    "知识点/attachments/50a2306ea4caf24dc1708b783e2ca957_MD5.jpeg",
-    "知识点/attachments/Pasted image 20250923153242.png",
     "知识点/attachments",
     "知识点/分布式存储方案.md",
     "知识点/分布式共识协议的演进.md",
@@ -230,8 +231,6 @@
     "横向对比/主流MQ横向对比.md",
     "横向对比/Json反序列化库的对比.md",
     "系统性学习模板.md",
-    "横向对比/ShardingJDBC vs MyCat.md",
-    "横向对比/MySQL主从同步方案.md",
     "横向对比",
     "BigData/大数据经典论文解读/attachments",
     "BigData/大数据经典论文解读",

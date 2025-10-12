@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "知识点/MySQL 性能优化实践.md",
+                "file": "知识点/大数据处理架构.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "MySQL 性能优化实践"
+              "title": "大数据处理架构"
             }
           }
         ]
@@ -193,15 +193,21 @@
   },
   "active": "c4d8eb39ba04159c",
   "lastOpenFiles": [
-    "知识点/MySQL5 vs MySQL8.md",
+    "知识点/attachments/10ed5d9665eac04e6224100b00139074_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251012142816.png",
+    "知识点/attachments/e55535e1a0be3d0e043e6f36c6c1c87b_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251012142318.png",
+    "知识点/attachments/b5d60f6be2b0f8c6da78c388f4f3f622_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251012141441.png",
+    "知识点/attachments/ad7da070ddcf06f12e6028f89dad48d1_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251012141326.png",
+    "知识点/attachments/593e3bf3139437223e321e56d8180389_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251012140750.png",
+    "知识点/attachments/1e5cb791c03d6a10dd48ab21f4d6889d_MD5.jpeg",
     "知识点/MySQL 性能优化实践.md",
-    "知识点/attachments/fdd158d6cf356f4c58d5ab5f3171a7e9_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251007162105.png",
+    "知识点/大数据处理架构.md",
+    "知识点/MySQL5 vs MySQL8.md",
     "知识点/延迟任务实现方案.md",
-    "知识点/attachments/29fc9ff0fd93df3d08d603c057515de7_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251003161655.png",
-    "知识点/attachments/d6577af8b67bca29cdaadbec43aa8f7b_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251003161109.png",
     "知识点/蓄水池算法.md",
     "知识点/未命名.base",
     "知识点/Redis Pipeline 和 lua 脚本.md",
@@ -216,10 +222,6 @@
     "左耳听风/分布式系统架构本质.md",
     "知识点/数据冷热分离.md",
     "知识点/布隆过滤器.md",
-    "知识点/attachments/c94235625f877dac5ae358b86cfaaba6_MD5.jpeg",
-    "知识点/attachments/Pasted image 20250923153505.png",
-    "知识点/attachments/e0e8a345d0cb64f89cc7194e1fc158e7_MD5.jpeg",
-    "知识点/attachments/Pasted image 20250923153415.png",
     "知识点/attachments",
     "知识点/分布式存储方案.md",
     "知识点/分布式共识协议的演进.md",
@@ -230,7 +232,6 @@
     "知识点",
     "横向对比/主流MQ横向对比.md",
     "横向对比/Json反序列化库的对比.md",
-    "系统性学习模板.md",
     "横向对比",
     "BigData/大数据经典论文解读/attachments",
     "BigData/大数据经典论文解读",

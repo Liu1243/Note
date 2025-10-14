@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "知识点/CDC 产品对比.md",
+                "file": "Java面经/javaguide/新特性.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CDC 产品对比"
+              "title": "新特性"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -139,13 +140,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "知识点/CDC 产品对比.md",
+                "file": "Java面经/javaguide/新特性.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "CDC 产品对比 的大纲"
+              "title": "新特性 的大纲"
             }
           },
           {
@@ -192,19 +193,20 @@
   },
   "active": "cc18204c3df126b5",
   "lastOpenFiles": [
-    "知识点/attachments/Pasted image 20251013181738.png",
-    "知识点/深入理解 Linux 进程与内存.md",
+    "知识点/建造者模式.md",
+    "Java面经/javaguide/新特性.md",
+    "知识点/深入内功--硬件原理.md",
+    "知识点/attachments/78199aa281087f6315a07996fa6e303a_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251014145132.png",
+    "知识点/attachments/e286e8b370cf554259037b182870d6c2_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251014144218.png",
+    "知识点/attachments/caf3a8670bcaf8d8f1a0b17acb60d051_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251014143037.png",
+    "知识点/attachments/384fb74cee24cc4f5e13dd7ce27fb6f6_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251014002458.png",
     "知识点/CDC 产品对比.md",
-    "知识点/attachments/Pasted image 20251012223121.png",
-    "知识点/attachments/288f3b3ddf4e16a0901b0999eed28190_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251012223048.png",
-    "知识点/attachments/69e4ea565cf299c0246bff5a8fe55a51_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251012222945.png",
-    "知识点/attachments/c75bf9945bae4ba3dfd1a7b233a9db29_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251012182827.png",
-    "知识点/attachments/22316b791acf1d6d1d4a3068c9305b4c_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251012182716.png",
-    "知识点/attachments/2620b771ddf349e8f055d654812d3f69_MD5.jpeg",
+    "知识点/attachments/f9d73f9562453d36ff4d8591701b4f8f_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251013181738.png",
     "知识点/大数据存储架构.md",
     "知识点/大数据处理架构.md",
     "知识点/分布式存储方案.md",
@@ -228,7 +230,6 @@
     "知识点/attachments",
     "知识点/分布式共识协议的演进.md",
     "知识点/docker macvlan.md",
-    "知识点/建造者模式.md",
     "知识点/JWT实现SSO.md",
     "知识点",
     "横向对比",

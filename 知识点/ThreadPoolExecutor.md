@@ -47,6 +47,7 @@ Runnable 和 Callable 的区别：
 | **提交方式**    | `execute(Runnable)`<br>`submit(Runnable)` | 只能 `submit(Callable)` 或 `invokeAll/Any(...)` |
 | **拿到结果**    | 无法直接拿（得自己塞变量、锁）                           | `Future<V>`、`get()` 阻塞拿结果                    |
 | **使用场景**    | 日志、异步写文件、无返回的耗时任务                         | 并行计算、RPC、需要返回结果或抛异常                          |
+|             |                                           |                                              |
 Runnable 没有返回值、Callable 有返回值。
 
 ### 批量执行任务

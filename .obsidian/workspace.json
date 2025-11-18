@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "2ec4485e50795a4e",
+        "id": "e39eb2eebfba57ab",
         "type": "tabs",
         "children": [
           {
-            "id": "8ec6446d8d26beb1",
+            "id": "89b8ba65911067ec",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "KV存储/分布式KV存储-CoreKV.md",
+                "file": "知识点/网络编程.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "分布式KV存储-CoreKV"
+              "title": "网络编程"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "MHA",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 263.5,
+    "width": 241.5,
     "collapsed": true
   },
   "right": {
@@ -95,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "学习.md",
+                "file": "IM/零基础IM开发入门.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "学习 的反向链接列表"
+              "title": "零基础IM开发入门 的反向链接列表"
             }
           },
           {
@@ -114,12 +114,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "学习.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "学习 的出链列表"
+              "title": "出链"
             }
           },
           {
@@ -129,9 +128,7 @@
               "type": "tag",
               "state": {
                 "sortOrder": "frequency",
-                "useHierarchy": true,
-                "showSearch": false,
-                "searchQuery": ""
+                "useHierarchy": true
               },
               "icon": "lucide-tags",
               "title": "标签"
@@ -143,17 +140,17 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "KV存储/分布式KV存储-CoreKV.md",
+                "file": "知识点/ThreadPoolExecutor.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "分布式KV存储-CoreKV 的大纲"
+              "title": "ThreadPoolExecutor 的大纲"
             }
           },
           {
-            "id": "e10a9bdd53a6fef3",
+            "id": "5d95608e8656d07c",
             "type": "leaf",
             "state": {
               "type": "advanced-tables-toolbar",
@@ -163,7 +160,7 @@
             }
           },
           {
-            "id": "d6d33c5bf1d0eba1",
+            "id": "15cf1ab7c6edbee1",
             "type": "leaf",
             "state": {
               "type": "git-view",
@@ -173,16 +170,16 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 289.5
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
       "bases:创建新数据库": false,
-      "obsidian-git:Open Git source control": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
       "canvas:新建白板": false,
@@ -190,56 +187,57 @@
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
       "obsidian-local-images-plus:Local Images Plus  0.16.3\r\nLocalize attachments (plugin folder)": false,
-      "table-editor-obsidian:Advanced Tables Toolbar": false
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "8ec6446d8d26beb1",
+  "active": "89b8ba65911067ec",
   "lastOpenFiles": [
-    "KV存储/attachments/b94e042d2e857e715cf720da4045b31d_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115220910.png",
-    "KV存储/attachments/2fdbefbf1825a807d735d1ace2d33351_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115213654.png",
-    "KV存储/attachments/68638c37c87f0212d34015275ae70753_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115212028.png",
-    "KV存储/attachments/466d02144d2393b5ffe1224cc9bb6539_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115211259.png",
-    "KV存储/attachments/89f2c12463811904fc02ed291e5f3d2c_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115210800.png",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
+    "知识点/attachments/f416762616a05d014f5f660647ad95fe_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251118134608.png",
+    "知识点/attachments/49fa7fb3af2caf0598b19dc546b39021_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251118134514.png",
+    "知识点/attachments/Pasted image 20251118134500.png",
+    "知识点/attachments/3365c80632a553f6272e08ae33912fa7_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251118134157.png",
+    "知识点/attachments/f6c3ee9b9f59f052ce587212e7dc8fe8_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251118133931.png",
+    "知识点/attachments/4d0c4d91c1405050d73870c033d4b8bf_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251118133825.png",
+    "学习.md",
+    "知识点/网络编程.md",
+    "未命名 1.base",
+    "未命名.base",
+    "黑马头条.md",
     "KV存储/分布式KV存储-CoreKV.md",
     "KV存储/attachments",
     "KV存储",
-    "可拓展的Web架构和分布式系统.md",
-    "黑马头条.md",
-    "知识点/attachments/Pasted image 20251012223121.png",
-    "知识点/蓄水池算法.md",
+    "IM/手写分布式IM系统/协议设计/02 消息的可用性（可靠性 + 一致性）.md",
+    "IM/手写分布式IM系统/协议设计/01 基本协议设计.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
+    "算法/hot100.md",
+    "IM/手写分布式IM系统/前置学习资料.md",
+    "KV 存储.md",
+    "横向对比/MySQL主从同步方案.md",
+    "算法/attachments",
+    "算法",
+    "系统架构师备考.md",
     "知识点/深入内功--进程管理.md",
-    "知识点/深入内功--硬件原理.md",
+    "Java面经/javaguide/JVM.md",
+    "Java面经/javaguide/并发编程.md",
     "知识点/深入内功--内存管理.md",
-    "知识点/数据和索引的组织形式.md",
-    "知识点/数据冷热分离.md",
-    "知识点/延迟任务实现方案.md",
-    "知识点/建造者模式.md",
-    "知识点/布隆过滤器.md",
-    "知识点/大数据存储架构.md",
-    "知识点/大数据处理架构.md",
-    "知识点/分布式存储方案.md",
-    "知识点/分布式共识协议的演进.md",
+    "Java面经/javaguide/新特性.md",
+    "知识点/深入内功--硬件原理.md",
     "知识点/ThreadPoolExecutor.md",
-    "知识点/Redis Pipeline 和 lua 脚本.md",
-    "知识点/Reactor 模型.md",
-    "知识点/MySQL5 vs MySQL8.md",
-    "知识点/MySQL 性能优化实践.md",
-    "知识点/MySQL 存储引擎.md",
+    "知识点/蓄水池算法.md",
+    "知识点/建造者模式.md",
+    "知识点/CDC 产品对比.md",
+    "知识点/大数据存储架构.md",
+    "知识点/未命名.base",
     "知识点/attachments",
     "知识点",
-    "横向对比",
-    "BigData/大数据经典论文解读/attachments",
-    "BigData/大数据经典论文解读",
-    "BigData/从0开始学大数据/attachments",
-    "BigData/从0开始学大数据",
-    "开发内功/网络管理/未命名.base"
+    "横向对比"
   ]
 }

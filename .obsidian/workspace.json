@@ -8,17 +8,17 @@
         "type": "tabs",
         "children": [
           {
-            "id": "89b8ba65911067ec",
+            "id": "c4be8aa2449ff4d7",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "知识点/网络编程.md",
+                "file": "KV存储/分布式KV存储-CoreKV.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "网络编程"
+              "title": "分布式KV存储-CoreKV"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 241.5,
-    "collapsed": true
+    "width": 297.5
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -191,32 +190,35 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "89b8ba65911067ec",
+  "active": "c4be8aa2449ff4d7",
   "lastOpenFiles": [
+    "IM/手写分布式IM系统/业务层/邻域驱动设计（二） -- IM微服务划分.md",
+    "IM/手写分布式IM系统/业务层/attachments/d7e70c69415f1bf91b263620be0a9aca_MD5.jpeg",
+    "IM/手写分布式IM系统/业务层/attachments/Pasted image 20251120174023.png",
+    "IM/手写分布式IM系统/业务层/attachments/09d5162a378bd77368e101a703636ec7_MD5.jpeg",
+    "IM/手写分布式IM系统/业务层/attachments/Pasted image 20251120173651.png",
+    "IM/手写分布式IM系统/业务层/Hardcore System Design.md",
+    "IM/plato整体架构设计总结.md",
+    "IM/IM/手写分布式IM系统/接入层/attachments/afc076fde73ef0964e574dcdb2433a7e_MD5.jpeg.md",
+    "KV存储/分布式KV存储-CoreKV.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
+    "知识点/网络编程.md",
     "知识点/attachments/f416762616a05d014f5f660647ad95fe_MD5.jpeg",
     "知识点/attachments/Pasted image 20251118134608.png",
     "知识点/attachments/49fa7fb3af2caf0598b19dc546b39021_MD5.jpeg",
     "知识点/attachments/Pasted image 20251118134514.png",
     "知识点/attachments/Pasted image 20251118134500.png",
     "知识点/attachments/3365c80632a553f6272e08ae33912fa7_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251118134157.png",
-    "知识点/attachments/f6c3ee9b9f59f052ce587212e7dc8fe8_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251118133931.png",
-    "知识点/attachments/4d0c4d91c1405050d73870c033d4b8bf_MD5.jpeg",
-    "知识点/attachments/Pasted image 20251118133825.png",
     "学习.md",
-    "知识点/网络编程.md",
     "未命名 1.base",
     "未命名.base",
     "黑马头条.md",
-    "KV存储/分布式KV存储-CoreKV.md",
     "KV存储/attachments",
     "KV存储",
     "IM/手写分布式IM系统/协议设计/02 消息的可用性（可靠性 + 一致性）.md",
     "IM/手写分布式IM系统/协议设计/01 基本协议设计.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
     "算法/hot100.md",
     "IM/手写分布式IM系统/前置学习资料.md",
     "KV 存储.md",
@@ -231,10 +233,6 @@
     "Java面经/javaguide/新特性.md",
     "知识点/深入内功--硬件原理.md",
     "知识点/ThreadPoolExecutor.md",
-    "知识点/蓄水池算法.md",
-    "知识点/建造者模式.md",
-    "知识点/CDC 产品对比.md",
-    "知识点/大数据存储架构.md",
     "知识点/未命名.base",
     "知识点/attachments",
     "知识点",

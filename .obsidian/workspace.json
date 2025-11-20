@@ -11,14 +11,14 @@
             "id": "8ec6446d8d26beb1",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "split-diff-view",
               "state": {
-                "file": "KV存储/分布式KV存储-CoreKV.md",
-                "mode": "source",
-                "source": false
+                "aFile": "KV存储/分布式KV存储-CoreKV.md",
+                "bFile": "KV存储/分布式KV存储-CoreKV.md",
+                "aRef": ""
               },
-              "icon": "lucide-file",
-              "title": "分布式KV存储-CoreKV"
+              "icon": "diff",
+              "title": "Diff: 分布式KV存储-CoreKV"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 263.5,
-    "collapsed": true
+    "width": 263.5
   },
   "right": {
     "id": "af3e46593f0673dd",
@@ -143,13 +142,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "KV存储/分布式KV存储-CoreKV.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "分布式KV存储-CoreKV 的大纲"
+              "title": "大纲"
             }
           },
           {
@@ -173,7 +171,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -195,25 +193,24 @@
   },
   "active": "8ec6446d8d26beb1",
   "lastOpenFiles": [
-    "KV存储/attachments/b94e042d2e857e715cf720da4045b31d_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115220910.png",
-    "KV存储/attachments/2fdbefbf1825a807d735d1ace2d33351_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115213654.png",
-    "KV存储/attachments/68638c37c87f0212d34015275ae70753_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115212028.png",
-    "KV存储/attachments/466d02144d2393b5ffe1224cc9bb6539_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115211259.png",
-    "KV存储/attachments/89f2c12463811904fc02ed291e5f3d2c_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251115210800.png",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
-    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
     "KV存储/分布式KV存储-CoreKV.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
+    "KV存储/attachments/437e69f072f692826eca964f9a3784e5_MD5.jpeg",
+    "KV存储/attachments/Pasted image 20251116114433.png",
+    "KV存储/attachments/dbec8f8d74f33dcb2b85e68aecf9ce74_MD5.jpeg",
+    "KV存储/attachments/Pasted image 20251116113019.png",
+    "KV存储/attachments/cbb999c17bddc4a24a91ec7cf313c49e_MD5.jpeg",
+    "KV存储/attachments/Pasted image 20251116112732.png",
+    "KV存储/attachments/d0a06fa7df02acc2a2fce1d03f90554b_MD5.jpeg",
+    "KV存储/attachments/Pasted image 20251116110114.png",
+    "KV存储/attachments/d6b3f2ce7f3c675422fd4251055a8570_MD5.jpeg",
+    "KV存储/attachments/Pasted image 20251116105003.png",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
+    "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
     "KV存储/attachments",
     "KV存储",
     "可拓展的Web架构和分布式系统.md",
     "黑马头条.md",
-    "知识点/attachments/Pasted image 20251012223121.png",
     "知识点/蓄水池算法.md",
     "知识点/深入内功--进程管理.md",
     "知识点/深入内功--硬件原理.md",

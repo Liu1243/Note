@@ -108,3 +108,97 @@ segment-lru是将缓存区分为两个部分，一个占据2o%叫做Probation（
 1.针对只访问一次的数据，在LRU中很快就被淘汰了，不占用缓存空间。
 2.针对突发性的稀疏流量，就是可能在短时间内频紧访问的数据，WindoWs-LRU可以很好的适应这种访问模型
 3.针对真正的热点数据，很快就会从Window-IRU进入到Protected区中，并且会经过保鲜机制存活下来。
+
+## Lesson05 SSTable
+### 先导知识
+LevelDB源码解读
+策略模式、迭代器模式
+### 介绍
+SSt文件是LSM用来存储持久化kV的文件，其设计充分考虑了持久化I读写性能，存储空间三者的权衡，可以学习到当今主流NoSg数据库文件存储格式的设计思想与方法，并且理解一个计算机领域重要应用之一：kV数据结构是如何存储在磁盘上的？更加宽泛的说可以学习到：内存数据结构是如何序列化到磁盘的?
+### 接口设计
+![](KV%E5%AD%98%E5%82%A8/attachments/506ea1289b75ba24c9fa211d0a1dbd47_MD5.jpeg)
+==创建==
+当向kv引擎Put数据时，会检查当前内存表是否达到指定的國值，如果达到值即会触发Flush行为，该行为最终会将整个skipList的数据序列化到磁盘上的sst文件上。因此需要一个open函数，打开一人sst文件，并且需要把数据序列化，然后把序列化的数据写入sst文件中。 
+func openTable(opt，tableName，skipList)->table
+又因为，序列化的过程是相对复杂的，为了合理的组织代码，并且可预测未来SS的存储格式会经常变化，这里传入一个buidler对象来处理将跳表的数据序列化为sst格式逻辑（策略模式)，代替直接传递 skipList对象。
+func openTable(opt，tableName，builder)->table
+==初始化==
+如果kv引擎不是第一次启动，他将在指定的工作目录下去加载所有后缀为.sst的文件，然后逐一初始化，恢复索引等结构用于检索。
+其接口可以还是openTable，只要使得builder为空，在打开tableName存在的情况下就进行初始化 func openTable(opt，tableName，nil)->table
+==检索==
+sst文件需要识别key的版本大小，因为有可能存在指定版本的点查/范围查询。
+func Serach(key,maxs）->kv
+司时需要支持繁项的范围查询，指定版本，前缀，升序，降序等范围查询，并且涉及在内存，磁盘等多种数据结构上的统一查询，所以需要使用选代器模式封装。
+==序列化==
+在flush跳表到磁盘成为sst时，需要序列化数据为二进制格式，并适用于存储在磁盘上。
+### 原理详解
+![](KV%E5%AD%98%E5%82%A8/attachments/b724e8a6157c954ab0eaf26221bd1826_MD5.jpeg)
+#### 编码思想
+编码的本质是遵守约定的映射，并具总在编解码的性能与存储空间之间作出权衡。通常需要写入三种要素，==类型==，用于标示一段数据用什么解码器还原来解释二进制的数据，==长度==，用于标示当前数据段占用的大小，以便于在二进制序列上移动指针读取数据，以及==数据==本身。
+进一步，为了提高查询性能，通常在编码协议中会写入数据的索引，将数据的索引也作为一种数据存储在编码的二进制序列中。
+同时，为了更加复杂的描述一段数据的类型，例如这段数据是否被压缩，是由哪个事务被写入，以及时间戳，是否删除等标记等等，单一的类型数据无法完全描述，因此引入了元数据段代替之前类型这一个枚举值来描述数据段。
+![](KV%E5%AD%98%E5%82%A8/attachments/d6b3f2ce7f3c675422fd4251055a8570_MD5.jpeg)
+读取数据时，编解码器应该设计成递归的形式，每种数据段有自己的解码规则，根据元数据段掌到的类型确定当前读取数据的解码器类型，通过长度确定其指针偏移范围读取数据，对这段数据进行解码，而这一过程往往是递归进行的。
+#### 内存映射
+mmap是linux提供的一种高效的内存与磁盘之间的数据传输方式。能够实现，磁盘文件和进程虚拟内存空间之间的相互同步，因此也就基于磁盘文件实现了进程之间的内存共享，他通过减少磁盘到页续再到用户进程空间的两次拷贝提高了整体的卷旺性能。
+mmap需要将进程虚拟地址空间的一段内存关联到某个磁盘文件上，在进程的地址空间中会维护内存地址与磁盘物理地址的映射。在进程访问这片内存地址时，如果没有查询到磁盘物理地址则会引发缺页中断，中断逻辑会去拷贝磁盘中相应的文件到用户空间。
+一旦进程的内存地址空间被更新，在一段时间后，更新的数据会同步回磁盘文件上，完成异步的更新。
+a.延迟拷贝数据到进程虚拟地址空间，比普通的IO减少了同步文件系统页缓存的步骤，效率高
+b.异步落盘有增加数据失的风险？->sst文件是仅追加的，因此当一个sst文件生成后，就不会有更新操作，不会频繁更新，数据脏页的情况就不存在，那么mmap将是高效的（可在flush的时候手动调用司步函数，保证数据落盘
+#### 基本格式
+![](KV%E5%AD%98%E5%82%A8/attachments/d0a06fa7df02acc2a2fce1d03f90554b_MD5.jpeg)
+#### 逻辑描述
+==创建/初始化==
+时机：manifest中加载，落盘memtable
+func openTable(opt, tableName, builder) -> table
+![](KV%E5%AD%98%E5%82%A8/attachments/cbb999c17bddc4a24a91ec7cf313c49e_MD5.jpeg)
+1.构建参数上下文，创建sstable对象（创建mmap文件，并关联一块内存区域）
+2.判断builder对象是否存在，如果存在则将执行builder的flush动作序列化数据到sst 
+3.初始化sst文件（初始化table对象，索引，元数据等）
+	a.读取尾部4字节获得checksum长度 
+	b.根据长度读取checksum值
+	c.读取4字节读取index_len的长度 
+	d.根据长度读取index_data
+	e.然后计算校验和与checksum对比 
+	f.pb反序列化data为tablelndex对象
+==序列化==
+时机：L0层flush，合并压缩
+add builder
+![](KV%E5%AD%98%E5%82%A8/attachments/dbec8f8d74f33dcb2b85e68aecf9ce74_MD5.jpeg)
+1.检查 添加这个entry对象是否超出了当前block的最大size
+2.如果超出最大size则序列化当前block
+	a，序列化entry_offsets(uint32的数组） 
+	b.序列化entry_offsets的长度
+	c.计算当前block的checksum值 
+	d.序列化checksum(uint32值） 
+	e.序列化checksum的长度
+	f.将当前的block加入整体sst的blocklist 
+	g.计算整个sst的keycount数量
+3.计算当前block的hashkey列表，用来之后生成bloom过滤器 4.计算当前block的最大版本号信息
+5.计算diffkey，用来压缩存储空间，拿block的第一个key作为basekey 
+6.计算header对象
+	a.overlap =len(key)-len(diffKey)
+	b.diff =len(diffKey)
+7.记录当前block的endoffset.存储在一个list中，本质上就是当前entry写入后的startoffset 
+8.写入builder的底层字节数组，先写header，再写diffkey
+9.计算当前entry值占用的空间大小，向builder申请足够的空间
+10.将序列化的entry写入，可变长编码的过期时间，value的字节数组
+
+builder flush() -> bytes
+![](KV%E5%AD%98%E5%82%A8/attachments/437e69f072f692826eca964f9a3784e5_MD5.jpeg)
+1.将当前没有序列化的block序列化
+2.构建bloomfilter->源码地址 
+3.构建tableindex
+	a.遍历biocklist生生blockoffset对象
+		i.根据每个block的end计算startoffset +=cur，end 
+		ii.获得block的长度
+		iii.获得block的baseKey
+	b.获得最大版本与keyCount值
+	c获得传递下来的bloomfilter的bytes 
+	d.使用pb序列化整个tablerindex对象
+4.计算tableindex的checksum 
+5.计算整体的sst文件大小
+6，创建一个足够大小的buf字节数组
+7遍历blocklist逐一copv数据到目标but
+8.Copypb序列化后的索引，及长度 
+9.Copychecksum和checksum长度

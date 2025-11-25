@@ -147,8 +147,7 @@ a.延迟拷贝数据到进程虚拟地址空间，比普通的IO减少了同步�
 b.异步落盘有增加数据失的风险？->sst文件是仅追加的，因此当一个sst文件生成后，就不会有更新操作，不会频繁更新，数据脏页的情况就不存在，那么mmap将是高效的（可在flush的时候手动调用司步函数，保证数据落盘
 #### 基本格式
 ![](KV%E5%AD%98%E5%82%A8/attachments/d0a06fa7df02acc2a2fce1d03f90554b_MD5.jpeg)
-#### 逻辑描述
-==创建/初始化==
+#### ==创建/初始化==
 时机：manifest中加载，落盘memtable
 func openTable(opt, tableName, builder) -> table
 ![](KV%E5%AD%98%E5%82%A8/attachments/cbb999c17bddc4a24a91ec7cf313c49e_MD5.jpeg)
@@ -161,9 +160,9 @@ func openTable(opt, tableName, builder) -> table
 	d.根据长度读取index_data
 	e.然后计算校验和与checksum对比 
 	f.pb反序列化data为tablelndex对象
-==序列化==
+#### ==序列化==
 时机：L0层flush，合并压缩
-add builder
+##### add builder
 ![](KV%E5%AD%98%E5%82%A8/attachments/dbec8f8d74f33dcb2b85e68aecf9ce74_MD5.jpeg)
 1.检查 添加这个entry对象是否超出了当前block的最大size
 2.如果超出最大size则序列化当前block
@@ -174,7 +173,8 @@ add builder
 	e.序列化checksum的长度
 	f.将当前的block加入整体sst的blocklist 
 	g.计算整个sst的keycount数量
-3.计算当前block的hashkey列表，用来之后生成bloom过滤器 4.计算当前block的最大版本号信息
+3.计算当前block的hashkey列表，用来之后生成bloom过滤器 
+4.计算当前block的最大版本号信息
 5.计算diffkey，用来压缩存储空间，拿block的第一个key作为basekey 
 6.计算header对象
 	a.overlap =len(key)-len(diffKey)
@@ -184,7 +184,7 @@ add builder
 9.计算当前entry值占用的空间大小，向builder申请足够的空间
 10.将序列化的entry写入，可变长编码的过期时间，value的字节数组
 
-builder flush() -> bytes
+##### builder flush() -> bytes
 ![](KV%E5%AD%98%E5%82%A8/attachments/437e69f072f692826eca964f9a3784e5_MD5.jpeg)
 1.将当前没有序列化的block序列化
 2.构建bloomfilter->源码地址 
@@ -202,3 +202,50 @@ builder flush() -> bytes
 7遍历blocklist逐一copv数据到目标but
 8.Copypb序列化后的索引，及长度 
 9.Copychecksum和checksum长度
+
+#### 检索
+func Search(key, maxVs) -> kv
+![](KV%E5%AD%98%E5%82%A8/attachments/c891746e0d4ca2a88689c97aa36d26b2_MD5.jpeg)
+1.获取当前table的索引 
+2.重新回溯bloomfilter
+3．判断当前key是否在该table中，不在则直接返回 
+4.创建当前table的迭代器
+5.Seek当前key，看是否返回了对象iter，如果没有则返回
+	a.根据blockoffset做二分查找，返回一个idx
+		i．去除时间戳去比较
+		ii.如果相等，则比较时间戳
+	b.如果idx\==0说明key只能在第一个block中block\[0].MinKey<=key 
+	c.否则block\[idx].MinKey>key
+	d.因此block_offset\[idx-1]<=key
+	e.如果在idx-1的block中未找到key那才可能在idx中 
+	f.根据计算的idx去加载对应的block，并构建block的迭代器
+		i.从blockcache中拿到block 
+		ii．如果没有拿到则从文件中加载
+			1.根据blockoffset中offset对象的offset和len从sst中读取字节数组
+			2.按写入顺序相反的方向读取读取数据，反序列化为block对象 3．全部读取后检查block的checksum是否一致
+	g.在block上seekkey
+		i.二分法检索key返回一个idx
+		ii.然后从block的offsets中找到start_offset 
+		iii.读取当前block的第一个key的header对象
+		iv.根据第一个key的header对象反序列化为baseKey 
+		V.读取idx+1的entry_offsets作为end_offset值
+		vi.通过start_offset与end_offset从block的data数组中获取entry的data部分 vi.解码data的header部分
+		vii.计算baseKey和diffKey拼接出最终的key
+		ix.去除header和key后读取data的后面部分，反序列化为value部分
+			1.先解码过期时间，用变长编码反解析 
+			2.在直接返回value部分(字节数组）
+	h.返回block送代器最终持有的item
+6.排除版本号的比较iter的key和当前key是否相等，不相等直接返回
+7.解析出当前key的时间截，比较是否比maxVS大，大的话需要更新maxVs 
+8.返回代器iter持有的entry
+
+#### 总结
+![](KV%E5%AD%98%E5%82%A8/attachments/c0c88eba3c43d84e7dff3fe55c69db15_MD5.jpeg)
+
+### LAB 实现sst文件
+1.功能：初始化，序列化，查询
+在一个生产上下文中完成LAB，从整体系统的角度理解SSt组件的应用场景。 
+2. 提高
+空间压缩，在sst序列化每个block时，对block使用高效的压缩算法，节省内存空间
+为工作自录上支件锁，件锁可保证多个进程不会同时操作一个自录
+manifest加载sst后就会加载所有sst的index部分，以便用于对大规模数据的存储

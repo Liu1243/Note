@@ -425,4 +425,4 @@ ZGC 在 Java11 中引入，处于试验阶段。经过多个版本的迭代，�
 不过，默认的垃圾回收器依然是 G1。
 在 Java21 中，引入了分代 ZGC，暂停时间可以缩短到 1 毫秒以内。
 
-
+[Site Unreachable](https://zhuanlan.zhihu.com/p/624386102)

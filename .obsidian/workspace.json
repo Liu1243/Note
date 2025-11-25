@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "2ec4485e50795a4e",
+        "id": "f74e9fa332a95527",
         "type": "tabs",
         "children": [
           {
-            "id": "8ec6446d8d26beb1",
+            "id": "dfd3f9f374b49f74",
             "type": "leaf",
             "state": {
-              "type": "split-diff-view",
+              "type": "markdown",
               "state": {
-                "aFile": "KV存储/分布式KV存储-CoreKV.md",
-                "bFile": "KV存储/分布式KV存储-CoreKV.md",
-                "aRef": ""
+                "file": "知识点/OceanBase 存储引擎.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "diff",
-              "title": "Diff: 分布式KV存储-CoreKV"
+              "icon": "lucide-file",
+              "title": "OceanBase 存储引擎"
             }
           }
         ]
@@ -142,12 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "知识点/OceanBase 存储引擎.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "大纲"
+              "title": "OceanBase 存储引擎 的大纲"
             }
           },
           {
@@ -171,7 +172,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -191,27 +192,35 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "8ec6446d8d26beb1",
+  "active": "dfd3f9f374b49f74",
   "lastOpenFiles": [
+    "知识点/attachments/382531812eebb44a1e22f77402e4a84e_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251126013434.png",
+    "知识点/attachments/3efc7657f0389087e456574adfc071df_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251126013324.png",
+    "知识点/attachments/ce23732e5f4a8978fe28918ac310340e_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251126013118.png",
+    "知识点/attachments/986b5ba888fefaca73ab298cba321c3a_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251126013044.png",
+    "知识点/attachments/0a340e7d24b5187ef9c85e771149a323_MD5.jpeg",
+    "知识点/attachments/Pasted image 20251126012937.png",
+    "知识点/attachments/05de7353555f7486dfe869e26e52fab2_MD5.jpeg",
     "KV存储/分布式KV存储-CoreKV.md",
+    "知识点/OceanBase 存储引擎.md",
+    "Java面经/javaguide/并发编程.md",
+    "Java面经/javaguide/JVM.md",
+    "知识点/蓄水池算法.md",
+    "IT老齐/老齐.md",
+    "横向对比/MySQL主从同步方案.md",
+    "知识点/网络编程.md",
+    "知识点/Reactor 模型.md",
     "IM/手写分布式IM系统/接入层/长连接网关设计（三） -- 通用性&多IDC&方案总结.md",
-    "KV存储/attachments/437e69f072f692826eca964f9a3784e5_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251116114433.png",
-    "KV存储/attachments/dbec8f8d74f33dcb2b85e68aecf9ce74_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251116113019.png",
-    "KV存储/attachments/cbb999c17bddc4a24a91ec7cf313c49e_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251116112732.png",
-    "KV存储/attachments/d0a06fa7df02acc2a2fce1d03f90554b_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251116110114.png",
-    "KV存储/attachments/d6b3f2ce7f3c675422fd4251055a8570_MD5.jpeg",
-    "KV存储/attachments/Pasted image 20251116105003.png",
     "IM/手写分布式IM系统/接入层/长连接网关设计（二） -- 连接可用性.md",
     "IM/手写分布式IM系统/接入层/长连接网关设计（一）--  基本实现.md",
     "KV存储/attachments",
     "KV存储",
     "可拓展的Web架构和分布式系统.md",
     "黑马头条.md",
-    "知识点/蓄水池算法.md",
     "知识点/深入内功--进程管理.md",
     "知识点/深入内功--硬件原理.md",
     "知识点/深入内功--内存管理.md",
@@ -223,13 +232,6 @@
     "知识点/大数据存储架构.md",
     "知识点/大数据处理架构.md",
     "知识点/分布式存储方案.md",
-    "知识点/分布式共识协议的演进.md",
-    "知识点/ThreadPoolExecutor.md",
-    "知识点/Redis Pipeline 和 lua 脚本.md",
-    "知识点/Reactor 模型.md",
-    "知识点/MySQL5 vs MySQL8.md",
-    "知识点/MySQL 性能优化实践.md",
-    "知识点/MySQL 存储引擎.md",
     "知识点/attachments",
     "知识点",
     "横向对比",

@@ -242,10 +242,325 @@ func Search(key, maxVs) -> kv
 #### 总结
 ![](KV%E5%AD%98%E5%82%A8/attachments/c0c88eba3c43d84e7dff3fe55c69db15_MD5.jpeg)
 
-### LAB 实现sst文件
+### LAB 实现sst文件(lab_sst分支)
 1.功能：初始化，序列化，查询
 在一个生产上下文中完成LAB，从整体系统的角度理解SSt组件的应用场景。 
 2. 提高
 空间压缩，在sst序列化每个block时，对block使用高效的压缩算法，节省内存空间
 为工作自录上支件锁，件锁可保证多个进程不会同时操作一个自录
 manifest加载sst后就会加载所有sst的index部分，以便用于对大规模数据的存储
+
+## Lesson06 MANIFEST
+### 需求背景
+Manifest文件是一个用于存储sst所属层级关系的元数据文件，当数据库重启时，需要读取该文件用于恢复层级关系的元信息。其次每次flush或者merge了sst文件后都需要变更Manifest文件。
+> 1能够存储sst文件层级元信息 
+> 2.支持高性能的update操作
+
+如果没有manifest文件行不行？
+> 把level信息写入sst文件本身，每次初始化的时候直接扫描工作目录下全部sst文件，来恢复层级元信息不行吗？
+
+数据库的恢复速度也是一个重要的优化指标。
+### 组件设计
+#### 一般解
+> 能够存储sst文件层级元信息
+> sst文件属于哪个level以及用于快速检索key是否在这个sst文件中
+
+##### 数据结构设计
+```go
+type manifest struct {
+	levels [][]*sst
+}
+type sst struct {
+	fileName string
+}
+```
+##### 对外接口设计
+read->Protobuf Data->writer 
+#### 更优解
+**支持高性能的update操作**
+顺序写的性能远天于随机写，因此使用mmap+append的设计思想可以充分发挥ssD的性能。
+> 顺序写保证不会有频繁更新导致的脏页问题,脏页会导致频繁的页交换
+##### 问题
+**append策略会导致读取逻辑复杂，需要重播所有变更，那么就会导致数据库重启速度变慢。**
+引入对变更程度的度量来衡量判断检查点时机，对manifest文件cehckpoint，覆写文件。因此把manifest文件可以设计成只有创建和删除sst两种命令的状态机。
+因为有删除操作，内存中使用list会导致多次移动元素，故内存用map来组织数据
+**如果整个db只有一个manifest文件，那是否会存在单点问题？**
+通过底层磁盘的亢余阵列来保证，并且保证数据库每次都在一个正确的状态下启动
+##### 数据结构设计
+```go
+type Manifest struct {
+	Levels []set[int64] // level->table set 每层有哪些set
+	Tables map[uint64]TableManifest // 快速查询一个table在哪一层
+	Creations int // 统计sst创建次数
+	Delections int // 统计sst删除次数
+}
+// table元信息
+type TableManifest struct {
+	Level uint8
+}
+```
+##### 对外接口设计
+1.funcOpenManifestFile(opt \*Options)(\*ManifestFile,error)
+	a.打开/创建manifest文件
+2.AddTableMeta(levelNum int,t \*TableMeta) (err error)
+	a.添加table元信息到manifest文件
+	b.在这里会在一定阈值时，进行覆写以便于提高数据库恢复的速度 
+3.RevertToManifest(idMapmap\[uint64]struct)error
+	a.检查manifest文件正确性，保证db在一个正确的状态启动
+	b.对比manifest文件和工作目录中的sst文件，删除非重合的部分
+
+### 设计原理
+#### 数据结构
+![](KV%E5%AD%98%E5%82%A8/attachments/3e47fe20f5a206368d0191f587937cbd_MD5.jpeg)
+#### 实现逻辑
+![](KV%E5%AD%98%E5%82%A8/attachments/25dec16af6bca138fdc15da6ce82f4fe_MD5.jpeg)
+**1.加载manifest文件**
+	a.打开工作目录下的manifest文件 
+	b.如果manifest不存在
+		i.则创建一个内存中的manifest结构
+		ii.并通过覆写的方式创建一个manifest文件
+			1.创建一个remanifest文件
+			2.将当前的状态全部抽象为changes对象，然后追加得到一个list
+			3.将其整个序列化到刚刚打开的remanifest文件（magicllen,crc,manifestChangeSeti） 
+			4.然后对remanifest重命名为manifest文件
+		iii.并直接返回结果
+	C.如果文件中存在新的数据，则会执行重放逻辅
+		i.按文件格式循环解析manifestchangeSet结果 
+		ii.遍历manifestChangeSet逐条应用change消息
+			1.如果是创建则更新内存中manifest中的levels和tables，并统计创建命令的次数 
+			2.如果是删除则删除manifest中的levels和tables，并统计删除命令的次数
+**2.构建levelmanger**
+	a.从manifest的元信息中解析出sst文件的fid
+	b.对比工作目录中多余的fid，将其删除，保证集群从正确的状态启动
+	c.然后逐一写入对应的level list中，并且按fid排序 
+	d.根据fid逐一打开sst文件，并加载其索引块
+3.添加一个sst文件到manifest中
+	a.创建一个changeSet对象 
+	b.应用到内存的manifest中
+	c.判断是否达到覆写阐值，如果达到则覆写manifest文件
+	d.序列化后追加写入到当前的manifest文件 
+	e.手动调用sync接口同步manifest文件
+> **如果写入manifest失败如何处理？**
+> 保证可以从wal中恢复即可
+
+### LAB-MANIFEST实现
+https://github.com/hardcore-os/corekv/tree/lab_manifest
+全局搜索LABManifest关键字可以找到coding的位置
+### 源码导读
+GitHub-hardcore-os/corekv
+在无法独立完成LAB时的一个参考答案
+
+## Lesson07 Recovery
+### 需求背景
+为解决数据库进程崩溃造成数据法失情况的发生，需要一种能够让数据库在重启时恢复上一次运行最后一个正确状态的机制。
+### 测试用例
+#### 正确初始化
+```go
+func TestFLushBase(t *testing.T)
+	lsm=buildcase() 
+	test := func() {
+		//测试flush
+		assert.Nil(t,lsm.levels.flush(lsm.memTable))
+		//基准chess
+		baseTest(t,lsm)
+	}
+	//运行N次测试多个sst的影响 
+	runTest(test，2)
+}
+```
+#### 异常初始化
+```go
+func TestRecoveryBase(t *testing.T) (
+	buildCase()
+	test := func() {
+		//丢弃整个LSM结构模拟数据库崩渍恢复
+		Lsm：=NewLSM(opt)
+		//测试正确性
+		baseTest(t,lsm)
+	}
+	runTest(test，1)
+}
+```
+#### 调用场景
+在LSM结构初始化的时候调用，如果没有WAL文件存在则创建空的memtable对象
+```go
+// 恢复接口
+func (lsm *LSM) revocery() (*memTable, []*memTable)
+// 写wal接口
+func (wf *WalFile) write(entry *utils.Entry) error
+```
+### 架构设计
+![](KV%E5%AD%98%E5%82%A8/attachments/8a06f136fbc38cc0fe5f895c88e1c74d_MD5.jpeg)
+### 更进一步
+1. 为保证数据一定写入了文件，每次WAL时都需要调用sync函数，同步文件系统？
+2. 如果没有写满一个memtable时数据库就崩溃了，那么重启后创建一个新的memtable，这样会造成wal文件的磁盘空间浪费（因为mmap会事先分配文件大小）？
+
+### 实验要求
+基础实验
+在lab_recovery分支上完成实验
+提高实验
+代码中有一处bug
+
+### Lesson08 Parallel Compact
+#### 需求背景
+现在的corekv，所有的sst都仅会在Lo层（memtable的flush)，在whiskey论文精读讲过sst通过**归并排序**实现分层的意义在于可以在常量次数的查找内确定key在哪一个sst文件中进而提高性能。
+那么选择LO层的哪几个文件合并到L1层？更一般地讲
+> 应该选择Lx层的哪些sst合并到Ly层可以使得查询效率最大化？
+
+LSM是非就地更新的，通过不断追加不同版本的kV来实现高性能的写入，但我们并不需要过于陈旧的key，这会造成存储空间的浪费，存储过多版本key的同时也会使得检索key的时候查询更多无效key而增加耗时,也就是说：
+> 应该如何删除无效版本的key，提高空间利用率？因此我们的需求就是
+
+1.实现一种Lx到Ly压缩(归并排序)sst的分层机制，提高查询效率。
+2.正确的识别无效的key(不会再被访问的key)并将其删除，提高空间利用
+
+那么为了实现这一过程，需要设计一个新的组件：Compacter，专门用来解决kv引擎中sst文件分层和无效key回收问题。
+#### 问题约束
+Compacter的过程一定是由一个后台协程完成的，因为他不需要与调用者交互，其技术挑战在于： 
+a.Lx到Ly层的合并，那么x和y应该如何选择，才能提高查询效率？
+b.如何识别无效的key并在何时删除key，使其空间利用率最天并对性能影响最小 
+c.引擎在compact时发送崩溃应该如何处理才能保证数据的一致性？
+d.对于corekv来说，在压缩过程中如何充分发挥ssD特性，提高compact的效率？
+
+#### 接口定义
+Compact如何与LSM的其他组件交互的？
+	a.Compact在LSM初始化的时候创建后台执行的协程，并周期性的检查levelManger中levels管理的
+各层状态，通过状态来决定真正compact的时机。
+	b.当触发compact条件后，则将根据levels中的元信息生成压缩计划，指定从哪层压缩到哪层，以及涉及的两层sst的fileName。
+对涉及的sst文件建立一个统一的送代器，逐个获取合并后的kv数据，写入table的构建器中，完成送代后flush到自标层上。
+在压缩过程中涉及需要合并的sst是可以被检索的，只有压缩完毕后才会原子的更新manifest文件和内存索引完成合并。
+![](KV%E5%AD%98%E5%82%A8/attachments/21fc89b0a81009bf8ebddcc32c1c0dff_MD5.jpeg)
+
+#### 设计与实现
+##### 暴力解
+在磁盘中进行多路归并排序，是compact的算法基础，一个符合直觉的解：
+1.针对LO层的sst全部是从内存表dump没有经过合并因此必然存在重叠区间的事实，每次LO层文件数量或者所有sst文件的总字节数送到一人國值的时候就会触发合并，将LO层中相互重叠的sst文件选中（口能有多个重叠组)，然后将LO的重叠组和L1中的所有文件进行比较，将L1中与重叠组有重合的SS加入重叠组，判断重叠只需要比较sst的最大key和最小key即可(sst文件本身是有序的)，而二者都已经在 table的索引元数据中被记录，因此是没有性能损失的。
+2.对于L1到L6的其他合并，只需要在当前leve的size超过國值后选择其中fid最小的那个sst文件（最旧的)，和下一层的所有sst文件判断是否有重叠后选中有重叠的sst文件然后执行多路归并生成新的sst 文件。
+3在合并的过程中需要不停的合并同一个kev的不同版本，所以必须要对至少两个sst文件施行归并排序，由于每个sst文件本身都是有序的，不同key按升序排序，相同的key按版本的降序排序，因此合并时仅写入第一个key，而忽略相同key的其他版本即可实现压缩。
+![](KV%E5%AD%98%E5%82%A8/attachments/2f67375f110ee16e774c1707b43e5cc0_MD5.jpeg)
+##### 更优解
+1.LO层因为sst是无序的，合并时会涉及较多的sst，如何优化读写延迟？
+> 1：合并时.对涉及的sst加读锁，保证依旧可以对外检索，而minor的过程只会向Lo添加新sst.因此可以保证是无阻塞的，同时当majorcompact结束后才会删除sst文件此步骤会造成阻塞(可通过mv的方式原子删除提高并发度）。
+> 2.对LO层的查询最坏情况可能要遍历所有的sst文件，因此对LO层sst文件自身进行压缩，可以有效减少LO层SSt文件的数量，进而提高查询性能。
+
+2.compact过程需要从Ln到Ln+1，一个有效key至少经历7次的移动，写放大严重如何解决？
+> 如果Lmax层没有达到预期的容量，可以直接实现LO到Lmax的压缩，进行跨层级压缩，来减少写放大的可能性。
+
+3.16层的数据会越来越多，是否会导致数据倾斜？过期的key在l6层如何被清理？
+> 数据到达L6层后将无法被压缩到下一层，因此实现L6层自身的压缩，可以清理L6层的无效数据，提高空间利用率和性能。
+
+4.为充分发挥ssd的并行度，如何实现并行compact压缩，来提高性能？
+> level级别和table级别都加上读写互斥锁，然后维护一个全局的关于sst的状态表，记录每一个压缩任务的执行状态以及涉及的sst有哪些，在生成压缩计划的时候，检查其互斥性，如果当前压缩任务涉及的sst文件与正在执行的其他压缩任务没有冲突则可以执行否则失败。
+
+5.对于Lx到LV的压缩，如果选择x与V才能使得整体压缩效益最大化，节省空间提高性能
+> Lo层根据sst文件的数量来决定，其他层根据每个level的去除正在压缩状态的sst文件的总size与每层的期望size的比值作为优先级，而每个level的期望size之间相差一个数量级。
+
+6.压缩过程执行到一半，数据库崩溃后数据的一致性如何保证？
+> 只有在manifest文件状态变更成功后，才会向Lx中删除老旧日的sst，并在Ly中添加新的sst文件。
+
+7．多个协程执行并行压缩，如果频繁出现并发冲突该如何解决？
+> 在多个并发执行的压缩器初始化时，给予一个500ms左右的随机时间，使得每个压缩器执行的并发性被打散，降低冲突的可能性。
+
+8.压缩时读取sSt文件到内存进行排序是否会造成OOM？
+> 使用迭代器模式，从磁盘中逐条拉取数据到本地，减少内存的使用避免OOM，并且可以适当的使用并行预取机制，优化读取性能。
+
+9.迭代器的range是否会破坏block的缓存？
+> 选代过程中正确识别，送代器的使用场景，跳过setcache的过程
+
+##### 详细设计
+![](KV%E5%AD%98%E5%82%A8/attachments/fe2e7f8fa63d1e14cee234bc9894bfe2_MD5.jpeg)
+![](KV%E5%AD%98%E5%82%A8/attachments/674a11e6e952ba8ebbc858f9c279593b_MD5.jpeg)
+逻辑实现
+![](KV%E5%AD%98%E5%82%A8/attachments/6219b1e0b585f17d75561c5881e49b76_MD5.jpeg)
+###### 迭代器设计
+![](KV%E5%AD%98%E5%82%A8/attachments/ff170bc844ce821f37fdc049bbcd1ba2_MD5.jpeg)
+###### 详细逻辑
+![](KV%E5%AD%98%E5%82%A8/attachments/a2947ce93446b1fa92fcedf5e250286a_MD5.jpeg)
+#### LAB:Parallel Compact
+
+### Lesson09 LSM Logic Robustness
+![](KV%E5%AD%98%E5%82%A8/attachments/499944e43cfd784afd1518edfa87949d_MD5.jpeg)
+![](KV%E5%AD%98%E5%82%A8/attachments/11d98cff10774c710acae8f2b431a6a8_MD5.jpeg)
+![](KV%E5%AD%98%E5%82%A8/attachments/5cb028a89c7d332b019022647799f5a8_MD5.jpeg)
+![](KV%E5%AD%98%E5%82%A8/attachments/bc12b61d38c89a0cb202100d892cdf3d_MD5.jpeg)![](KV%E5%AD%98%E5%82%A8/attachments/9da0804cc183801fcb4b97780a9899e4_MD5.jpeg)
+
+### Lesson10 vlog file codec
+#### 背景需求
+在论文《目WiscKey：在SSD存储上的键值分离设计》介绍了kv分离这种思想，关于kv分离是什么/有什么用/怎么做的问题这里不再复述，可以看《目wiscKey论文精读》了解更多。本节内容直接关注，kv 分离在corekv的具体实现上。
+#### 组件交互
+KV分离是如何集成在LSM系统中的？
+![](KV%E5%AD%98%E5%82%A8/attachments/140b070096bf39cbf0e731ffbda42ec2_MD5.jpeg)
+根据上图得出以下7个命题：
+1.SET kV时判断值的字节大小是否超过阈值是则将其写入vlog文件并将返回的值指针写入sst中。 
+2.GETkey时从sst中查询值并判断其是否为值指针是则从vlog中查询真正的值，否则直接返回。
+3.vlog文件是一组fid自增的文件写入的数据超过设定阐值大小就会通过滚动的方式写入到fid+1的文件 
+4.存在一种GC触发方式，从vlog文件组中选择一个脏key数量最多的文件进行重写操作
+5.重写操作就是删除无效key.保留有效key到一个新vlog文件中的过程。 
+6.对于重新写回LSM的有效key,可以批量的写入以提高性能
+7.kv先写vlog文件再写LSM，因此必须保证vlog文件与sst文件的一致性
+#### 接口设计
+1.根据命题1/2，在GET/SET时需要得知何时做kV分离以及判断从sst掌到的值是否为值指针。
+> 需要引入一个参数，来判断value的天小是否超过值，就叫ValueThreshold。
+> 需要一个函数用来判断值是否为值指针，在sst增加一个meta字段存储flag元数据
+
+2.根据命题3，vlog应该以仅追加的方式写入并持有一个统计学段可以识别当前文件大小以便于分割
+> 需要记录一个maxFID表示最后一个活跃的vlog文件，然后记录一个offset代表下一个可写位置 vlog文件底层还是依赖mmap，与wal文件很像也是仅追加的写入
+> 通过记录当前vlog文件的学节大小以及已经写入的kv数量双重判断是否需要切分滚动vlog文件
+
+==mmap与fd write性能对比==
+`mmap` 通过**消除数据拷贝和系统调用**，在小数据和随机访问场景下是绝对的性能王者；而 `write` 在处理**大块数据流**时，凭借简单的逻辑和高效的 DMA，依然是非常稳健的选择。
+也就是说，在value大于4KB的时候（KV分离阈值），直接使用fd的write顺序写性能更高。
+3.根据命题4/5，协程应该持有一个vlog列表以及统计组件用来识别脏key并处理复写过程中的并发问题
+> 这个问题在下一节详细讲解
+
+4．根据命题6，需要设计一个批量写入LSM的新路径，以加速vlogGC的进程。
+> 批量写入LSM，需要使用channel来传递，因此需要维护一个request结构体封装buf存储批量数据这个问题在下一节GC过程中详细讲解
+
+5.对于命题7，写入vlog数据后如果DB崩溃，则可能丢失数据，因此需要重放vlog数据
+> 需要一种重放机制，在DB初始化时从vlog文件上一个检查点位置重新读取kV并写入LSM保证数据一致
+
+综合来看，我们需要:
+一个ValueLog结构体作为整个kv分离机制的驱动组件统一所有逻辑。
+> 具体来说，KV分离需要有初始化/读/写/关闭/GC(重写)/重放等功能模块。
+
+一个LogFile结构体来处理vlog文件的磁盘存储以及编解码问题。
+> 要基于mmap实现vlog文件的存储，实现具体的读/写/关闭操作
+
+一个DiscardStats结构来封装kv分离过程中的统计数据。
+> 在compact的时候进行统计每个fid写入kv的总字节数，用一个map组织以json序列化后作为一个内部 key存储在DB中，作为一个统计快照
+
+==根据上述的分析，本节中我们可以得到这样的需求列表：==
+1.实现一个vlog驱动组件，用来控制整个kv分离机制（读/写/统计/重放/复写）
+2.open函数，当存在vlog文件时需要重放之前的vlog文件否则重启一个新的vlog文件
+3.read函数，根据值指针查询到具体的entry对象并返回 
+4.write函数，写入entry对象并返回值指针
+5.close函数，优雅关闭时，释放持有的vlog文件句柄
+```go
+//valuelog
+type valueLog struct {
+	...
+	// 全局的文件句柄映射表：维护fid与logfile映射关系
+	filesMap map[uint32]*file.LogFile
+	// vlog文件当前最大的fid值，代表当前唯一可写的vlog文件
+	maxFid uint32
+	// coreKV全局驱动对象
+	db *DB
+	// maxFid对应的vlog文件中下一个可写的offset位置
+	writeableLogOffset uint32
+	// 已经写入的vlog中kv数量
+	numEntriesWritten uint32
+	// 全局的配置对象
+	opt Options
+	// 统计每个vlog文件脏key数量，便于选择最需要被GC的vlog文件
+	lfDiscardStats *lfDiscardStats
+	...
+}
+func (db *DB) initVLog()
+func (vlog *valueLog) close() error
+func (vLog *valueLog) write(reqs []*request) error
+func (vlog *valueLog) read(vp valuePointer) ([]byte, func(), error)
+```
+#### 实现原理
+箭头起点表示调用者，终点表示被调用者
+除3.a与3.e除外(二者表示了数据的流向从LSM返回给DB)
+
+#### LAB：实现vlog文件的编解码

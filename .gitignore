@@ -1,2 +1,5 @@
-.obsidian/workspace.json
 .DS_Store
+# Obsidian UI state (user-specific)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/graph.json

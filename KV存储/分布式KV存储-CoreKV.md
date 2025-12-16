@@ -562,5 +562,482 @@ func (vlog *valueLog) read(vp valuePointer) ([]byte, func(), error)
 #### 实现原理
 箭头起点表示调用者，终点表示被调用者
 除3.a与3.e除外(二者表示了数据的流向从LSM返回给DB)
+![](KV%E5%AD%98%E5%82%A8/attachments/9e21e42580f9bfc7b5f6973cdebde748_MD5.jpeg)
+1.在db初始化的时候调用initvLog函数（对应绿色线条）
+	a.启动discard数据收集协程，记录每个\[fid].vlog有多少被丢弃的value 
+	b.丛工作自录中获取所有以.vlog结尾的文件从中获取tid列表
+	c.如果fid列表为空就创建一个O.viog文件，否则排序fid后遍历打开每个vlog文件并更新maxFiD 
+	d.对每个\[fid].log文件进行重放，逐一遍历kv数据批量打包为request,写入LSM
+	e.通过maxFID获取最后一个活跃的vlog文件并seek到未尾获取其offset作为writableLogoffset 
+	f.获取！corekv！discard内部key的值，是用来存储discard统计数据的快照，用来恢复DB状态
+2.db写入一个kv,通过shouldwriteValueToLSM判断vlaue是否超过阐值（对应红色线条）
+	a.超过阈值，写入vlog文件，将key,value数据封装一个request对象调用valueLog的write方法 
+	b.加锁获取maxFID从中获取当前可写的logFile文件句柄，调用其write方法
+	c.创建一个buf对象将kv数据编码为二进制数据写入buf，并构建值指针对象后写入LogFile
+	d.判断当前的vlog文件是否达到了切割标准，是则newID=maxFid+1，创建一个新的LogFile文件
+	e.最后db将entry的meta字段中添加BitValuePointeruePtr表示一个值指针，将valuePtr写入LSM 
+3.db读取key(对应蓝色线条）
+	a．先从LSM中读取到entry对象，判断entry的meta字段是否有BitValuePointeruePtr的标记
+	b.是的话则将entry的value反序列化为valuePtr结构体，并调用vlog的read方法读取真正的value 
+	c.先加锁，再根据valuePtr中的fid在map中找到logFile的句柄调用其read去mmap中查询bytes 
+	d，对读取的数据进行crc32检查，检查对value的读取是否有效，最终返回value的数组
+	e.然后通过拷贝替换db持有的entry的value字段，将entry返回给db调用者 
+4.DB关闭vlog对象（未在途中表示
+	a.等待关闭信号(所有协程任务运行完毕）
+	b.遍历filesMap对象掌到所有的fid，对于maxFID进行截断操作 
+	c．对于所有的fid逐个关闭底层的LogFile对象，释放内存和fd句柄
 
+关键细节：
+1值指针应该如何设计？ 
+FID+Offset+Len
+2.vlog的存储格式如何设计？ 
+head+key+value+crc32
+其中head包含klen+vlen+(meta)?
+3.如何为sst的存储格式中扩展一个meta字段？
+需要对kv的pb结构/表/builder/valueStruct等组件进行修改，相对复杂
 #### LAB：实现vlog文件的编解码
+
+### Lesson11 vlog gc
+#### 需求分析
+不断追加的value数据会使得vlog文件组filesize不断变大，而这些被存储的value有可能已经失效（过期，被删除，被更新)。存储无效的value就会导致空间利用率降低，并且也会影响QueryRange的效率。
+**如何在不影响线上请求的情况下，删除无效的value呢？对这一问题的解决方案就是垃圾回收(gc)**。 GC需要在尽可能低成本的运行，因为它是一种代价，并不创造收益。
+任意GC算法都需要回答三个同题：**何时触发？如何识别？如何删除？**
+对于corekv来说，他是一个底层kv引擎，仅知道读写负载这一信息，很难在最佳时间触发Gc。若过于频繁触发会使性能抖动，过于缓慢触发会失去GC的作用。因此应该交由kV的使用者来进行GC这一决策，开发一个对外的接口，让使用者根据业务情况选择最佳的GC触发时机。
+识别垃圾对象是困难的，因为corekv不能中断写操作并且支持TTL，如此说来，在任意时刻总存在新产生的垃圾对象，那么识别程序必须能够高效识别且知道何时终止识别过程。对于Vog文件来说，其逻辑上是一个仅追加的文件，物理上是多个分段支件组成的。对于一个这样的线性列表支件，可以从头开始遍历一遍，每次去LSM中查询当前的key是否无效，并将无效的key忽略，有效的key保留。同时完成识别与删除操作，这就是在线垃圾收集的基本思想。
+那么问题是每次gc都需要从头开始遍历这在效率上是不可行的，因此可以想到使用采样统计的思想进行优化，如果每次我们随机采样其中儿个Vlog文件进行GC是否会做到完美的权衡得失？
+比随机选择更好的方式是利用一些信息进行选择，比如记录每一个vlog文件中有哪些过期的脏key存在，每次选择脏key数量最多的vlog文件。那么在哪在什么时候做这个统计操作？compact的时候是最佳时机，因为本来就需要遍历整个sst文件，他知道哪些key需要被删除，在compact的时候将被删除的key 通过channe发送通知，交给一个专门统计脏kev的协程，来统计这份数据，然后基于这个数据每次选择脏key最多的vlog文件，对其Gc。
+**如果这份统计数据由于kV引擎崩溃而丢失了怎么办**？这就需要kV定期将其同步到DB中，作为一个内部key存储到磁盘中。
+上面提到过删除无效key的办法就是再次把有效的key写回DB一次，根据set的流程，set后的数据会再次被插入vlog文件的tail位置，完成GC。**如果当key1判断为有效key写回DB的同时，在线请求对key 进行了update操作并且先一步写入DB，那么这一重写操作是否会覆盖正常的set操作呢？**
+在上面的流程中肯定是会的，因此解决办法就是在GC的时候禁止memtable滚动，只要保证LSM中写顺序的正确性即可，因为vlog文件对value的顺序不敏感，可以理解为LSM是vlog的一种索引，而所有的数据存储在仅追加的日志中(这一思想也是现代分布式系统的核心思维模型）。只要禁止memtable的滚动，跳表会按kev的时间排序，这样我们通过在一个跳表中利用时间截的有序性解决了重写时的并发冲突问题，这也是为什么要禁止内存表滚动的原因，因为滚动会导致keV1跨跳表写入，无法利用这一特性。
+#### 系统设计
+![](KV%E5%AD%98%E5%82%A8/attachments/386fb65d1b0da20a39fed6e47a55d340_MD5.jpeg)
+**用户调用RunValueLogGc接口传递discardRatio参数（丢弃率）** 
+1.选择discard统计值最大的那个vlog文件
+2，对该文件进行采样，检查当前这个文件是否值得被重写
+3.读取当前文件的所有kv，然后拿其中的key去lsm中查询，并将两个entry进行对比检查当前的这个entry是否有必要重写，如果有则封装为request对象并发送给writech
+4.从writeCh中读取到req，写入到req的buf中，直到达到buf的预期大小，然后一次性写入vlog文件（需要kv分离的entry会被写入），而不需要写入vlog的entry会被直接写入lsm中。
+#### 接口设计
+`func (kv *KV)RunValueLogGC(int ratio) error`
+#### 关键细节
+1.异步写入如何防止背压？背压强调的是对于一个队列模型，输入数据的速度大于输出数据的速度，进而导致缓冲区溢出的现象，在corekv中，由于异步的批量写入很容易造成写入速度高于存储速度导致 OOM，因此需要一定的机制来限制异步写入的频次。
+2.在上一节中我们专注于vlog文件的编解码并没有讲清楚vlog是如何与现有corekv整合到，我们从GET和SET两个函数看下其中要做事情。
+```go
+func (db *DB)Set(data *utils.Entry) error {
+	// 必要检查
+	// 如果value大于一个阈值，则创建指针，并写入vlog中
+	var (
+		vp *utils.ValuePtr
+		err error
+	)
+	// 如果value不应该写入LSM，则先写入vlog，必须保证vlog具有重放功能 便于崩溃恢复
+	if !db.shouldWriteValueToLSM(data) {
+		if vp, err = db.vlog.newValuePtr(data); err!=nil {
+			return err
+		}
+		data.Meta |= utils.BitValuePointer
+		data.Value = vp.Encode()
+	}
+	return db.lsm.Set(data)
+}
+func (db *DB)Get(key []byte) (*utils.Entry, error) {
+	var (
+		entry *utils.Entry
+		err error
+	)
+	// 从LSM中查询，判断entry是否是值指针
+	if entry, err = db.lsm.Get(key); err!=nil {
+		return entry, err
+	}
+	// 检查从lsm中拿到的value是否是ptr
+	if entry != nil && utils.IsValuePtr(entry) {
+		var vp utils.ValuePtr
+		vp.Decode(entry.Value)
+		result, cb, err := db.vlog.read(&vp)
+		defer utils.RunCallBack(cb)
+		if err != nil {
+			return nil, err 
+		}
+		enrty.Value = utils.SafeCopy(nil, result)
+	}
+	return entry, nil
+}
+```
+3.corekv作为一个高性能的引擎，必须保证被频繁使用的对象应该尽可能的复用，减少创建对象时分配内存与回收对象时释放肉存的资源消耗。而reguest的对象就是常见的频繁被创建使用的对象，因此我们需要使用对象池机制来提高性能。
+4.**值指针是如何编解码的**？任何对象在内存中都是一段学节序列(学节数组），因此理论上任何一个对象都可以直接转化为学节数组，但由于复杂对象包含指针学段，其对象本身不能保护全部的信息，因此该对象的学节数组是不能作为序列化的等价产物的，但如果该对象仅包含基本数据类型，那么其自身的字节数组包含全部序列化信息，因此该对象的学节数组可以与序列化产物直接等价。
+```go
+type ValuePtr struct {
+	Len uint32
+	Offset uint32
+	Fid uint32
+}
+// Encode Pointer into byte buffer
+func (p ValuePtr) Encode() []byte {
+	b := make([]byte, vptrSize)
+	// copy over the content from p to b
+	*(*ValuePtr)(unsafe.Pointer(&b[0])) = p
+	return b
+}
+// Decode the value pointer into the provided byte buffer
+func (p *ValuePtr) Decode(b []byte) {
+	// cpoy over data from b into b. 
+	copy(((*[vptrSize]byte)(unsafe.Pointer(p))[:]), b[:vptrSize])
+}
+```
+5．GC可以同时运行多个嘛？
+肯定是不行的，操作vlog每次只能有一个协程，因此需要一个并发控制限制。 
+6.每次都要从头开始执行Vog嘛？这样效率是不是太低？
+vlog文件在相对较大的时候不能立即删除，而应该先被逻辑删除，在一般情况下fid较小的vlog文件会GC 清除，因此当corekv重后启重放时，如果每次都从o.vlog开始，则会做过多的无用功，所以需要有一个head指针表示小于该位置的指针都是无效的kv数据，不需要关注(重放/GC）。 
+7．如何选择一个vlog文件执行Gc可以使得效率最大化？
+如果每次都选择脏key最多的vlog文件执行gc那么Gc的效果就是最大的，但当corekv是第一次启动，没有统计数据时该如何选择？这个时候最简单的方式就是使用随机选择的方法，随机选择一个Vvlog文件进行GC，利用随机选择作为一种降级策略。 
+8.选择出来的vog文件就一定会执行嘛？
+需要说明的是要有一个标准来判断执行此GC是合法的，我们定义一个丢弃采样率这样的一个指标在接口中传递进去，用来判断当前的vlog是不是值得被GC，这一判断是对选择策略的一个补充，因为有可能是随机选择出来的，那么如何判断其被GC的价值呢？可以通过排除法，首先一个刚刚被创建的vlog支件不值得被GC，maxFID的vlog一定不能被Gc（还在append中），在两个size和count的采样窗口内去检查被读取的key是不是一个被丢弃的key，是的话就对齐进行统计。
+如果可丢弃的key不足count窗口的大小(通常是1ooo条)，或者其可丢弃的kv总大小不足size窗口，或实际去弃key的总size小于预期size（总size\*去弃率）那么我们门就跳过这个vlog文件的Gc任务。
+```go
+func DiscardEntry(e, vs *Entry) bool {
+	if isDeletedOrExpired(vs.Meta, vs.ExpireAt) {
+		return true
+	}
+	if (vs.Meta & BitValuePointer) == 0 {
+		return true
+	}
+	return false
+}
+```
+9.如何执行GC？
+在kv分离所追求的在线GC本质上可以等价于重写操作，因此在vlog的gc实现中，直接对被选中的文件执行重写即可完成gc。
+遍历vlog文件，拿到key去读DB，解析值指针，然后用值指针去vlog文件查询到kv数据组织为entry写入一个buf中，buf满时披露写入LSM中，为充分发挥SSD特性，可以异步的并发写磁盘，来提高写性能。
+批量写入writeCh中，专门的写协程会处理批量写请求，要产严格控制写入磁盘的频率避免背压现象产生。
+#### 逻辑流畅
+![](KV%E5%AD%98%E5%82%A8/attachments/72e3427bb8ff99107b2d89a60372133d_MD5.jpeg)
+
+### Lesson11 API
+#### 背景需求
+我们在前面的课程当中，实现了各个独立的模块，包括内存部分的Memtable、磁盘部分的SsT、Vlog 以及各种数据结构中的lterator。但到自前为正，我们还没有提供给用户使用的APl，在今关的课程当中，我们就来实现coreKv最外层的APl。
+#### 组件交互
+![](KV%E5%AD%98%E5%82%A8/attachments/1487393d321df91c16c7a499ac588c6e_MD5.jpeg)
+CoreKV是经典的LSMTree架构，但与传统LSMtree不同的地方在于，引I入了Wisckey的特性。即在Value值比较大的时候，会使用KV分离的方式进行存储。这样减少了写放大。
+==内存部分==
+在Corekv的内存部分，称为MemTable，分为MemTable和ImmutableMemTable，具体的实现我们采用了SkipList，他对外提供了一些接口，这些接口我们后面需要用到，来实现一个完整的KV读写流程。
+==磁盘部分==
+磁盘部分分为三部分
+ssTable通过LevelManager进行管理
+![](KV%E5%AD%98%E5%82%A8/attachments/ac92abc2c1e1caa2a7463b75c89c490e_MD5.jpeg)
+WAL文件，将数据写到MemTable之前，需要先写入WAL文件，保证原子性。 
+VLog文件，KV分离后，存储Value的文件
+我们来关注这个图中的Set和Get调用，接下来我们的工作就是将整个流程串起来。
+#### 接口设计
+我们需要提供那些API？
+> 打开并初始化一个DB
+> 关闭DB、并且清理占用资源
+> 在DB中进行增删改查、遍历等操作
+
+首先我们需要一个Open方法，来显式的打开数据库。
+Open(opt \*Options)\*DB
+这个方法需要传入一些配置参数，返回值是一个DB实例
+在Options当中，我们需要提供以下可配置的参数
+	1.在CoreKV中，我们实现了KV分离的特性，但是Value达到多大需要进行分离存诸，这个需要根据业务实际调优，因此这个值需要对外提供可配置选项。
+	2.同理MemTable SSTable VLogSize都需要提供可配置选项。
+```go
+// Options 总配置文件
+type Options struct {
+	ValueThreshold int64 // kV分离阈值
+	WorkDir string // 数据库文件保存目录
+	MemTableSize int64 // 内存MemTable大小上限
+	SSTableMaxSz int64 //SST文件大小上限
+	MaxBatchCount int64 //最大批量写入数量
+	MaxBatchSize int64 // max batch size in bytes
+	ValueLogFileSize int // Vlog文件大小
+	VerifyValueMaxEntries bool
+	ValueLogMaxEntries uint32
+	LogRotatesToFlush int32
+	MaxTableSize int64
+}
+```
+close()
+关闭数据库，清理资源占用，包括打开的文件描述符、占用的内存资源。具体需要关闭哪些呢？ MemTable的内存占用，Vlog的文件描述符和Stat统计信息的内存占用。
+
+API
+> Set
+> Get
+> Del
+> Update
+> Range
+
+Info
+返回统计信息
+
+DB数据结构
+```go
+// DB 对外暴露的接口对象 全局唯一，持有各种资源句柄
+DB struct {
+	sync.RWMutex
+	opt *Options
+	lsm *lsm.LSM
+	vlog *valueLog
+	stats *Stats
+	flushChan chan flushTask // For flushing memtables
+	writeCh chan *request
+	blockWrites int32
+	vhead *utils.ValuePtr
+	logRotates int32
+}
+```
+#### 实现原理
+现有组件提供的接口情况
+LSMTree中包含两部分MemTable和SSTable，具体的交互细节这节课不需要关注，我们只需要知道调用LSM的Set接口，可以将数据写入；调用Get接口，可以将数据读出。
+同时LSM提供了NewLSM初始化方法，和Close清理资源的方法。
+
+Vlog提供了open和close方法，write和read方法，这里我们也不用关注。
+我们唯一需要感知到的接口就是newValuePtr，这个方法将单个的Value包装成Vlog可以识别的 Request，并返回一个Vlog中的指针值。
+
+我们先梳理一下，这些组件提供的所有对外接口。
+MemTable和SSTable共同组成LSMTree，通过LSMTree对外提供接口，提供的API有Set、Get
+调用LSM的Set方法时，为了保证原子性，因为文件需要先写入WAL文件，WAL文件提供有Write方法，但是LSMTree的实现中，我们已经集成到了LSM的API中，因此这里不用关心。
+
+总结：
+LSM Tree：Set、Get
+vlog：newValuePtr
+
+##### Set接口
+1.调用者将要存储的Key和Value组装成CoreKV的Entry结构体，Key和Value当前只支持\[byte]类型
+```go
+// NewEntry
+func NewEntry(key, value []byte) *Entry {
+	return &Entry {
+		Key: key,
+		Value: value
+	}
+}
+```
+2.调用者调用Set方法，传入Entry结构体。
+3.判断是否超过KV分离值，如果超出國值，需要进行KV分离，则调用vlog提供的写入方法newValuePtr写入Value值。同时将Value的指针值替换给Entry的Value 
+4.写入LSM树
+![](KV%E5%AD%98%E5%82%A8/attachments/13a820d0050bb9e6014927c9a6fede0a_MD5.jpeg)
+##### Get接口
+1.调用者调用Get方法，传入要查找的Key值
+2.直接调用Ism的Get方法，从LSM树中查找。如果查找不到，即返回NotFouna
+3.如果查找到对应的Value，需要判断Value是否是指针类型，如果是指针类型，需要进行解码 4．如果非指针类型，直接组装成Entry。如果是指针类型，解码后，传入Vlog拿到存储的值 
+5.判断Entry是否是已过期的值。
+6.返回Entry或者ErrKeyNotFound
+![](KV%E5%AD%98%E5%82%A8/attachments/5adc5742c0bd3aaa9991e47e5c59aa6c_MD5.jpeg)
+##### 更新和删除操作
+这两种操作都可以视为变种的Set操作。
+由于LSMTree中的MemTable支持原地的更新操作，我们来考虑如下三种情况
+![](KV%E5%AD%98%E5%82%A8/attachments/2f5d314b2585e9f98edb38196ed21644_MD5.jpeg)
+1、如果原始值还在MemTable中，Set相同的Key，那么能够保证在MemTable中只会保留有最新的值。
+2、如果原始值被刷新到了SSTable中，Set相同的Key，那么MemTable中会存在最新的Key，此时最先读取MemTable，也能保证读到最新的值。
+3、如果原始值被刷新到了SSTable，后面新Set的值也被刷到了不同的SSTable中，由于LSMTree的读取策略，能够保证读取到最新的ssTable中的最新Key。
+对于册删除操作，我们可以利用幕碑机制。即，将Vaue设置为Nil，这样在读取到值为Nil的情况时，给用户返回NotFouno
+##### TTL
+TTL（TimeToLive）是KV存储诸中非常常用的一个功能，尤其是缓存场景中，可以使用TTL功能对缓存进行过期操作。
+具体的实现有两种方式，一种是静默时的数据检查，一种是在触发读写操作时进行检查。在SST文件进行Compaction时，会对所有的KV对进行有效期的检查，过期数据在Compaction的时候会被丢弃，减少没有必要的写入操作。
+在Get方法取到数据后，返回前，会再次进行有效期的检查。
+##### Range
+Range接口实现的功能是遍历整个corekV，这需要我们调用各个模块的Iterator来组合实现这个功能。 
+Range接口的输出结果是当前DB中存储的所有有效的Key-Value对，同时这些Key-Value对应该按照一定的顺序有序输出（具体顺序取决于我们在实现过程中使用的比较器），我们在这里采用的排序规则是，按照字典序由小到大排序。
+接下来我们要思考的问题就是，如何把所有的Key-Value对遍历一遍？
+我们先来看一下当前实现了哪些Iteratol
+内存表MemTable的Memlterator，作用是遍历整个MemTable
+ssT文件的contactlterator，作用是遍历所有的SsTTable，每个Table文件都具有自已的lterator实现，通过Contactiterator进行组合送代。其中Levelo层的SsT文件因为Key值范围有重合，不能使用 Contactlterator进行组合，只能单独对每个Iterator进行遍历。
+因此，我们只需要把所有的Iterator全部遍历一遍，所有的Key-Value对就会输出。但是还有一个问题是，有一些被删除或者失效的Key-Value，此时还没有被Compact删除，会不会也被遍历出来？
+答案是不会。DBiterator是CoreKV最外层的迭代器实现，最终的实现是依赖Mergelterator，Mergelterator当中持有所有的Iterator，采用多路归并的思想进行比较遍历。在遍历Mergelteratol 时，会比较所有Iterator的Key值大小，把当前所有Iterator中最小的Key值输出。
+![](KV%E5%AD%98%E5%82%A8/attachments/f40e43b0979ba36c0269efd344d88a48_MD5.jpeg)![](KV%E5%AD%98%E5%82%A8/attachments/8b6321cebe4f5395c7f34acbac72d733_MD5.jpeg)
+##### 未来改进
+支持事务
+
+### Lesson12 单机事务实现 Snapshot Isolation
+#### SI && MVCC
+快照隔离（sl,Snapshotlsolation）是讨论隔离性时常见的术语，可以做两种的解读，一是具体的隔离级别，SQLServer、CockroachDB都直接定义了这个隔离级别；二是一种隔离机制用于实现相应的隔离级别，在Oracle、MySQLInnoDB、PostgreSQL等主流数据库中普遍使用。多版本并发控制（MVcC
+multiversionconcurrencycontrol）是通过记录数据项历史版本的方式提升系统应对多事务访问的并发处理能力，例如避免单值（Single-Valued）存储情况下写操作对读操作的锁排斥。MVcc和锁都是Si的重要实现手段，当然也存在无锁的SI实现。 
+##### SI运作方式
+事务（记为T1）开始的瞬间会获取一个时间截StartTimestamp（记为ST），而数据库内的所有数据项的每个历史版本都记录着对应的时间戳CommitTimestamp（记为cT）。T1读取的快照由所有数据项版本中那些C小于S工目最近的历史版本构成，由于这些数据项内容只是历史版本不会再次被写操作锁定所以不会发生读写冲突，快照内的读操作永远不会被阻塞。
+其他事务在ST之后的修改，T1不可见。当T1commit的瞬间会获得一个cT，并保证大于此刻数据库中已存在的任意时间戳（ST或CT），持久化时会将这个CT将作为数据项的版本时间戳截。T1的写操作也体现在T1的快照中，可以被T1内的读操作再次读取。当T1commit后，修改会对那些持有ST大于T1CT的事务可见。
+如果存在其他事务（T2），其CT在T1的运行间隔ST，CT】之间，与T1对同样的数据项进行写操作，则T1abort，T2commit成功，这个特性被称为First-committer-wins，可以保证不出现Lostupdate。事买上，部分数据库会将其调整为Eirst-write-wins，将冲突判断提前到write操作时，减少冲突的代价。类似cAS，从而阻止了更新异常(LostUpdate)的出现。
+> 简单提一下冲突检查的方式
+> 实现的时候通常利用锁和LastCommitMap，提交之前锁住相应的行，然后遍历自己的WriteSet，检查是否存在一行记录的LastCommit落在了自己的\[ST,cT]内。
+> 如果不存在冲突，就把自己的CommitTS更新到LastCommit中，并提交事务释放锁。这个过程不是某个数据库的具体实现，事实上不同数据库对于S实现存在很大差别。
+> 例如，PostgreSQL会将历史版本和当前版本一起保存通过时间戳区分，而MySQL和Oracle都在回滚段中保存历史版本。
+> MySQL的RC与RR级别均使用了SI，如果当前事务（T1）读操作的数据被其他事务的写操作加锁，T1 转向回滚段读取快照数据，避免读操作被阻塞。
+
+实际上，我们可以对于上述运行过程提同
+提交时进行的冲突检查是为了解决LostUpdate异常，那么对于这个异常来说，写写冲突的检查是充分且必要的吗？
+
+#### Snapshot Isolation Demo
+如果说直接上手corekv，编写它的事务处理模块太复杂，那么我们先从一个简单的Demo开始
+在这个Demo中，我们模拟一个银行中的多个账户，每个账户都有一定的余额列表，我们会随机开启事务，在多个账户之间互相转账，同时检测转账的结果是否符合事务的要求。首先，我们来编写一个银行类，提供一些基本方法。
+```go
+type Bank struct {
+	orcale *txn.TranscationManager // 事务管理
+	accountNum int // 银行内所有账户数量
+	accounts []*Account // 所有账户
+}
+```
+对于Bank而言，我们要提供的一个核心功能就是，在账户之间转账。
+![](KV%E5%AD%98%E5%82%A8/attachments/f520810f9a43fc15d129cc9241adb7c2_MD5.jpeg)
+还有一个额外的功能，就是累计全部账户的余额，便于检查转账结果是否正确。
+![](KV%E5%AD%98%E5%82%A8/attachments/8b3af83d5bc21ca05c184cf7ed054e63_MD5.jpeg)
+对于一个账户，需要记录如下字段
+![](KV%E5%AD%98%E5%82%A8/attachments/e3c892bf848e089093ef6465cdd3ad58_MD5.jpeg)
+##### 快照读
+Snapshotsolation的核心概念，是对于读操作来说，都从快照中读取，从而避免了读写冲突。
+```go
+type Transaction struct {
+	mutex sync.Mutex
+	id int64
+	max int64
+	active map[iny64]struct{}
+}
+```
+那么如何生成这个快照呢？上述的代码中，我们看到，每一个事务对一个Account的操作都被记录在这个Account的history字段中。由于事务ID是严格单调递增的（我们用这种方式实现逻辑上的时间戳），当我们开启一个事务的时候，在TransactionManager当中获取一个StartTimeStamp，也就是当前事务的D，那么在此之前的HistorV就可以算作快照数据。那么具体满足哪些条件，才可以视为合法的快照数据呢？
+首先，在获取到事务ID后，由于读写不冲突，该Account内的余额还有可能被其他事务更新，也就是说History字段当中还会不断的增加数据。自前可以确定的是，在该事务ID之后更新的数据，一定不能被当前事务可见。
+所以我们记录下来第一个条件：**当前事务可见的快照列表，事务ID一定不能天于当前事务。**
+第二个条件，在该事务开启时，在事务的结构体的active字段中，会保存在那一时刻所有活跃中的事务快照（该列表中的事务Commit或者Abort后会被册删除掉）。**当前事务只能看到被Commit的事务列表，因此History学段中的数据，都不能出现在Active列表当中**。这是第二个条件。
+第三个条件，在该事务开启时，会保存当前最大的Commit的事务ID，那么大于该ID的事务，在事务开启的时刻，可以被认为没有被提交，自然对当前事务也就不可见。
+那么第三个条件就是：**当前事务可见的快照列表，事务ID只能小于等于最大的已提交事务ID**
+当然满足这些条件的History肯定不止一条，因为这当前事务的整个执行过程中，可能会有多个事务被提交。这时，我们只需要选择最新的一个事务就可以了。
+上述的操作就是快照读，指的是，在读取事务开始时，申请一个StartTimeStamp，所有可读取的快照，必定在此StartTimeStamp之前。
+##### 并发写
+聊完了快照读，我们再来看一下并发写。
+我们提到，所有对于Account的余额更新操作，都会在Account的History列表中记录下来，具体的数值，和是哪一个事务进行的更新。在Snapshotlsolation的论文描述中，写入操作在进行Commit时，会获取一个CommitTimeStamp，在该事务开启时的StartTimeStamp和Commit时的
+CommitTimeStamp之间，如果有其他事务Commit了自己History中的数据，自己的事务就要Abort掉，否则就会造成其他事务Commit的数据被修改，造成LostUpdate。那么具体的逻辑怎么实现呢
+在论文中提到，可以获取一个很久的StartTimeStamp作为事务开始的标志。那么我们干脆以最开始的时间戳作为StartTimeStamp。而在Commit的时候，才去申请一个CommitTimeStamp，在遍历操作时，去判断从StartTimeStamp到这个CommitTimeStamp内有没有事务从未Commit状态，到 Commit状态。
+如同判断这个事务从未Commit变成了Commit状态呢？
+我们提到在事务开始之初，在Account对象的History字段内包含了所有被Commit的历史数据。在事务对象的Active字段内，包含了事务生成时所有活跃的事务列表（活跃的意思是，已开启，未提交）。所以如果一条数据的事务D，存在于活跃的事务列表中，说明这条数据在事务并始时，这条数据还未被提交。而在Commit时，发现这条数据已经被提交到了Account的History字段中。当前事务就要被 Abort。
+![](KV%E5%AD%98%E5%82%A8/attachments/0c1768cd48d58fc82533651d4b9e125f_MD5.jpeg)
+
+### Lesson13 快照读
+在学习了之前的SnapshotlsolationDemo之后，我们已经知道了如何去实现快照隔离级别。现在我们要
+和CoreKV的代码结合起来，真正实现一个支持事务的KV数据库。
+#### 背景
+回想一下，之前实现的SnapShotIsolation，我们做了哪些事情？
+> 在银行中实现了很多账户
+> 需要在每一个账户中记录历史版本数据
+> 读取时需要获取一个时间戳，来判断哪些历史版本对当前事务可见，从而实现快照读
+> 写操作时需要获取一个commit时间戳，来判断范围内的数据是否被其他事务提交需要进行写写冲突检测
+
+#### 组件设计
+##### 历史版本
+> 对应到银行中的一个账户，CoreKV中的一条数据就是一个KV对
+> 对应到一个账户中的余额，Corekv中的就是一个value值
+> 对应到一个账户中的余额修改记录，corekv中就是一个value版本
+> 账户余额修改记录中的对应事务，corekv中就是key的ts
+
+在CoreKV中，已经天然支持了多版本的数据结构。每一个Key在写入的时候，都会携带一个时间戳。 CoreKV1.o的时间戳，是在Key后面追加真实的物理时间戳，但是Key在大量并发写入的时候，时间戳不能满足精确区分同一个KeV写入先后顺序。因此我们必须实现一个逻辑时间戳，逻辑时间戳的获取我们在事务管理模块中完成。
+我们再来复习一下，多版本的Key在CoreKV中的存储格式
+![](KV%E5%AD%98%E5%82%A8/attachments/59b6d8ba2722274c298973a9d5e3e52b_MD5.jpeg)
+解释一下上面这个图，在跳表的每个节点当中，存储的Key都是原始Key+TimeStamp，在SSTFile存储的Key当中，组成结构也同样是Key+TimeStamp，并且都是按照一定的顺序排列的，这个顺序的规则是，按照Key的学典序进行排列，当遇到相同的Key时，则按照时间戳截天小（Key的后8位）排序。
+这也就是说，所有的Key中都包含了版本信息，这个版本信息在Key的后8位当中。且由于这个时间截是事务提交时的时间截，所以也可以找到对应的事务。（commitTs相关的逻辑会在事务的写入操作中讲解，这里先记住即可）。
+看到这里，我们已经实现了Demo当中所有账户余额历史版本的保存、读取功能。
+##### 迭代器
+在对历史版本进行送代时，账户余额是保存在内存中的，因此我们可以方便的进行遍历。但是CoreKV会将数据进行下盘，因此我要读取出来指定版本之前的最新一个历更数据，这需要我作比【银行 Demo】代码，稍微多一些逻辑。
+所幸的是，我们在CoreKV1.O的版本中实现了针对整个DB的送代器，但我们还需要一个额外的送代器--pendingWritelterator，也就是当前事务写入数据的送代器。
+为什么需要当前事务写入数据的代器呢？
+![](KV%E5%AD%98%E5%82%A8/attachments/bf8b3565e33ecddef97d08870e5b8052_MD5.jpeg)
+1：在该事务进行读取时，对当前事务已经写入的数据，应该充许被读取到。
+2，在该事务进行读取时，对其他事务已经写入但还未提交的数据，不应该读取到。
+为了实现上述的效果，我们将一个事务的写入数据暂存在txn结构体的pendingWrites当中，只有当事务执行了Commit操作后，才调用DB的Set接口，将数据真正写入Memtable中。（写入操作时会细讲）。所以对这部分数据进行读取时，需要提供iterator对其进行送代，
+###### 数据结构
+```go
+type pedingWritesIterator struct {
+	entries []*utils.Entry
+	nextIdx int
+	readTs uint64
+}
+```
+到此为止，我们需要的送代器要负责送代三个部分的数据 
+1.当前事务写入的
+2.内存中的 
+3.磁盘中的
+而pendingWriteslterator的核心逻辑如下：
+```go
+func (pi *pendingWritesIterator) Seek(key []byte) {
+	key = utils.ParseKey(key)
+	pi.nextIdx = sort.Search(len(pi.entries), func(idx int) bool {
+		cmp := bytes.Compare(pi.entries[idx].Key, key)
+		return cmp <=0
+	})
+}
+```
+##### 事务管理
+事务管理模块负责授时（生成逻辑时间戳）、事务状态记录、事务清理、冲突检测等。
+###### 数据结构
+```go
+type TxnManager struct {
+	sync.Mutex
+	nextTxnTs uint64
+}
+```
+
+```go
+type Txn struct {
+	readTs uint64
+	commitTs uint64
+	db *DB
+	
+	reads []uint64
+	doneRead bool
+	
+	pendingWrites map[string]*utils.Entry
+}
+```
+获取读取时间戳，就是实现一个单调递增的计数器
+```go
+func (m *TxnManager) ReadTs() uint64 {
+	var ReadTs uint64
+	m.Lock()
+	readTs = m.nextTxnTs-1
+	m.Unlock()
+	return readTs
+}
+```
+##### 冲突检测
+在事务管理模块中，会记录所有已经提交的事务，如果当前事务管理模块中所有已提交的事务时间戳都小于当前事务的读取时间截，此刻认为没有冲突。
+如果存在事务，提交的时间截比当前事务的读取时间截要天，则需要进行下一步检测
+在每个已提交的事务中，会记录该事务修改的Key列表，如果Key列表中存在要读取的Key，则说明要读取的Key被其他事务修改，此时即认为存在冲突。
+![](KV%E5%AD%98%E5%82%A8/attachments/5d557126eea7353908767928be423642_MD5.jpeg)
+#### 代码实现
+当我们有了以上的工具组件以后，我们就可以按照SnapshotlsolationDemo的思路来实现快照读
+快照读操作
+	a.初始化一个事务txn
+		1.初始化pendingWrites字段，用来暂存该事务内的所有写入操作 
+		2.完成事务starttimestamp授时
+			a.调用txn_manager，将时间戳字段递增。
+	b.读取数据
+		i.调用txn的Get方法
+			1.先从pendingWrites当中查找，如果找到直接返回，因为pendingWrite当中是最新的数据。
+			2.如果pendingWrites当中没有找到，则调用db的Get方法。对于Get方法而言，需要传入带时间戳的Key，时间戳应为该事务的starttimestamp 
+			3．提交事务
+				a.如果该事务中没有写操作，则直接返回
+				b.进行冲突检测，如果读取的Key中被其他事务修改，则返回ErrConflict
+
+#### 场景分析
+1：当前事务有写有读，前面写入的数据，会被后面的读取操作读到吗？
+会的。因为当前事务写入操作都暂存在pendingWrites当中，在读取操作时会遍历pendingWrites，可以保证前面写入的数据被读到。
+2．其他事务先进行写操作，当前事务进行读操作，如何保证当前事务不会读到其他事务未提交的数据？首先，只有事务提交后的数据，才能写入memtable和SsT文件中，未提交的数据都暂存在事务的pendingWrite当中，而pendingWrites只能被当前事务自己可见。 
+3.当前先进行读操作，其他事务进行写操作，但未提交
+首先，只有事务提交后的数据，才能写入memtable和SsT文件中，未提交的数据都暂存在事务的
+pendingWrite当中，而pendingWrites只能被当前事务自己可见。 
+4.其他事务先执行写，且已经提交
+其他事务已经提交的数据，会写入Memtable中，当前事务一定可以读到。
+### Lesson14 并发写
+#### OverView
+在上一节课的讲解中，我们已经实现了快照读，核心的思路是，在启动读取事务的时候，获取一个 Start时间戳，当前读取事务能读到的内容包括：所有已经提交的事务以及当前事务写入的内容。
+CoreKV实现了SerializableSnapshot隔离级别（简称ssl）的乐观并发控制的事务，相比Snapshot隔离级别（简称Sl），SSI除了跟踪写操作进行冲突检测，也会对事务中的读操作进行跟踪，在Commit时进行冲突检查，当前事务读取过的数据，如果在事务执行的期间被其他事务修改过，则会提交失败：
+![](KV%E5%AD%98%E5%82%A8/attachments/cafecd577cbd5149211a5963776c453b_MD5.jpeg)
+#### 事务的生命周期
+乐观并发控制事务的生命周期大致上分为四段，获取时间戳、跟踪读写、提交、请理：
+- 事务启动：获取事务开始时刻的授时
+- 事务过程：跟踪事务的读写操作涉及到的key，事务期间读操作按启动时刻的快照为准，事务中的写入内容在内存中暂存
+- 事务提交：根据事务中跟踪的key进行冲突检测，获取事务提交时刻的授时，使写入生效
+- 清理旧事务：当活跃的事务完成后，可以使已经不再需要的快照数据、冲突检测数据等事务相关数据得到释放
+为了管理事务的生命周期，需要为每个事务和全局层面记录两部分元信息：
+- 每个事务层面，需要记录自己读写的key列表，以及事务的开始时间戳和提交时间戳截，这部分信息维护在Txn结构体中
+- 全局层面，需要管理全局时间截，以及最近提交的事务列表，用于在新的事务提交中对事务开始与提交时间戳中间提交过的事务范围进行冲突检查，乃至当前活跃的事务的最小时间戳，用于清理旧事务信息，这部分信息维护在oracle结构体中
+这里授时得到的时间戳并非物理时间，而是逻辑上的：所有的数据变化均来自事务提交的时刻，因此仅当事务提交时使时间戳递增。
+![](KV%E5%AD%98%E5%82%A8/attachments/4ba8ace21fe049078856f40f00dde27d_MD5.jpeg)
+以上面的图为例，事务1在提交时需要与事务2和事务3进行冲突检测，因为事务2和事务3的提交时间位于事务1的开始与提交之间，事务2和事务3写入的key如果与事务1读写的key列表存在重叠，则认为存在冲突。
+
+根据上面的描述，我们需要实现如下的功能
+1.事务管理器需要管理活跃中的事务，并且需要负责清理过期的事务。 
+2．事务管理器需要提供所有事务注册的接口，事务提交时的通知接口 
+3：事务管理器需要检测事务之间的冲突

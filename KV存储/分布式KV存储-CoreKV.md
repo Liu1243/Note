@@ -1,6 +1,8 @@
 ## Lesson01 SkipList
 [Lesson 01 SkipList - 飞书云文档](https://hardcore.feishu.cn/wiki/VfAbwCvmyiVD5IktOU3crBT8nsc)
-
+1.更高效的randLevel算法？
+redis采用p=1/4的概率随机层高，平衡查询性能（跳跃步长）和内存开销（指针数量）。
+预计算查询表、结合Arena紧凑存储
 ## Lesson02 Bloom Filter
 ### 推导
 给定位数组大小m、数据量n，得出Hash函数个数k：
@@ -42,7 +44,7 @@ func (s \*Arena) putVal(v ValueStruct) uint32
 ValOffet的数据类型是uint32，ValSize最天也就是uint32，那理论上用一个uint64就可以表示。我们将 valsize左移32位，然后做个拼接即可
 ==val size+val offset合并为一个64位val数组，各32位，实现无锁更新==
 
-func (s \*Arena) putKey(key \[]byte) uint32
+func (s \*Arena) putKey(key \[]byte) uint33
 
 这样我们就把一个基本完善的CoreKV内存管理模块完成了，并且考虑了很多细节。但是，我们的SkipList就要大改动了，I因为开始的Element中保存的是实际的KV值，但是接下来Element中保存的是 Arena中的offset。
 我们的SkipList当中也必须要持有一个Arena，类似这样
